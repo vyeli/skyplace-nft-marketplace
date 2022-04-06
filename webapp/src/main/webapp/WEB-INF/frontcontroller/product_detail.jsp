@@ -25,7 +25,9 @@
     </div> <!-- Description box -->
     <div>
         <!-- center img -->
-        <img class="object-contain max-w-xl m-8 rounded-md" src="https://s3.amazonaws.com/businessinsider.mx/wp-content/uploads/2021/07/16190820/image-25.jpeg" alt="Alien Cryptopunk">
+        <img class="object-contain max-w-xl m-8 rounded-md"
+             src="https://s3.amazonaws.com/businessinsider.mx/wp-content/uploads/2021/07/16190820/image-25.jpeg"
+             alt="Alien Cryptopunk">
     </div> <!-- center img -->
 
     <div class="flex flex-col">
@@ -34,7 +36,7 @@
         <div class="border-2 p-2 rounded-md h-64">
             <div class="flex mb-2">
                 <!-- Price -->
-                <img class="h-7 w-7 my-auto" src="http://assets.stickpng.com/images/5a7593fc64538c292dec1bbf.png" alt="eth">
+                <img class="h-7 w-7 my-auto" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/2048px-Ethereum-icon-purple.svg.png" alt="eth">
                 <p class="my-auto text-sm"><span class="font-bold pl-4 text-lg">0.6</span>&nbsp;($2,090.48)</p>
             </div> <!-- Price -->
             <hr>
