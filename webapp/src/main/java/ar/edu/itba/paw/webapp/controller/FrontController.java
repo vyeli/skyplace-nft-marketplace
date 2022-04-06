@@ -14,4 +14,10 @@ public class FrontController {
         return mav;
     }
 
+    @RequestMapping("/404")
+    public ModelAndView notFound() {
+        final ModelAndView mav = new ModelAndView("frontcontroller/notfound");
+        return mav;
+    }
+
 }
