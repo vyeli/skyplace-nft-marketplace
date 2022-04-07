@@ -36,9 +36,9 @@ public class WebConfig {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
         ds.setDriverClass(org.postgresql.Driver.class);
-        ds.setUrl("");
-        ds.setUsername("");
-        ds.setPassword("");
+        ds.setUrl("jdbc:postgresql://10.16.1.110/paw-2022a-09");
+        ds.setUsername("paw-2022a-09");
+        ds.setPassword("y87lZUffp");
 
         return ds;
     }

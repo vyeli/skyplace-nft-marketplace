@@ -9,8 +9,8 @@
 </head>
 <body>
 <div class="h-screen flex flex-col">
-    <div class="w-full h-16">navbar</div>
-    <div class="flex flex-col items-center mt-12 w-full grow overflow-clip">
+    <%@ include file="../components/navbar.jsp" %>
+    <div class="flex flex-col items-center pt-12 w-full grow overflow-clip">
         <h1 class="text-4xl">Explore NFTs</h1>
         <div class="relative mt-12 w-5/12 min-w-[300px] md:min-w-[550px]">
             <!-- Background circles -->

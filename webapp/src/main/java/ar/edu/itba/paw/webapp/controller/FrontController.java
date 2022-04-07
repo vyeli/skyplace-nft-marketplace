@@ -34,7 +34,7 @@ public class FrontController {
         return mav;
     }
 
-    @RequestMapping("/")
+    @RequestMapping(value={"/", "/index"})
     public ModelAndView home() {
         final ModelAndView mav = new ModelAndView("frontcontroller/index");
         return mav;
