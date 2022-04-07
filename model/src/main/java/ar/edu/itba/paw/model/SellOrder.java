@@ -9,7 +9,8 @@ public class SellOrder {
     private byte[] image;
     private String email;
 
-    public SellOrder(String name, double price, String description, byte[] image, String email) {
+    public SellOrder(long id, String name, double price, String description, byte[] image, String email) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;

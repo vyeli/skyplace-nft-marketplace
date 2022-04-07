@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -20,16 +22,7 @@ public class SellOrderJdbcDao implements SellOrderDao {
         jdbcTemplate = new JdbcTemplate(ds);
         jdbcInsert = new SimpleJdbcInsert(ds)
                 .withTableName("SellOrders")
-                .usingGeneratedKeyColumns("orderId");
-
-//        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS SellOrders (" +
-//                "orderId SERIAL PRIMARY KEY," +
-//                "name VARCHAR(100) UNIQUE NOT NULL," +
-//                "price NUMERIC(5) NOT NULL," +
-//                "description VARCHAR(200)," +
-//                "image bytea NOT NULL," +
-//                "email VARCHAR(100) NOT NULL)"
-//        );
+                .usingGeneratedKeyColumns("id");
     }
 
     @Override
@@ -39,6 +32,14 @@ public class SellOrderJdbcDao implements SellOrderDao {
 
     @Override
     public SellOrder create(String name, double price, String description, byte[] image, String email) {
-        return null;
+        final Map<String, Object> sellOrderData = new HashMap<>();
+        sellOrderData.put("seller_email", email);
+        sellOrderData.put("descr", description);
+        sellOrderData.put("price", price);
+        sellOrderData.put("id_nft", 1);
+        sellOrderData.put("nft_addr", "0xabcdefghijklmnopqrstuvwxyz");
+
+        final long sellOrderId = jdbcInsert.executeAndReturnKey(sellOrderData).longValue();
+        return new SellOrder(sellOrderId, name, price, description, image, email);
     }
 }

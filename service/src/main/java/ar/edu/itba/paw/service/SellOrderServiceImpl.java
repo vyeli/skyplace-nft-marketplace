@@ -24,6 +24,6 @@ public class SellOrderServiceImpl implements SellOrderService {
 
     @Override
     public SellOrder create(String name, double price, String description, byte[] image, String email) {
-        return null;
+        return sellOrderDao.create(name, price, description, image, email);
     }
 }
