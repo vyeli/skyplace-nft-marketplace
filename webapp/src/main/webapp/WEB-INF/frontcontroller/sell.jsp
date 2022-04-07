@@ -1,0 +1,81 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+<!DOCTYPE html>
+<html>
+<%@ include file="Head.jsp" %>
+<body class="h-screen flex flex-col">
+    <div class="h-16 bg-slate-400 grid place-items-center">
+      Navbar Placeholder
+    </div>
+    <div class="w-full max-w-5xl mx-auto mt-[-2rem] p-4 grow flex flex-col justify-center">
+      <h1 class="text-3xl text-center">
+        Sell an NFT
+      </h1>
+      <c:url value="/sell" var="postPath"/>
+      <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-20">
+        <form:label path="name" class="flex flex-col gap-1">
+          <span class="text-slate-600">Name</span>
+          <form:input
+            type="text"
+            path="name"
+            required="true"
+            autoComplete="off"
+            placeholder="Nft name"
+            class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+          />
+            <form:errors path="name" element="p" cssStyle="color: tomato" />
+        </form:label>
+        <form:label path="price" class="flex flex-col gap-1">
+          <span class="text-slate-600">Price</span>
+          <form:input
+            type="number"
+            path="price"
+            autoComplete="off"
+            required="true"
+            placeholder="0.0"
+            class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+          />
+        </form:label>
+        <form:label path="description" class="flex flex-col gap-1">
+          <span class="text-slate-600">Description</span>
+          <form:textarea
+            path="description"
+            autoComplete="off"
+            placeholder="Nft description"
+            class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+          />
+        </form:label>
+        <label class="flex flex-col gap-1">
+          <span class="text-slate-600">Image</span>
+          <form:input
+              path="image"
+              type="file"
+              required="true"
+              class="mt-3 block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4
+            file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100"
+          />
+            <form:errors path="image" element="p" cssStyle="color: tomato" />
+        </label>
+        <form:label path="email" class="flex flex-col gap-1">
+          <span class="text-slate-600">Email</span>
+          <form:input
+            type="email"
+            path="email"
+            required="true"
+            autoComplete="off"
+            placeholder="Your email"
+            class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+          />
+            <form:errors path="email" element="p" cssStyle="color: tomato" />
+        </form:label>
+        <input
+          type="submit"
+          value="Publish"
+          class="p-1 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
+        />
+      </form:form>
+    </div>
+</body>
+</html>
