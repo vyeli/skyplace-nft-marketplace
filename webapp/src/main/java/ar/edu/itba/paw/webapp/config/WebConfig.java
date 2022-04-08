@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,10 @@ import javax.sql.DataSource;
 @Configuration
 public class WebConfig {
 
+    public static final String DB_URL_PARAMETER = "DB_URL";
+    public static final String DB_USERNAME_PARAMETER = "DB_USERNAME";
+    public static final String DB_PASSWORD_PARAMETER = "DB_PASSWORD";
+
     @Bean
     public ViewResolver viewResolver() {
         final InternalResourceViewResolver resolver = new InternalResourceViewResolver();
@@ -34,11 +39,12 @@ public class WebConfig {
     @Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
+        final Dotenv env = Dotenv.load();
 
         ds.setDriverClass(org.postgresql.Driver.class);
-        ds.setUrl("");
-        ds.setUsername("");
-        ds.setPassword("");
+        ds.setUrl(env.get(DB_URL_PARAMETER));
+        ds.setUsername(env.get(DB_USERNAME_PARAMETER));
+        ds.setPassword(env.get(DB_PASSWORD_PARAMETER));
 
         return ds;
     }
