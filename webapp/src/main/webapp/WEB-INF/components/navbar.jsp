@@ -4,7 +4,7 @@
     <nav class="container flex items-center py-4 mt-4">
         <a href="<c:url value="/" />">
             <div class="cursor-pointer flex flex-row flex-start gap-2">
-                <img src="" alt="logo" />
+                <img src="<c:url value='../resources/logo.png' />" alt="logo" />
                 <h1 class="font-semibold text-2xl">Skyplace</h1>
             </div>
         </a>

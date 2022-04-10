@@ -36,7 +36,6 @@ public class FrontController {
     }
 
 
-
     @RequestMapping(value="/")
     public ModelAndView home() {
         final ModelAndView mav = new ModelAndView("frontcontroller/index");
@@ -66,8 +65,8 @@ public class FrontController {
     
     @RequestMapping(value = "/sell", method = RequestMethod.GET)
     public ModelAndView createNftForm(@ModelAttribute("sellNftForm") final SellNftForm form) {
-
         final ModelAndView mav = new ModelAndView("frontcontroller/sell");
+        
         return mav;
     }
 
