@@ -19,9 +19,9 @@
                     placeholder="Search items, collections and accounts">
                 <!-- Search icon -->
             </div>
-            <ul class="hidden sm:flex flex-1 justify-end items-center gap-12 pr-4">
-                <li class="cursor-pointer"><a href="<c:url value=" /explore" />">Explore</a></li>
-                <li class="cursor-pointer"><a href="<c:url value=" /sell" />">Create</a></li>
-            </ul>
+            <div class="hidden sm:flex flex-1 justify-end items-center gap-12 pr-4">
+                <a href="<c:url value=" /explore" />">Explore</a>
+                <a href="<c:url value=" /sell" />">Sell</a>
+            </div>
         </nav>
     </header>
