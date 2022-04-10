@@ -10,7 +10,7 @@ import java.util.Optional;
 @Service
 public class SellOrderServiceImpl implements SellOrderService {
 
-    private SellOrderDao sellOrderDao;
+    private final SellOrderDao sellOrderDao;
 
     @Autowired
     public SellOrderServiceImpl(SellOrderDao sellOrderDao) {
@@ -23,7 +23,7 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public SellOrder create(String name, double price, String description, byte[] image, String email) {
-        return sellOrderDao.create(name, price, description, image, email);
+    public SellOrder create(String name, int nftId, String nftContract, String chain, String category, double price, String description, byte[] image, String email) {
+        return sellOrderDao.create(name, nftId, nftContract, chain, category, price, description, image, email);
     }
 }

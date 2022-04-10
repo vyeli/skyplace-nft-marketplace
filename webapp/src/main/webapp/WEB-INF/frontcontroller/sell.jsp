@@ -25,6 +25,56 @@
           />
             <form:errors path="name" element="p" cssStyle="color: tomato" />
         </form:label>
+        <form:label path="nftId" class="flex flex-col gap-1">
+          <span class="text-slate-600">Id</span>
+          <form:input
+                  type="text"
+                  path="nftId"
+                  required="true"
+                  autoComplete="off"
+                  placeholder="Nft id"
+                  class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+          />
+          <form:errors path="nftId" element="p" cssStyle="color: tomato" />
+        </form:label>
+        <form:label path="nftContract" class="flex flex-col gap-1">
+          <span class="text-slate-600">Contract</span>
+          <form:input
+                  type="text"
+                  path="nftContract"
+                  required="true"
+                  autoComplete="off"
+                  placeholder="Nft contract"
+                  class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+          />
+          <form:errors path="nftContract" element="p" cssStyle="color: tomato" />
+        </form:label>
+        <form:label path="chain" class="flex flex-col gap-1">
+          <span class="text-slate-600">Blockchain</span>
+          <form:select
+                  path="chain"
+                  required="true"
+                  class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+          >
+            <c:forEach var="chain" items="${chains}">
+              <form:option value="${chain}"><c:out value="${chain}" /></form:option>
+            </c:forEach>
+          </form:select>
+          <form:errors path="chain" element="p" cssStyle="color: tomato" />
+        </form:label>
+        <form:label path="category" class="flex flex-col gap-1">
+          <span class="text-slate-600">Category</span>
+          <form:select
+                  path="category"
+                  required="true"
+                  class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+          >
+            <c:forEach var="category" items="${categories}">
+              <form:option value="${category}"><c:out value="${category}" /></form:option>
+            </c:forEach>
+          </form:select>
+          <form:errors path="category" element="p" cssStyle="color: tomato" />
+        </form:label>
         <form:label path="price" class="flex flex-col gap-1">
           <span class="text-slate-600">Price</span>
           <form:input
@@ -33,6 +83,8 @@
             autoComplete="off"
             required="true"
             placeholder="0.0"
+            min="0"
+            step="0.01"
             class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
           />
         </form:label>

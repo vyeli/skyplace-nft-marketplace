@@ -9,6 +9,16 @@ public class SellNftForm {
     @NotBlank
     private String name;
 
+    private int nftId;
+
+    @NotBlank
+    private String nftContract;
+
+    @NotBlank
+    private String chain;
+
+    private String category;
+
     private double price;
 
     private String description;
@@ -26,6 +36,38 @@ public class SellNftForm {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getNftId() {
+        return nftId;
+    }
+
+    public void setNftId(int nftId) {
+        this.nftId = nftId;
+    }
+
+    public String getNftContract() {
+        return nftContract;
+    }
+
+    public void setNftContract(String nftContract) {
+        this.nftContract = nftContract;
+    }
+
+    public String getChain() {
+        return chain;
+    }
+
+    public void setChain(String chain) {
+        this.chain = chain;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public double getPrice() {

@@ -3,42 +3,42 @@ package ar.edu.itba.paw.model;
 public class SellOrder {
 
     private long id;
-    private String name;
-    private double price;
+    private String sellerEmail;
     private String description;
-    private byte[] image;
-    private String email;
+    private double price;
+    private int nftId;
+    private String nftAddress;
 
-    public SellOrder(long id, String name, double price, String description, byte[] image, String email) {
+    public SellOrder(long id, String sellerEmail, String description, double price, int nftId, String nftAddress) {
         this.id = id;
-        this.name = name;
-        this.price = price;
+        this.sellerEmail = sellerEmail;
         this.description = description;
-        this.image = image;
-        this.email = email;
+        this.price = price;
+        this.nftId = nftId;
+        this.nftAddress = nftAddress;
     }
 
     public long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public double getPrice() {
-        return price;
+    public String getSellerEmail() {
+        return sellerEmail;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public byte[] getImage() {
-        return image;
+    public double getPrice() {
+        return price;
     }
 
-    public String getEmail() {
-        return email;
+    public int getNftId() {
+        return nftId;
+    }
+
+    public String getNftAddress() {
+        return nftAddress;
     }
 }

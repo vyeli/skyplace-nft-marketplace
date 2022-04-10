@@ -8,6 +8,6 @@ public interface SellOrderDao {
 
     Optional<SellOrder> getOrderById(long id);
 
-    SellOrder create(String name, double price, String description, byte[] image, String email);
+    SellOrder create(String name, int nftId, String nftContract, String chain, String category, double price, String description, byte[] image, String email);
 
 }

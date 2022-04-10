@@ -2,6 +2,8 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.model.SellOrder;
+import ar.edu.itba.paw.service.CategoryService;
+import ar.edu.itba.paw.service.ChainService;
 import ar.edu.itba.paw.service.ExploreService;
 import ar.edu.itba.paw.service.MailingService;
 import ar.edu.itba.paw.service.SellOrderService;
@@ -24,17 +26,20 @@ import javax.validation.Valid;
 @Controller
 public class FrontController {
 
-    private final SellOrderService ss;
+    private final SellOrderService sos;
+    private final CategoryService categoryService;
+    private final ChainService chainService;
     private final ExploreService exploreService;
     private final MailingService mailingService;
 
     @Autowired
-    public FrontController(SellOrderService ss, ExploreService exploreService, MailingService mailingService) {
-        this.ss = ss;
+    public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, ExploreService exploreService, MailingService mailingService) {
+        this.sos = sos;
+        this.categoryService = categoryService;
+        this.chainService = chainService;
         this.exploreService = exploreService;
         this.mailingService = mailingService;
     }
-
 
     @RequestMapping(value="/")
     public ModelAndView home() {
@@ -66,17 +71,20 @@ public class FrontController {
     @RequestMapping(value = "/sell", method = RequestMethod.GET)
     public ModelAndView createNftForm(@ModelAttribute("sellNftForm") final SellNftForm form) {
         final ModelAndView mav = new ModelAndView("frontcontroller/sell");
-        
+        List<String> categories = categoryService.getCategories();
+        List<String> chains = chainService.getChains();
+        mav.addObject("categories", categories);
+        mav.addObject("chains", chains);
         return mav;
     }
 
     @RequestMapping(value = "/sell", method = RequestMethod.POST)
-    public ModelAndView create(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors) {
+    public ModelAndView createSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors) {
         if (errors.hasErrors()) {
             return createNftForm(form);
         }
 
-        final SellOrder order = ss.create(form.getName(), form.getPrice(), form.getDescription(), form.getImage(), form.getEmail());
+        final SellOrder order = sos.create(form.getName(), form.getNftId(), form.getNftContract(), form.getChain(), form.getCategory(), form.getPrice(), form.getDescription(), form.getImage(), form.getEmail());
         return new ModelAndView("redirect:/product/" + order.getId());
     }
 

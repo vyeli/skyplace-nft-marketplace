@@ -15,14 +15,17 @@ import java.util.Optional;
 public class SellOrderJdbcDao implements SellOrderDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
+    private final SimpleJdbcInsert jdbcInsertSellOrder;
+    private final SimpleJdbcInsert jdbcInsertNft;
 
     @Autowired
     public SellOrderJdbcDao(final DataSource ds) {
         jdbcTemplate = new JdbcTemplate(ds);
-        jdbcInsert = new SimpleJdbcInsert(ds)
+        jdbcInsertSellOrder = new SimpleJdbcInsert(ds)
                 .withTableName("SellOrders")
                 .usingGeneratedKeyColumns("id");
+        jdbcInsertNft = new SimpleJdbcInsert(ds)
+                .withTableName("Nfts");
     }
 
     @Override
@@ -31,15 +34,25 @@ public class SellOrderJdbcDao implements SellOrderDao {
     }
 
     @Override
-    public SellOrder create(String name, double price, String description, byte[] image, String email) {
+    public SellOrder create(String name, int nftId, String nftContract, String chain, String category, double price, String description, byte[] image, String email) {
+        final Map<String, Object> nftData = new HashMap<>();
+        nftData.put("id", nftId);
+        nftData.put("contract_addr", nftContract);
+        nftData.put("nft_name", name);
+        nftData.put("chain", chain);
+        nftData.put("category", category);
+        nftData.put("img", image);
+
+        jdbcInsertNft.execute(nftData);
+
         final Map<String, Object> sellOrderData = new HashMap<>();
         sellOrderData.put("seller_email", email);
         sellOrderData.put("descr", description);
         sellOrderData.put("price", price);
-        sellOrderData.put("id_nft", 1);
-        sellOrderData.put("nft_addr", "0xabcdefghijklmnopqrstuvwxyz");
+        sellOrderData.put("id_nft", nftId);
+        sellOrderData.put("nft_addr", nftContract);
 
-        final long sellOrderId = jdbcInsert.executeAndReturnKey(sellOrderData).longValue();
-        return new SellOrder(sellOrderId, name, price, description, image, email);
+        final long sellOrderId = jdbcInsertSellOrder.executeAndReturnKey(sellOrderData).longValue();
+        return new SellOrder(sellOrderId, email, description, price, 1, "0xabcdefghijklmnopqrstuvwxyz");
     }
 }
