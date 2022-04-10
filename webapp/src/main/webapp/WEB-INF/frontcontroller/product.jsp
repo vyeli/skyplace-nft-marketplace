@@ -69,11 +69,6 @@
 <%--                        BUTTON--%>
 <%--                    </button>--%>
                 </form:form>
-<%--            <form action="/product" method="POST">--%>
-<%--                <label for="email">email:</label>--%>
-<%--                <input type="email" id="email" name="email"><br><br>--%>
-<%--                <input type="submit" value="Submit">--%>
-<%--            </form>--%>
             </div>
         </div>
     </div> <!-- Pricing box-->

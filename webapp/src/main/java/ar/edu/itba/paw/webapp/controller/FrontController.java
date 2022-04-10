@@ -35,23 +35,7 @@ public class FrontController {
         this.mailingService = mailingService;
     }
 
-    @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("mailForm") final MailForm form, @PathVariable String productId) {
-        long prodId = 0;
-        try {
-            prodId = Long.parseLong(productId);
-        } catch (Exception e) {
-            return new ModelAndView("frontcontroller/notfound");
-        }
 
-        final NftCard nft = exploreService.getNFTById(prodId);
-        if(nft == null)
-            return new ModelAndView("frontcontroller/notfound");
-
-        final ModelAndView mav = new ModelAndView("frontcontroller/product");
-        mav.addObject("nft", nft);
-        return mav;
-    }
 
     @RequestMapping(value="/")
     public ModelAndView home() {
@@ -104,6 +88,25 @@ public class FrontController {
         return mav;
     }
 
+    /*Product Detail*/
+    @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
+    public ModelAndView product(@ModelAttribute("mailForm") final MailForm form, @PathVariable String productId) {
+        long prodId = 0;
+        try {
+            prodId = Long.parseLong(productId);
+        } catch (Exception e) {
+            return new ModelAndView("frontcontroller/notfound");
+        }
+
+        final NftCard nft = exploreService.getNFTById(prodId);
+        if(nft == null)
+            return new ModelAndView("frontcontroller/notfound");
+
+        final ModelAndView mav = new ModelAndView("frontcontroller/product");
+        mav.addObject("nft", nft);
+        return mav;
+    }
+
     @RequestMapping(value = "/product", method = RequestMethod.POST)
     public ModelAndView createOrder(@Valid @ModelAttribute("mailForm") final MailForm form, final BindingResult errors) {
         if (errors.hasErrors()) {
@@ -114,6 +117,8 @@ public class FrontController {
         return new ModelAndView("redirect:/shipped/");
     }
 
+
+    /*404*/
     @RequestMapping("/**")
     public ModelAndView notFound() {
         final ModelAndView mav = new ModelAndView("frontcontroller/notfound");
