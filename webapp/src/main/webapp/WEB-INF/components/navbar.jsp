@@ -2,7 +2,7 @@
 
     <header class="font-sans font-light">
         <nav class="container flex items-center py-4 mt-4">
-            <a href="<c:url value=" /" />">
+            <a href="<c:url value="/" />">
             <div class="cursor-pointer flex flex-row flex-start gap-2">
                 <img src="<c:url value='../resources/logo.png' />" alt="logo" />
                 <h1 class="font-semibold text-2xl">Skyplace</h1>
@@ -20,8 +20,8 @@
                 <!-- Search icon -->
             </div>
             <div class="hidden sm:flex flex-1 justify-end items-center gap-12 pr-4">
-                <a href="<c:url value=" /explore" />">Explore</a>
-                <a href="<c:url value=" /sell" />">Sell</a>
+                <a href="<c:url value="/explore" />">Explore</a>
+                <a href="<c:url value="/sell" />">Sell</a>
             </div>
         </nav>
     </header>
