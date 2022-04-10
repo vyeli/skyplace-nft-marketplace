@@ -81,13 +81,6 @@ public class FrontController {
         return new ModelAndView("redirect:/product/" + order.getId());
     }
 
-    @RequestMapping(value = "/product", method = RequestMethod.GET)
-    public ModelAndView createMailForm(@ModelAttribute("mailForm") final MailForm form) {
-
-        final ModelAndView mav = new ModelAndView("frontcontroller/product");
-        return mav;
-    }
-
     /*Product Detail*/
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
     public ModelAndView product(@ModelAttribute("mailForm") final MailForm form, @PathVariable String productId) {
@@ -107,10 +100,10 @@ public class FrontController {
         return mav;
     }
 
-    @RequestMapping(value = "/product", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("mailForm") final MailForm form, final BindingResult errors) {
+    @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
+    public ModelAndView createOrder(@Valid @ModelAttribute("mailForm") final MailForm form, final BindingResult errors, @PathVariable String productId) {
         if (errors.hasErrors()) {
-            return createMailForm(form);
+            return product(form, productId);
         }
 
         mailingService.sendMail();

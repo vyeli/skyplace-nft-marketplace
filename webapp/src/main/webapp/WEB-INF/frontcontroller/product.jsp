@@ -53,17 +53,14 @@
             </div> <!-- Specification -->
             <div class="p-4 flex flex-col">
 
-                <c:url value="/product" var="postPath"/>
+                <c:url value="/product/${nft.id_nft}" var="postPath"/>
                 <form:form modelAttribute="mailForm" action="${postPath}" method="post">
-                    <form:label path="email" class="flex flex-col gap-1">
-                        <span class="text-slate-600">Email</span>
-                    </form:label>
-                    <form:input path="email" type="email" required="true" autoComplete="off" placeholder="Your email"/>
-                    <input
-                            type="submit"
-                            value="Place bid"
-                            class="p-1 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
-                    />
+                    <div class="flex">
+                        <form:input path="email" type="email" required="true" name="field_name" class="border-2 rounded px-4 py-2 w-56" placeholder="your@email.com"  />
+                        <input type="submit" value="Place bid" class="ml-4 p-1 w-28 font-bold rounded-lg shadow-sm cursor-pointer
+                                                                        bg-cyan-100 text-cyan-700 hover:bg-cyan-200 hover:text-white"/>
+                    </div>
+                    <p class="ml-2 italic mt-2">Enter your email to inform the seller</p>
                     <form:errors path="email" element="p" cssStyle="color: tomato" />
 <%--                    <button class="w-40 bg-cyan-600 p-2 text-white rounded-md">--%>
 <%--                        BUTTON--%>
