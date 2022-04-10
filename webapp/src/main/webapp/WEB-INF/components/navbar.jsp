@@ -1,6 +1,8 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+
 <header class="font-sans font-light">
     <nav class="container flex items-center py-4 mt-4">
-        <a href="">
+        <a href="<c:url value="/" />">
             <div class="cursor-pointer flex flex-row flex-start gap-2">
                 <img src="" alt="logo" />
                 <h1 class="font-semibold text-2xl">Skyplace</h1>
@@ -16,8 +18,8 @@
             <!-- Search icon -->
         </div>
         <ul class="hidden sm:flex flex-1 justify-end items-center gap-12 pr-4">
-            <li class="cursor-pointer"><a href="explore">Explore</a></li>
-            <li class="cursor-pointer"><a href="sell">Create</a></li>
+            <li class="cursor-pointer"><a href="<c:url value="/explore" />">Explore</a></li>
+            <li class="cursor-pointer"><a href="<c:url value="/sell" />">Create</a></li>
         </ul>
     </nav>
 </header>

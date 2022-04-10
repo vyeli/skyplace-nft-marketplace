@@ -42,6 +42,7 @@ public class WebConfig {
         final Dotenv env = Dotenv.load();
 
         ds.setDriverClass(org.postgresql.Driver.class);
+
         ds.setUrl(env.get(DB_URL_PARAMETER));
         ds.setUsername(env.get(DB_USERNAME_PARAMETER));
         ds.setPassword(env.get(DB_PASSWORD_PARAMETER));

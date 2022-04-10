@@ -14,7 +14,7 @@
         <div class="flex flex-col justify-start pl-5 gap-y-1">
             <h2 class="text-5xl text-bol font-bold">Page not found</h2>
             <p class="text-xl text-bol font-light">Please check the URL in the address bar and try again.</p>
-            <a href="index">
+            <a href="<c:url value="/" />">
                 <button type="button" class="w-fit shadow-md mt-3 py-2 px-6 rounded-md transition duration-300 bg-cyan-600 text-white">Go back</button>
             </a>
         </div>

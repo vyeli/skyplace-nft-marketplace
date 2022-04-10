@@ -30,21 +30,21 @@
                 <div
                         class="border-2 border-slate-300 cursor-pointer rounded-tl-lg hover:bg-cyan-400 bg-white z-10">
                     <!-- imagen -->
-                    <a href="category/all" class="w-full h-full flex justify-center items-center flex-col">
+                    <a href="<c:url value="/category/all" />" class="w-full h-full flex justify-center items-center flex-col">
                         <span class="text-xl md:text-2xl">All</span>
                     </a>
                 </div>
                 <div
                         class="border-slate-300 border-2 border-l-0 md:border-r-0 rounded-tr-lg md:rounded-none cursor-pointer hover:bg-cyan-400 bg-white z-10">
                     <!-- imagen -->
-                    <a href="category/collections" class="w-full h-full flex justify-center items-center flex-col">
+                    <a href="<c:url value="/category/collections" />" class="w-full h-full flex justify-center items-center flex-col">
                     <span class="text-xl md:text-2xl">Collections</span>
                     </a>
                 </div>
                 <div
                         class="border-2 border-slate-300 border-t-0 md:border-t-2 border-l-2 md:rounded-tr-lg cursor-pointer hover:bg-cyan-400 bg-white z-10">
                     <!-- imagen -->
-                    <a href="category/art" class="w-full h-full flex justify-center items-center flex-col">
+                    <a href="<c:url value="/category/art" />" class="w-full h-full flex justify-center items-center flex-col">
                     <span class="text-xl md:text-2xl">Art</span>
                     </a>
                 </div>
@@ -52,21 +52,21 @@
                 <div
                         class="border-slate-300 border-2 border-t-0 md:border-r-2 border-l-0 md:border-l-2 border-b-2 md:rounded-bl-lg cursor-pointer hover:bg-cyan-400 bg-white z-10">
                     <!-- imagen -->
-                    <a href="category/utility" class="w-full h-full flex justify-center items-center flex-col">
+                    <a href="<c:url value="/category/utility" />" class="w-full h-full flex justify-center items-center flex-col">
                     <span class="text-xl md:text-2xl">Utility</span>
                     </a>
                 </div>
                 <div
                         class="border-slate-300 border-2 border-t-0 rounded-bl-lg md:border-0 md:border-b-2 md:rounded-none cursor-pointer hover:bg-cyan-400 bg-white z-10">
                     <!-- imagen -->
-                    <a href="category/photography" class="w-full h-full flex justify-center items-center flex-col">
+                    <a href="<c:url value="/category/photography" />" class="w-full h-full flex justify-center items-center flex-col">
                     <span class="text-xl md:text-2xl">Photography</span>
                     </a>
                 </div>
                 <div
                         class="border-slate-300 border-2 border-l-0 md:border-l-2 border-t-0 rounded-br-lg cursor-pointer hover:bg-cyan-400 bg-white z-10">
                     <!-- imagen -->
-                    <a href="category/other" class="w-full h-full flex justify-center items-center flex-col">
+                    <a href="<c:url value="/category/other" />" class="w-full h-full flex justify-center items-center flex-col">
                     <span class="text-xl md:text-2xl">Other</span>
                     </a>
                 </div>
