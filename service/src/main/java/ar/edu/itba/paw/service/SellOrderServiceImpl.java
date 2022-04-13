@@ -4,6 +4,7 @@ import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.persistence.SellOrderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public SellOrder create(String name, int nftId, String nftContract, String chain, String category, double price, String description, byte[] image, String email) {
+    public SellOrder create(String name, int nftId, String nftContract, String chain, String category, double price, String description, MultipartFile image, String email) {
         return sellOrderDao.create(name, nftId, nftContract, chain, category, price, description, image, email);
     }
 }

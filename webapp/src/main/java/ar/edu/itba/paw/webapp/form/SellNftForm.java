@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.form;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
 
 public class SellNftForm {
 
@@ -23,8 +24,7 @@ public class SellNftForm {
 
     private String description;
 
-    @NotEmpty
-    private byte[] image;
+    private MultipartFile image;
 
     @NotEmpty
     @Email
@@ -86,11 +86,11 @@ public class SellNftForm {
         this.description = description;
     }
 
-    public byte[] getImage() {
+    public MultipartFile getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(MultipartFile image) {
         this.image = image;
     }
 

@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -34,14 +37,23 @@ public class SellOrderJdbcDao implements SellOrderDao {
     }
 
     @Override
-    public SellOrder create(String name, int nftId, String nftContract, String chain, String category, double price, String description, byte[] image, String email) {
+    public SellOrder create(String name, int nftId, String nftContract, String chain, String category, double price, String description, MultipartFile image, String email) {
         final Map<String, Object> nftData = new HashMap<>();
         nftData.put("id", nftId);
         nftData.put("contract_addr", nftContract);
         nftData.put("nft_name", name);
         nftData.put("chain", chain);
         nftData.put("category", category);
-        nftData.put("img", image);
+        String base64Encoded = "";
+        try {
+            byte[] bytes = image.getBytes();
+            byte[] encodedBase64 = Base64.getEncoder().encode(bytes);
+            base64Encoded = new String(encodedBase64, StandardCharsets.UTF_8);
+        } catch(Exception e) {
+            System.out.println("getbytes error");
+        }
+
+        nftData.put("img", base64Encoded);
 
         jdbcInsertNft.execute(nftData);
 

@@ -28,7 +28,7 @@ public class ExploreJdbcDao implements ExploreDao{
             String contract_addr = rs.getString("contract_addr");
             String chain = rs.getString("chain");
             long id_product = rs.getLong("id_product");
-            byte[] img = rs.getBytes("img");
+            String img = rs.getString("img");
             float price = rs.getFloat("price");
             int score = 0;
             long id_nft = rs.getLong("id_nft");

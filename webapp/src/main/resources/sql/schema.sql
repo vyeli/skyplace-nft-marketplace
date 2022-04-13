@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS nfts (
     nft_name TEXT,
     chain TEXT NOT NULL,
     category TEXT,
-    img BYTEA NOT NULL,
+    img TEXT NOT NULL,
     PRIMARY KEY (id, contract_addr),
     FOREIGN KEY (chain) REFERENCES chains(chain) ON DELETE CASCADE,
     FOREIGN KEY (category) REFERENCES categories(category) ON DELETE SET NULL

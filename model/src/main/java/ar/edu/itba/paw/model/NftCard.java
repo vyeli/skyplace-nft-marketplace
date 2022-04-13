@@ -2,7 +2,7 @@ package ar.edu.itba.paw.model;
 
 public class NftCard {
 
-    private byte[] img;
+    private String img;
     private String name;
     private String chain;
     private float price;
@@ -13,7 +13,7 @@ public class NftCard {
     private long id_nft;
     private long id_product;
 
-    public NftCard(byte[] img, String name, String chain, float price, int score, String seller_email, String descr, String contract_addr, long id_nft, long id_product) {
+    public NftCard(String img, String name, String chain, float price, int score, String seller_email, String descr, String contract_addr, long id_nft, long id_product) {
         this.img = img;
         this.name = name;
         this.chain = chain;
@@ -26,7 +26,7 @@ public class NftCard {
         this.id_product = id_product;
     }
 
-    public byte[] getImg() {
+    public String getImg() {
         return img;
     }
 
