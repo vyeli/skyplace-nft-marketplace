@@ -2,7 +2,6 @@ package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.persistence.ExploreDao;
-import ar.edu.itba.paw.persistence.SellOrderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +23,6 @@ public class ExploreServiceImpl implements ExploreService{
 
     @Override
     public List<NftCard> getNFTs(int page, String categoryName, String search) {
-        return exploreDao.getNFTs(page, categoryName, search);
+        return exploreDao.getNFTs(page, categoryName.substring(0,1).toUpperCase()+categoryName.substring(1), search);
     }
 }

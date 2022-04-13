@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -49,8 +48,8 @@ public class ExploreJdbcDao implements ExploreDao{
         StringBuilder sb = new StringBuilder();
         List<String> args = new ArrayList<>();
         sb.append("SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, img, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr)");
-        if (!categoryName.equals("all")) {
-            sb.append(" WHERE category=? ");
+        if (!categoryName.equals("All")) {
+            sb.append(" WHERE category LIKE ?");
             args.add(categoryName);
         }
 
