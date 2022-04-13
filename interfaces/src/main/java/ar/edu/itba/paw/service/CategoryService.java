@@ -6,4 +6,5 @@ public interface CategoryService {
 
     List<String> getCategories();
 
+    List<String> getStaticCategories();
 }

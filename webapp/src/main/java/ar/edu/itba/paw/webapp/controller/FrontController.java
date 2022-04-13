@@ -11,15 +11,13 @@ import ar.edu.itba.paw.webapp.form.MailForm;
 import ar.edu.itba.paw.webapp.form.SellNftForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.*;
 
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 
@@ -47,6 +45,12 @@ public class FrontController {
         return mav;
     }
 
+    @RequestMapping(value = "/search", method = RequestMethod.POST)
+    public ModelAndView search() {
+
+        return new ModelAndView("redirect:/category");
+    }
+
     @RequestMapping("/explore")
     public ModelAndView explore() {
         final ModelAndView mav = new ModelAndView("frontcontroller/explore");
@@ -54,12 +58,12 @@ public class FrontController {
     }
 
     @RequestMapping("category/{categoryName}")
-    public ModelAndView getCategory(@PathVariable String categoryName) {
-        List<String> categories = new ArrayList<>(Arrays.asList("all", "collections", "art", "utility", "photography", "other"));
+    public ModelAndView getCategory(@PathVariable String categoryName, @RequestParam(value="name", required=false) String name) {
+        List<String> categories = categoryService.getStaticCategories();
         if(!categories.contains(categoryName))
             return new ModelAndView("redirect:/explore");
         final ModelAndView mav = new ModelAndView("frontcontroller/category");
-        final List<NftCard> nfts = exploreService.getNFTs(1);
+        final List<NftCard> nfts = exploreService.getNFTs(1, categoryName, name);
 
         mav.addObject("category", categoryName);
         mav.addObject("nfts", nfts);

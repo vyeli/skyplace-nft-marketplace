@@ -17,7 +17,7 @@
 <body>
 <div class="h-screen flex flex-col h-full">
   <%@ include file="../components/navbar.jsp" %>
-  <div class="grow flex">
+  <div class="grow flex max-h-[calc(100vh-5rem)]">
     <div class="flex flex-col w-72 min-w-[250px] items-center">
       <span class="text-4xl"><c:out value="${category}" /></span>
       <span>${nftAmount} resultados</span>
@@ -126,13 +126,13 @@
         <!-- pages -->
         <div class="flex text-2xl pt-4">
           <!-- icon previous -->
-          <span class=" text-gray-400 cursor-pointer mr-4">Previous</span>
-          <label>
-            <input type="number" min="1" value="1"
-                   class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 h-10" />
-          </label>
-          <span class="ml-4"> of ${pages}</span>
-          <span class="text-cyan-400 cursor-pointer ml-4">Next</span>
+<%--          <span class=" text-gray-400 cursor-pointer mr-4">Previous</span>--%>
+<%--          <label>--%>
+<%--            <input type="number" min="1" value="1"--%>
+<%--                   class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 h-10" />--%>
+<%--          </label>--%>
+<%--          <span class="ml-4"> of ${pages}</span>--%>
+<%--          <span class="text-cyan-400 cursor-pointer ml-4">Next</span>--%>
         </div>
         <div class="pt-4 text-2xl mr-8">
           <!--
@@ -146,7 +146,7 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-3 overflow-y-scroll h-[calc(100vh-8rem)]">
+      <div class="grid grid-cols-3 overflow-x-hidden overflow-y-scroll h-[calc(100vh-8rem)]">
         <c:forEach items="${nfts}" var="nft">
           <div class="flex justify-center items-center">
             <jsp:include page="../components/card.jsp">

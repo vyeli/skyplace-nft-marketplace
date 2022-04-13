@@ -18,8 +18,11 @@
             Become the owner of any NFT available in the market.
         </p>
         <div class="flex justify-center flex-wrap gap-6">
+            <a href="<c:url value="/sell" />">
             <button type="button" class="shadow-md py-3 px-6 rounded-md transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl">Get started</button>
+            </a><a href="<c:url value="/explore" />">
             <button type="button" class="shadow-md py-3 px-6 rounded-md transition duration-300 border-2 border-cyan-600 hover:border-cyan-800 hover:bg-cyan-800 text-cyan-600 hover:text-white hover:shadow-xl">Explore</button>
+            </a>
         </div>
     </div>
     <!-- Image and circles -->

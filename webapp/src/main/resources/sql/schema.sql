@@ -57,3 +57,14 @@ CREATE TABLE IF NOT EXISTS Purchases (
     FOREIGN KEY (id_buyer) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (id_seller) REFERENCES users(id) ON DELETE SET NULL
 );
+
+INSERT INTO categories VALUES("Collections");
+INSERT INTO categories VALUES("Art");
+INSERT INTO categories VALUES("Utility");
+INSERT INTO categories VALUES("Photography");
+INSERT INTO categories VALUES("Other");
+
+INSERT INTO chains VALUES("Ethereum");
+INSERT INTO chains VALUES("Rinkeby");
+INSERT INTO chains VALUES("Kovan");
+INSERT INTO chains VALUES("BSC");

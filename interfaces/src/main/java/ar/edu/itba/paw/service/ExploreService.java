@@ -8,5 +8,5 @@ public interface ExploreService {
 
     NftCard getNFTById(long id);
 
-    List<NftCard> getNFTs(int page);
+    List<NftCard> getNFTs(int page, String categoryName, String search);
 }

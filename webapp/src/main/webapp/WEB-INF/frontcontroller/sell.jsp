@@ -7,7 +7,7 @@
 <%@ include file="Head.jsp" %>
 <body class="h-screen flex flex-col">
 <%@ include file="../components/navbar.jsp" %>
-    <div class="w-full max-w-5xl mx-auto mt-[-2rem] p-4 grow flex flex-col justify-center">
+    <div class="w-full max-w-5xl mx-auto p-4 grow flex flex-col justify-center">
       <h1 class="text-3xl text-center">
         Sell an NFT
       </h1>
