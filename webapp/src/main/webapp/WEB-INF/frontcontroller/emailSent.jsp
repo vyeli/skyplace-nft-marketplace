@@ -5,10 +5,10 @@
 <%@ include file="Head.jsp" %>
 <body>
 <!-- Header -->
-    <div class="mb-20"></div> <!-- Navbar -->
+    <%@ include file="../components/navbar.jsp" %>
     <div class="container rounded-lg text-2xl font-Montserrat m-auto flex flex-col">
         <c:if test="${emailSent == true}">
-            <img class="w-52 self-center " src="../img/emailsent.svg" alt="">
+            <img class="w-52 self-center " src="<c:url value="/resources/emailsent.svg" />" alt="Email sent image">
             <p class="text-center">Email sent successfully</p>
             <p class="text-center">the seller is informed and will contact you shortly</p>
             <a href="<c:url value="/" />" class="self-center">
@@ -16,8 +16,8 @@
             </a>
         </c:if>
         <c:if test="${emailSent == false}">
-            <p class="text-center">Email sent successfully</p>
-            <script>alert("Email could not be sent")</script>
+            <p class="text-center">Email could not be sent successfully</p>
+            <script>alert("Email could not be sent successfully")</script>
         </c:if>
     </div>
 </body>

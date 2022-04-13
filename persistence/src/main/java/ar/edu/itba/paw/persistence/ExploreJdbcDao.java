@@ -7,9 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository

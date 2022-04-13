@@ -13,16 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.ui.Model;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.springframework.validation.BindingResult;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -70,7 +64,7 @@ public class FrontController {
         final ModelAndView mav = new ModelAndView("frontcontroller/category");
         final List<NftCard> nfts = exploreService.getNFTs(1, categoryName, name);
 
-        mav.addObject("category", categoryName);
+        mav.addObject("category", categoryName.substring(0,1).toUpperCase()+categoryName.substring(1));
         mav.addObject("nfts", nfts);
         mav.addObject("pages", nfts.size()/12+1);
         mav.addObject("nftAmount", nfts.size());

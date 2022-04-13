@@ -9,48 +9,47 @@
 
                 <body class="h-screen flex flex-col">
                     <%@ include file="../components/navbar.jsp" %>
-                        <div class="flex flex-row justify-center mt-12">
+                        <div class="flex justify-center grow gap-8 mt-12">
                             <!-- Container -->
-                            <div class="border-2 w-80 mt-8 rounded-md">
+                            <div class="border-2 w-80 pt-8 rounded-md max-h-96 overflow-hidden">
                                 <!-- Description box -->
                                 <p class="text-2xl font-bold m-4 ">Description</p>
                                 <hr>
-                                <p class="m-3">Created by&nbsp;<span class="text-cyan-500">${nft.seller_email}</span>
-                                    <br>
-                                    <br>
+                                <p class="p-3 break-words">Created by&nbsp;<span class="text-cyan-500">${nft.seller_email}</span></p>
+                                <p class="p-3 break-words">
                                     ${nft.descr}
                                 </p>
                             </div> <!-- Description box -->
                             <div class="w-96 h-96">
                                 <!-- center img -->
-                                <img class="object-contain max-w-xl m-8 rounded-md"
+                                <img class="pt-8 w-full h-full"
                                     src="data:image/jpg;base64,${nft.img}" alt="${nft.name}">
                             </div> <!-- center img -->
 
-                            <div class="flex flex-col">
+                            <div class="flex flex-col w-96 overflow-hidden">
                                 <!-- Pricing box-->
                                 <h1 class="py-8 font-bold text-2xl">${nft.name}</h1>
                                 <div class="border-2 p-2 rounded-md h-64">
                                     <div class="flex mb-2">
                                         <!-- Price -->
-                                        <img class="h-7 w-7 my-auto"
-                                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/2048px-Ethereum-icon-purple.svg.png"
+                                        <img class="h-8 w-8 my-auto"
+                                            src="<c:url value="/resources/eth_logo.svg" />"
                                             alt="eth">
                                         <p class="my-auto text-sm"><span
-                                                class="font-bold pl-4 text-lg">${nft.price}</span></p>
+                                                class="font-bold text-lg">${nft.price}</span></p>
                                     </div> <!-- Price -->
                                     <hr>
-                                    <div class="mt-2 py-2 h-52 grid grid-flow-row ">
+                                    <div class="mt-2 py-2 h-52 flex flex-col ">
                                         <!-- Specification -->
                                         <div class="flex justify-between">
                                             <p>Contract address </p>
-                                            <p>
+                                            <p class="w-3/5 break-words max-h-20 overflow-hidden text-right">
                                                 ${nft.contract_addr}
                                             </p>
                                         </div>
                                         <div class="flex justify-between">
                                             <p>Token ID</p>
-                                            <p>${nft.id_nft}</p>
+                                            <p class="w-3/5 overflow-hidden text-right">${nft.id_nft}</p>
                                         </div>
                                         <div class="flex justify-between">
                                             <p>Blockchain</p>

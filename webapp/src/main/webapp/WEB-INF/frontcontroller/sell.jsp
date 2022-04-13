@@ -12,7 +12,7 @@
         Sell an NFT
       </h1>
       <c:url value="/sell" var="postPath"/>
-      <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-20" enctype="multipart/form-data">
+      <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
         <form:label path="name" class="flex flex-col gap-1">
           <span class="text-slate-600">Name</span>
           <form:input
@@ -95,7 +95,7 @@
             path="description"
             autoComplete="off"
             placeholder="Nft description"
-            class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+            class="min-h-16 max-h-32 pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
           />
         </form:label>
         <label class="flex flex-col gap-1">

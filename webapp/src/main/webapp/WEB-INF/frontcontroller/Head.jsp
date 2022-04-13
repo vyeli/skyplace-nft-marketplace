@@ -1,7 +1,9 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link rel="icon" href="<c:url value='/resources/logo.svg' />">
     <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
     <style>
         body {
