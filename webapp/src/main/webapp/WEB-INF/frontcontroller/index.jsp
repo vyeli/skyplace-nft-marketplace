@@ -4,13 +4,13 @@
 <!DOCTYPE html>
 <html>
 <%@ include file="Head.jsp" %>
-<body class="h-screen flex flex-col max-w-[100vw]">
+<body class="min-h-screen flex flex-col max-w-[100vw]">
 <!-- Header -->
 <%@ include file="../components/navbar.jsp" %>
 <!-- Hero -->
-<div class="container flex flex-col-reverse lg:flex-row gap-12 grow justify-center mt-28">
+<div class="container px-4 py-8 flex flex-col-reverse lg:flex-row gap-4 lg:gap-12 grow justify-center items-center overflow-hidden md:overflow-visible">
     <!-- Message and buttons -->
-    <div class="flex flex-1 flex-col items-center lg:items-start">
+    <div class="flex flex-1 flex-col items-center lg:items-start lg:mt-[-7rem]">
         <h2 class="text-3xl mid:text-4 lg:text-5xl text-center lg:text-left mb-6 font-semibold pt-12">
             Discover, buy and sell NFTs
         </h2>
@@ -27,7 +27,7 @@
         </div>
     </div>
     <!-- Image and circles -->
-    <div class="relative flex flex-items-center justify-center flex-1 mb-10 md:mb-16 lg:mb-0 w-full max-w-lg">
+    <div class="relative flex flex-items-center justify-center flex-1 md:mb-16 lg:mb-0 w-full max-w-lg lg:mt-[-7rem]">
         <div class="absolute -top-4 -left-8 w-80 h-80 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-75 animate-blob z-0"></div>
         <div class="absolute -top-4 -right-8 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-75 animate-blob delay-2000 z-0"></div>
         <div class="absolute top-8 w-80 h-80 bg-red-300 rounded-full mix-blend-multiply filter blur-xl opacity-75 animate-blob delay-4000 z-0"></div>

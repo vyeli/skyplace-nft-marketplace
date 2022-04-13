@@ -5,7 +5,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Category | Skyplace</title>
+  <title>Category | Skyplace</title>
   <style>
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
@@ -15,15 +15,15 @@
   </style>
 </head>
 <body>
-<div class="h-screen flex flex-col h-full">
+<div class="min-h-screen flex flex-col">
   <%@ include file="../components/navbar.jsp" %>
-  <div class="grow flex max-h-[calc(100vh-5rem)]">
+  <div class="grow flex pt-16 max-h-[calc(100vh-5rem)] divide-x divide-slate-300">
     <div class="flex flex-col w-72 min-w-[250px] items-center">
       <span class="text-4xl"><c:out value="${category}" /></span>
       <span>${nftAmount} resultados</span>
 
       <!-- Filter -->
-      <div class="border-r-2 border-slate-300 grow w-full">
+      <div class="grow w-full">
         <!-- Close filter btn -->
 <%--        <div class="w-full h-12">--%>
 
@@ -122,31 +122,31 @@
     <!-- all nfts -->
     <div class="w-[80%] min-w-[500px] grow flex flex-col">
       <!-- header -->
-      <div class="flex justify-between h-16">
-        <!-- pages -->
-        <div class="flex text-2xl pt-4">
-          <!-- icon previous -->
-<%--          <span class=" text-gray-400 cursor-pointer mr-4">Previous</span>--%>
-<%--          <label>--%>
-<%--            <input type="number" min="1" value="1"--%>
-<%--                   class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 h-10" />--%>
-<%--          </label>--%>
-<%--          <span class="ml-4"> of ${pages}</span>--%>
-<%--          <span class="text-cyan-400 cursor-pointer ml-4">Next</span>--%>
-        </div>
-        <div class="pt-4 text-2xl mr-8">
-          <!--
-          <label for="npages" class="">Show</label>
-          <select name="npages" id="npages" class="border-2 rounded-xl w-16 cursor-pointer">
-            <option value="12p">12</option>
-            <option value="24p">24</option>
-            <option value="48p">48</option>
-          </select>
-          -->
-        </div>
-      </div>
+<%--      <div class="flex justify-between h-16">--%>
+<%--        <!-- pages -->--%>
+<%--        <div class="flex text-2xl pt-4">--%>
+<%--          <!-- icon previous -->--%>
+<%--&lt;%&ndash;          <span class=" text-gray-400 cursor-pointer mr-4">Previous</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;          <label>&ndash;%&gt;--%>
+<%--&lt;%&ndash;            <input type="number" min="1" value="1"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                   class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 h-10" />&ndash;%&gt;--%>
+<%--&lt;%&ndash;          </label>&ndash;%&gt;--%>
+<%--&lt;%&ndash;          <span class="ml-4"> of ${pages}</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;          <span class="text-cyan-400 cursor-pointer ml-4">Next</span>&ndash;%&gt;--%>
+<%--        </div>--%>
+<%--        <div class="pt-4 text-2xl mr-8">--%>
+<%--          <!----%>
+<%--          <label for="npages" class="">Show</label>--%>
+<%--          <select name="npages" id="npages" class="border-2 rounded-xl w-16 cursor-pointer">--%>
+<%--            <option value="12p">12</option>--%>
+<%--            <option value="24p">24</option>--%>
+<%--            <option value="48p">48</option>--%>
+<%--          </select>--%>
+<%--          -->--%>
+<%--        </div>--%>
+<%--      </div>--%>
 
-      <div class="grid grid-cols-3 overflow-x-hidden overflow-y-scroll h-[calc(100vh-8rem)]">
+      <div class="px-8 pb-8 grid grid-cols-auto-fit gap-8 place-items-start overflow-x-hidden overflow-y-scroll">
         <c:forEach items="${nfts}" var="nft">
           <div class="flex justify-center items-center">
             <jsp:include page="../components/card.jsp">

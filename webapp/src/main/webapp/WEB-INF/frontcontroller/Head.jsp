@@ -4,10 +4,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link rel="icon" href="<c:url value='/resources/logo.svg' />">
-    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Montserrat', serif;
+            font-family: 'Montserrat', sans-serif;
         }
     </style>
     <script>
@@ -45,13 +47,15 @@
                     },
                     container: {
                         center: true,
-                        padding: "1rem",
                         screens: {
-                            lg: "1124px",
-                            xl: "1124px",
+                            lg: "924px",
+                            xl: "924px",
                             "2xl": "1124px",
                         }
-                    }
+                    },
+                    gridTemplateColumns: {
+                        'auto-fit': 'repeat(auto-fit, minmax(260px, 1fr))'
+                    },
                 }
             }
         }
