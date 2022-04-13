@@ -34,7 +34,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
-
+  
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/</url-pattern>

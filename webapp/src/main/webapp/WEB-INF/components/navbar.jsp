@@ -3,14 +3,14 @@
         <nav class="container flex items-center">
             <a href="<c:url value="/" />">
             <div class="cursor-pointer flex flex-row flex-start gap-2">
-                <img src="<c:url value='/resources/image/logo.svg' />" alt="logo" />
+                <img src="<c:url value="/resources/logo.svg" />" alt="logo" />
                 <h1 class="font-semibold text-2xl">Skyplace</h1>
             </div>
             </a>
             <div class="w-1/2 relative flex flex-row flex-start p-1 mx-8 rounded border border-gray-300">
                 <c:url value="/category/all" var="postPath"/>
                 <form action="${postPath}" method="get" class="w-full flex m-0">
-                    <img src="<c:url value='/resources/image/icsearch.svg' />" alt="icsearch" />
+                    <img src="<c:url value='/resources/icsearch.svg' />" alt="icsearch" />
                 <input name="name" class="outline-none w-full border-none p-0 focus:border-none focus:ring-0" type="text"
                     placeholder="Search items, collections and accounts" />
                 </form>
