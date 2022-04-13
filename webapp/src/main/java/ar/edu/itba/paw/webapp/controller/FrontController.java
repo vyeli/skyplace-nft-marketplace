@@ -11,8 +11,9 @@ import ar.edu.itba.paw.webapp.form.MailForm;
 import ar.edu.itba.paw.webapp.form.SellNftForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -43,8 +44,9 @@ public class FrontController {
     }
 
     @RequestMapping(value="/")
-    public ModelAndView home() {
+    public ModelAndView home(@RequestParam(value="emailSent", required = false) String emailSent) {
         final ModelAndView mav = new ModelAndView("frontcontroller/index");
+        mav.addObject("emailSent", emailSent);
         return mav;
     }
 
@@ -95,7 +97,7 @@ public class FrontController {
         return new ModelAndView("redirect:/product/" + order.getId());
     }
 
-    /*Product Detail*/
+    /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
     public ModelAndView product(@ModelAttribute("mailForm") final MailForm form, @PathVariable String productId) {
         long prodId = 0;
@@ -115,17 +117,25 @@ public class FrontController {
     }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("mailForm") final MailForm form, final BindingResult errors, @PathVariable String productId) {
+    public ModelAndView createOrder(@Valid @ModelAttribute("mailForm") final MailForm form, final BindingResult errors, @PathVariable String productId, ModelMap model) {
         if (errors.hasErrors()) {
             return product(form, productId);
         }
 
-        mailingService.sendMail();
-        return new ModelAndView("redirect:/shipped/");
+        final boolean returnSatus = mailingService.sendMail(form.getBuyerMail(), form.getSellerMail(), form.getNftName(), form.getNftAddress(), form.getNftPrice());
+        model.addAttribute("emailSent", returnSatus);
+        return new ModelAndView("redirect:/emailSent", model);
     }
 
 
-    /*404*/
+    @RequestMapping(value="/emailSent")
+    public ModelAndView emailSent(@RequestParam(value="emailSent", required = false) String emailSent) {
+        final ModelAndView mav = new ModelAndView("frontcontroller/emailSent");
+        mav.addObject("emailSent", emailSent);
+        return mav;
+    }
+
+    /* 404 */
     @RequestMapping("/**")
     public ModelAndView notFound() {
         final ModelAndView mav = new ModelAndView("frontcontroller/notfound");

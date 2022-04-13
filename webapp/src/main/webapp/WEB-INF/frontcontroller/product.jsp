@@ -62,15 +62,19 @@
                                         <c:url value="/product/${nft.id_product}" var="postPath" />
                                         <form:form modelAttribute="mailForm" action="${postPath}" method="post">
                                             <div class="flex">
-                                                <form:input path="email" type="email" required="true" name="field_name"
-                                                    class="border-2 rounded px-4 py-2 w-56"
-                                                    placeholder="your@email.com" />
+                                                <form:input path="buyerMail" type="email" required="true" name="field_name"
+                                                            class="border-2 rounded px-4 py-2 w-56"
+                                                            placeholder="your@email.com" />
+                                                <form:input path="sellerMail" type="hidden" value="${nft.seller_email}"/>
+                                                <form:input path="nftName" type="hidden" value="${nft.name}"/>
+                                                <form:input path="nftAddress" type="hidden" value="${nft.contract_addr}"/>
+                                                <form:input path="nftPrice" type="hidden" value="${nft.price}"/>
                                                 <input type="submit" value="Place bid" autocomplete="off"
                                                     class="ml-4 p-1 w-28 font-bold rounded-lg shadow-sm cursor-pointer
                                                             bg-cyan-100 text-cyan-700 hover:bg-cyan-200 hover:text-white" />
                                             </div>
                                             <p class="ml-2 italic mt-2">Enter your email to inform the seller</p>
-                                            <form:errors path="email" element="p" cssStyle="color: tomato" />
+                                            <form:errors path="buyerMail" element="p" cssStyle="color: tomato" />
                                         </form:form>
                                     </div>
                                 </div>

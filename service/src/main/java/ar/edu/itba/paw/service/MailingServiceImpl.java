@@ -36,7 +36,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendMail() {
+    public boolean sendMail(String buyerMail, String sellerMail,String nftName, String nftAddress, float nftPrice) {
         // 1. Crear objeto sesion
         Session session = Session.getInstance(getProperties(),
                 new javax.mail.Authenticator() {
@@ -49,15 +49,21 @@ public class MailingServiceImpl implements MailingService{
             // 2. Crear mensaje
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(Objects.requireNonNull(env.get(MAIL_USERNAME_PARAMETER))));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(Objects.requireNonNull(env.get(MAIL_USERNAME_PARAMETER))));
-            message.setSubject("Testing mail");
-            message.setText("Hello from the other side");
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(sellerMail));
+            message.setSubject("Bid placed for your nft");
+            message.setText("Hello, " + buyerMail + " has just placed a bid for your nft " + nftName + ". Full details are:" +
+                    "\n- Buyer: " + buyerMail +
+                    "\n- Nft name: " + nftName +
+                    "\n- Nft address: " + nftAddress +
+                    "\n- Price: " + nftPrice);
 
             // 3. Mandar el mensaje
             Transport.send(message);
+            return true;
 
         } catch (MessagingException e) {
             e.printStackTrace();
+            return false;
         }
 
     }

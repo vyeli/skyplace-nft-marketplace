@@ -1,5 +1,5 @@
 package ar.edu.itba.paw.service;
 
 public interface MailingService {
-    void sendMail();
+    boolean sendMail(String buyerEmail, String sellerMail, String nftName, String nftAddress, float nftPrice);
 }
