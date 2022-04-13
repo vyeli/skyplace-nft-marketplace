@@ -12,7 +12,7 @@
     <%@ include file="../components/navbar.jsp" %>
     <div class="flex grow justify-center relative items-center">
         <!-- Background circles -->
-        <div class="absolute mt-16 h-80 w-1/2">
+        <div class="absolute mt-16 h-80 max-w-3xl w-1/2">
             <div
                 class="absolute -top-4 md:-top-6 -left-16 w-48 h-48 md:w-72 md:h-72 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-75 animate-blob">
             </div>
