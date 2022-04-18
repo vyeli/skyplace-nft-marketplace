@@ -37,10 +37,15 @@ public class ExploreJdbcDao implements ExploreDao{
     }
 
     @Override
-    public NftCard getNFTById(long id) {
-        String selectNFTByIdQuery = "SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, img, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE sellorders.id=?";
-        List<NftCard> r = executeSelectQuery(selectNFTByIdQuery, new Object[]{id});
-        return r.size() > 0 ? r.get(0):null;
+    public NftCard getNFTById(String id) {
+        try {
+            long prodId = Long.parseLong(id);
+            String selectNFTByIdQuery = "SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, img, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE sellorders.id=?";
+            List<NftCard> r = executeSelectQuery(selectNFTByIdQuery, new Object[]{prodId});
+            return r.size() > 0 ? r.get(0):null;
+        } catch(NumberFormatException e) {
+            return null;
+        }
     }
 
     @Override

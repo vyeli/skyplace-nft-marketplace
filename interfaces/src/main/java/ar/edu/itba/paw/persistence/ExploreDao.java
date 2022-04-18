@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ExploreDao {
 
-        NftCard getNFTById(long id);
+        NftCard getNFTById(String id);
 
         List<NftCard> getNFTs(int page, String categoryName, String search);
 }

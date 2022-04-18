@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS SellOrders (
     id SERIAL PRIMARY KEY,
     seller_email TEXT NOT NULL,
     descr TEXT,
-    price FLOAT NOT NULL,
+    price DOUBLE PRECISION NOT NULL,
     id_nft INT NOT NULL,
     nft_addr TEXT NOT NULL,
     FOREIGN KEY (id_nft, nft_addr) REFERENCES nfts(id, contract_addr) ON DELETE CASCADE

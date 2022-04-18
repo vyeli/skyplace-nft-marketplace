@@ -9,10 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class SellOrderJdbcDao implements SellOrderDao {
@@ -38,12 +35,19 @@ public class SellOrderJdbcDao implements SellOrderDao {
 
     @Override
     public SellOrder create(String name, int nftId, String nftContract, String chain, String category, double price, String description, MultipartFile image, String email) {
+        List<String> chains = jdbcTemplate.query("SELECT chain FROM chains", (rs, i) -> rs.getString("chain"));
+        List<String> categories = jdbcTemplate.query("SELECT category FROM categories", (rs, i) -> rs.getString("category"));
+
+        if(!chains.contains(chain) || !categories.contains(category))
+            return new SellOrder(-1, email, description, price, nftId, nftContract);
+
         final Map<String, Object> nftData = new HashMap<>();
         nftData.put("id", nftId);
         nftData.put("contract_addr", nftContract);
         nftData.put("nft_name", name);
-        nftData.put("chain", chain);
+
         nftData.put("category", category);
+        nftData.put("chain", chain);
         String base64Encoded = "";
         try {
             byte[] bytes = image.getBytes();
@@ -65,6 +69,6 @@ public class SellOrderJdbcDao implements SellOrderDao {
         sellOrderData.put("nft_addr", nftContract);
 
         final long sellOrderId = jdbcInsertSellOrder.executeAndReturnKey(sellOrderData).longValue();
-        return new SellOrder(sellOrderId, email, description, price, 1, "0xabcdefghijklmnopqrstuvwxyz");
+        return new SellOrder(sellOrderId, email, description, price, nftId, nftContract);
     }
 }

@@ -17,7 +17,7 @@ public class ExploreServiceImpl implements ExploreService{
     }
 
     @Override
-    public NftCard getNFTById(long id) {
+    public NftCard getNFTById(String id) {
         return exploreDao.getNFTById(id);
     }
 

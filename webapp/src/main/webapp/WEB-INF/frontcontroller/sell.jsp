@@ -29,8 +29,9 @@
         <form:label path="nftId" class="flex flex-col gap-1">
           <span class="text-slate-600">Id</span>
           <form:input
-                  type="text"
+                  type="number"
                   path="nftId"
+                  min="0"
                   required="true"
                   autoComplete="off"
                   placeholder="Nft id"
@@ -85,9 +86,10 @@
             required="true"
             placeholder="0.0"
             min="0"
-            step="0.01"
+            step="0.00000001"
             class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
           />
+          <form:errors path="price" element="p" cssStyle="color: tomato" />
         </form:label>
         <form:label path="description" class="flex flex-col gap-1">
           <span class="text-slate-600">Description</span>
@@ -122,11 +124,12 @@
           />
             <form:errors path="email" element="p" cssStyle="color: tomato" />
         </form:label>
-        <input
-          type="submit"
-          value="Publish"
-          class="p-1 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
-        />
+          <input
+            type="submit"
+            value="Publish"
+            class="p-1 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
+          />
+          <form:errors path="publish" element="p" cssStyle="color: tomato" />
       </form:form>
     </div>
 </body>

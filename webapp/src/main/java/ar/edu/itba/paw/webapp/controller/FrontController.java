@@ -18,6 +18,7 @@ import java.util.*;
 
 import org.springframework.validation.BindingResult;
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 
 @Controller
 public class FrontController {
@@ -88,20 +89,17 @@ public class FrontController {
         }
 
         final SellOrder order = sos.create(form.getName(), form.getNftId(), form.getNftContract(), form.getChain(), form.getCategory(), form.getPrice(), form.getDescription(), form.getImage(), form.getEmail());
+        if(order.getId() == -1) {
+            errors.rejectValue("publish", "publish.error", "Order can not be created with this information");
+            return createNftForm(form);
+        }
         return new ModelAndView("redirect:/product/" + order.getId());
     }
 
     /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
     public ModelAndView product(@ModelAttribute("mailForm") final MailForm form, @PathVariable String productId) {
-        long prodId = 0;
-        try {
-            prodId = Long.parseLong(productId);
-        } catch (Exception e) {
-            return new ModelAndView("frontcontroller/notfound");
-        }
-
-        final NftCard nft = exploreService.getNFTById(prodId);
+        final NftCard nft = exploreService.getNFTById(productId);
         if(nft == null)
             return new ModelAndView("frontcontroller/notfound");
 

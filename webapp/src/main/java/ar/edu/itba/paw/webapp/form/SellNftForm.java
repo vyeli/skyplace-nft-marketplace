@@ -1,15 +1,22 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.validators.interfaces.ImageConstraint;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 
 public class SellNftForm {
 
     @NotBlank
     private String name;
 
+    @Digits(message = "Id is not a valid number!", integer = 8, fraction = 0)
+    @Min(value=0L, message = "ID must be a positive number")
     private int nftId;
 
     @NotBlank
@@ -20,10 +27,13 @@ public class SellNftForm {
 
     private String category;
 
+    @Digits(integer=8, fraction=8, message = "Price is not a valid number or contains more than 8 decimals!")
+    @DecimalMin(value="0", message = "Price must be a positive number")
     private double price;
 
     private String description;
 
+    @ImageConstraint
     private MultipartFile image;
 
     @NotEmpty
@@ -102,4 +112,7 @@ public class SellNftForm {
         this.email = email;
     }
 
+    public String getPublish() {
+        return "";
+    }
 }
