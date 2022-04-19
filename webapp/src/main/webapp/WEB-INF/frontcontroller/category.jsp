@@ -148,17 +148,15 @@
 
       <div class="px-8 pb-8 grid grid-cols-auto-fit gap-8 place-items-start overflow-x-hidden overflow-y-scroll">
         <c:forEach items="${nfts}" var="nft">
-          <div class="flex justify-center items-center">
-            <jsp:include page="../components/card.jsp">
-              <jsp:param name="name" value="${nft.name}" />
-              <jsp:param name="descr" value="${nft.descr}" />
-              <jsp:param name="img" value="${nft.img}" />
-              <jsp:param name="price" value="${nft.price}" />
-              <jsp:param name="score" value="${nft.score}" />
-              <jsp:param name="seller_email" value="${nft.seller_email}" />
-              <jsp:param name="id_product" value="${nft.id_product}"/>
-            </jsp:include>
-          </div>
+          <jsp:include page="../components/Card.jsp">
+            <jsp:param name="name" value="${nft.name}" />
+            <jsp:param name="descr" value="${nft.descr}" />
+            <jsp:param name="img" value="${nft.img}" />
+            <jsp:param name="price" value="${nft.price}" />
+            <jsp:param name="score" value="${nft.score}" />
+            <jsp:param name="seller_email" value="${nft.seller_email}" />
+            <jsp:param name="id_product" value="${nft.id_product}"/>
+          </jsp:include>
         </c:forEach>
       </div>
     </div>
