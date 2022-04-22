@@ -12,8 +12,8 @@
     <div class="flex flex-col sm:flex-row justify-center items-center flex-grow sm:divide-x h-">
         <h1 class="text-8xl text-cyan-500 pr-5 text-bold">404</h1>
         <div class="flex flex-col justify-start pl-5 gap-y-1">
-            <h2 class="text-5xl text-bol font-bold">Page not found</h2>
-            <p class="text-xl text-bol font-light">Please check the URL in the address bar and try again</p>
+            <h2 class="text-5xl text-bold font-bold">Page not found</h2>
+            <p class="text-xl text-bold font-light">Please check the URL in the address bar and try again</p>
             <a href="<c:url value="/" />">
                 <button type="button" class="w-fit shadow-md mt-3 py-2 px-6 rounded-md transition duration-300 bg-cyan-600 text-white">Go back</button>
             </a>

@@ -2,13 +2,11 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.model.SellOrder;
-import ar.edu.itba.paw.service.CategoryService;
-import ar.edu.itba.paw.service.ChainService;
-import ar.edu.itba.paw.service.ExploreService;
-import ar.edu.itba.paw.service.MailingService;
-import ar.edu.itba.paw.service.SellOrderService;
+import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.service.*;
 import ar.edu.itba.paw.webapp.form.MailForm;
 import ar.edu.itba.paw.webapp.form.SellNftForm;
+import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -18,7 +16,6 @@ import java.util.*;
 
 import org.springframework.validation.BindingResult;
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 
 @Controller
 public class FrontController {
@@ -28,14 +25,16 @@ public class FrontController {
     private final ChainService chainService;
     private final ExploreService exploreService;
     private final MailingService mailingService;
+    private final UserService userService;
 
     @Autowired
-    public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, ExploreService exploreService, MailingService mailingService) {
+    public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, ExploreService exploreService, MailingService mailingService, UserService userService) {
         this.sos = sos;
         this.categoryService = categoryService;
         this.chainService = chainService;
         this.exploreService = exploreService;
         this.mailingService = mailingService;
+        this.userService = userService;
     }
 
     @RequestMapping(value="/")
@@ -126,6 +125,32 @@ public class FrontController {
         mav.addObject("emailSent", emailSent);
         return mav;
     }
+
+    // Create
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public ModelAndView createUserForm(@ModelAttribute("userForm") final UserForm form) {
+        final ModelAndView mav = new ModelAndView("frontcontroller/create");
+        return mav;
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public ModelAndView createUser(@Valid @ModelAttribute("userForm") final UserForm form, final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return createUserForm(form);
+        }
+
+        final User user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getPassword());
+        return new ModelAndView("redirect:/" );
+    }
+
+    // Login
+    @RequestMapping("/login")
+    public ModelAndView login() {
+        final ModelAndView mav = new ModelAndView("frontcontroller/login");
+        return mav;
+    }
+
+
 
     /* 404 */
     @RequestMapping("/**")
