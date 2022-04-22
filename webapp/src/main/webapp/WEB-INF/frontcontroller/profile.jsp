@@ -113,7 +113,7 @@
             <div class="grid grid-cols-auto-fit justify-center gap-8 items-center overflow-x-hidden">
                 <c:forEach items="${nfts}" var="nft">
                     <div class="flex justify-center place-items-center">
-                        <jsp:include page="../components/card.jsp">
+                        <jsp:include page="../components/Card.jsp">
                             <jsp:param name="name" value="${nft.name}" />
                             <jsp:param name="descr" value="${nft.descr}" />
                             <jsp:param name="img" value="${nft.img}" />
