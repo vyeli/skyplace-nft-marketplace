@@ -101,7 +101,7 @@ public class FrontController {
     public ModelAndView product(@ModelAttribute("mailForm") final MailForm form, @PathVariable String productId) {
         final NftCard nft = exploreService.getNFTById(productId);
         if(nft == null)
-            return new ModelAndView("frontcontroller/notfound");
+            return notFound();
 
         final ModelAndView mav = new ModelAndView("frontcontroller/product");
         mav.addObject("nft", nft);
@@ -130,7 +130,16 @@ public class FrontController {
     /* 404 */
     @RequestMapping("/**")
     public ModelAndView notFound() {
-        final ModelAndView mav = new ModelAndView("frontcontroller/notfound");
+        final ModelAndView mav = new ModelAndView("frontcontroller/error404");
+        return mav;
+    }
+
+    @RequestMapping("/profile")
+    public ModelAndView profile(){
+        ModelAndView mav = new ModelAndView("frontcontroller/profile");
+
+        final List<NftCard> nfts = exploreService.getNFTs(1, "All", null);
+        mav.addObject("nfts", nfts);
         return mav;
     }
 

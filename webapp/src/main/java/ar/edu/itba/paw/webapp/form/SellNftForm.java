@@ -33,7 +33,7 @@ public class SellNftForm {
 
     private String description;
 
-    @ImageConstraint
+    @ImageConstraint(maxSize = 2097152)     // 2MB
     private MultipartFile image;
 
     @NotEmpty

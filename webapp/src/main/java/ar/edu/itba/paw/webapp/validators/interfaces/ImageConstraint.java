@@ -13,9 +13,11 @@ import java.lang.annotation.Target;
 @Target( { ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ImageConstraint {
-    String message() default "Invalid image file";
+    String message() default "";
 
     // Follow spring standards
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
+
+    long maxSize();
 }

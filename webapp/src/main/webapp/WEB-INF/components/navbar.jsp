@@ -16,8 +16,52 @@
         </form>
         <!-- Search icon -->
     </div>
-    <div class="hidden sm:flex justify-end items-center gap-12 pr-4 text-lg font-normal">
+    <div class="hidden sm:flex flex-row justify-end items-center gap-12 pr-4 text-lg font-normal">
         <a class="hover:underline decoration-2 decoration-cyan-500 underline-offset-4" href="<c:url value="/explore" />">Explore</a>
         <a class="hover:underline decoration-2 decoration-cyan-500 underline-offset-4" href="<c:url value="/sell" />">Sell</a>
+        <button id="profileButton" data-dropdown-toggle="profileMenu" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="profileMenu" class="hidden flex flex-col flex-grow z-10 w-44 rounded text-gray-700 border border-gray-300 text-sm divide-y divide-gray-300 shadow">
+            <ul class="py-1" aria-labelledby="profileButton">
+                <li>
+                    <a href="<c:url value="/profile"/>" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-2 h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>My profile</span>
+                    </a>
+                </li>
+                <li class="pb-1">
+                    <a href="<c:url value="/profile?tab=favorited"/>" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-2 h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Favorites</span>
+                    </a>
+                </li>
+                <li class="pt-1 border-t border-gray-300">
+                    <a href="<c:url value="/logout"/>" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-2 h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Log out</span>
+                    </a>
+                </li>
+                <!--
+                <li>
+                    <a href="<c:url value="/login"/>" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-2 h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Log in</span>
+                    </a>
+                </li>
+                -->
+            </ul>
+        </div>
     </div>
 </nav>
