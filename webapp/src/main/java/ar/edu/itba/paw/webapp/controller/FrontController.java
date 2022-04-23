@@ -155,7 +155,7 @@ public class FrontController {
     /* 404 */
     @RequestMapping("/**")
     public ModelAndView notFound() {
-        final ModelAndView mav = new ModelAndView("frontcontroller/error404");
+        final ModelAndView mav = new ModelAndView("error/404");
         return mav;
     }
 
