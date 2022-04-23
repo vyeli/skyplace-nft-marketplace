@@ -127,13 +127,13 @@ public class FrontController {
     }
 
     // Create
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
     public ModelAndView createUserForm(@ModelAttribute("userForm") final UserForm form) {
-        final ModelAndView mav = new ModelAndView("frontcontroller/create");
+        final ModelAndView mav = new ModelAndView("frontcontroller/register");
         return mav;
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ModelAndView createUser(@Valid @ModelAttribute("userForm") final UserForm form, final BindingResult errors) {
         if (errors.hasErrors()) {
             return createUserForm(form);

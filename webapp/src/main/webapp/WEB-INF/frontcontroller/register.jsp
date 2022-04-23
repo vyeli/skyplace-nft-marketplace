@@ -15,7 +15,7 @@
             <p class="text-center pt-2">Create an account to buy and sell nfts</p>
         </div>
 
-        <c:url value="/create" var="postPath"/>
+        <c:url value="/register" var="postPath"/>
         <form:form modelAttribute="userForm" action="${postPath}" method="post" class="mt-8 space-y-6">
             <div class="rounded-md shadow-sm -space-y-px">
                 <div>

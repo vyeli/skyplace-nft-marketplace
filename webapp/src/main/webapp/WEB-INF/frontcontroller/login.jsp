@@ -30,7 +30,7 @@
                     <label for="remember-me" class="ml-2 block text-sm text-gray-900"> Remember me </label>
                 </div>
                 <div class="text-sm">
-                    <a href="<c:url value="/create"/>" class="font-medium text-cyan-600 hover:text-cyan-500"> Don't have an account ? Sign up </a>
+                    <a href="<c:url value="/register"/>" class="font-medium text-cyan-600 hover:text-cyan-500"> Don't have an account ? Sign up </a>
                 </div>
             </div>
 
