@@ -22,7 +22,7 @@
         </div> <!-- Description box -->
         <div class="w-96 h-96">
             <!-- center img -->
-            <img class="w-full h-full object-cover"
+            <img class="w-full h-full object-contain"
                 src="data:image/jpg;base64,${nft.img}" alt="${nft.name}">
         </div> <!-- center img -->
 

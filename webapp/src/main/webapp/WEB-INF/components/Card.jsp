@@ -2,9 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
 <!-- Card -->
-<div class="relative rounded-lg group shadow-sm hover:shadow-xl">
+<div class="relative rounded-lg group shadow-sm hover:shadow-xl w-full max-w-sm">
     <!-- NFT image -->
-    <img src="data:image/jpg;base64,${param.img}" alt="${param.name}" class="aspect-[4/3] rounded-t-lg object-center object-cover group-hover:opacity-80" />
+    <img src="data:image/jpg;base64,${param.img}" alt="${param.name}" class="aspect-[4/3] w-full rounded-t-lg object-center object-cover group-hover:opacity-80" />
     <!-- Name and price -->
     <div class="pt-4 px-4 flex items-center justify-between text-base font-medium text-gray-900 border-x border-slate-300 space-x-8">
         <h3 class="max-w-[20ch] truncate text-lg">
