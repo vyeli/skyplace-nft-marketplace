@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
 @ComponentScan({"ar.edu.itba.paw.webapp.auth"})
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
+    public static final String REMEMBERME_KEY_PARAMETER = "REMEMBERME_KEY";
+
     @Autowired
     private skyplaceUserDetailsService userDetailsService;
 
@@ -52,7 +54,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .userDetailsService(userDetailsService)
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
                 //FIXME ADD OPENSSL 4K KEY FILE AS KEY
-//                .key("mysupersecretketthatnobodyknowsabout ") // no hacer esto, crear una aleatoria segura suficiente mente grande y colocarla bajo src/main/resources
+                .key(Dotenv.load().get(REMEMBERME_KEY_PARAMETER)) // no hacer esto, crear una aleatoria segura suficiente mente grande y colocarla bajo src/main/resources
                 .and().logout()
                     .logoutUrl("/logout")
                     .logoutSuccessUrl("/login")
