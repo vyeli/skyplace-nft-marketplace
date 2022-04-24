@@ -20,7 +20,7 @@ public class ExploreJdbcDao implements ExploreDao{
         jdbcTemplate = new JdbcTemplate(ds);
     }
 
-    private List<NftCard> executeSelectQuery(String query, Object[] args) {
+    private List<NftCard> executeSelectNFTQuery(String query, Object[] args) {
         return jdbcTemplate.query(query, args, (rs, i) -> {
             String name = rs.getString("nft_name");
             String contract_addr = rs.getString("contract_addr");
@@ -41,7 +41,7 @@ public class ExploreJdbcDao implements ExploreDao{
         try {
             long prodId = Long.parseLong(id);
             String selectNFTByIdQuery = "SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, img, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE sellorders.id=?";
-            List<NftCard> r = executeSelectQuery(selectNFTByIdQuery, new Object[]{prodId});
+            List<NftCard> r = executeSelectNFTQuery(selectNFTByIdQuery, new Object[]{prodId});
             return r.size() > 0 ? r.get(0):null;
         } catch(NumberFormatException e) {
             return null;
@@ -49,16 +49,40 @@ public class ExploreJdbcDao implements ExploreDao{
     }
 
     @Override
-    public List<NftCard> getNFTs(int page, String categoryName, String search) {
+    public List<NftCard> getNFTs(int page, String categoryName, String chain, double minPrice, double maxPrice, String sort, String search) {
+
         StringBuilder sb = new StringBuilder();
-        List<String> args = new ArrayList<>();
-        sb.append("SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, img, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr)");
+        List<Object> args = new ArrayList<>();
+        sb.append("SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, img, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE true ");
         if (!categoryName.equals("All")) {
-            sb.append(" WHERE category LIKE ?");
+            sb.append(" AND category LIKE ? ");
             args.add(categoryName);
         }
+        if (!chain.equals("All")) {
+            sb.append(" AND chain LIKE ? ");
+            args.add(chain);
+        }
+        if(minPrice > 0) {
+            sb.append(" AND price >= ? ");
+            args.add(minPrice);
+        }
+        if(maxPrice > 0) {
+            sb.append(" AND price <=  ? ");
+            args.add(maxPrice);
+        }
+        switch (sort) {
+            case "name":
+                sb.append(" ORDER BY nft_name ");
+                break;
+            case "price_asc":
+                sb.append(" ORDER BY price");
+                break;
+            case "price_dsc":
+                sb.append(" ORDER BY price DESC");
+                break;
+        }
 
-        List<NftCard> result = executeSelectQuery(sb.toString(), args.toArray());
+        List<NftCard> result = executeSelectNFTQuery(sb.toString(), args.toArray());
 
         if(search != null)
             result = result.stream().filter(nftCard -> calculateDistance(nftCard.getName(), search) < 4).collect(Collectors.toList());

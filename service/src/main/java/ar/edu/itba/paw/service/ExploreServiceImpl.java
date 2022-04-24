@@ -22,7 +22,16 @@ public class ExploreServiceImpl implements ExploreService{
     }
 
     @Override
-    public List<NftCard> getNFTs(int page, String categoryName, String search) {
-        return exploreDao.getNFTs(page, categoryName.substring(0,1).toUpperCase()+categoryName.substring(1), search);
+    public List<NftCard> getNFTs(int page, String categoryName, String chain, double minPrice, double maxPrice, String sort, String search) {
+        return exploreDao.getNFTs(
+                page,
+                categoryName.substring(0,1).toUpperCase()+categoryName.substring(1),
+                chain.substring(0,1).toUpperCase()+chain.substring(1),
+                minPrice,
+                maxPrice,
+                sort,
+                search);
     }
+
+
 }

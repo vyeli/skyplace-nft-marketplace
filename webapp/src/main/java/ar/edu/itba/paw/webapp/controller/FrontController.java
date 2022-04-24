@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.webapp.form.ExploreFilter;
 import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
@@ -44,30 +45,22 @@ public class FrontController {
         return mav;
     }
 
-    @RequestMapping(value = "/search", method = RequestMethod.POST)
-    public ModelAndView search() {
-
-        return new ModelAndView("redirect:/category");
-    }
-
     @RequestMapping("/explore")
-    public ModelAndView explore() {
+    public ModelAndView explore(@ModelAttribute("exploreFilter") @Valid ExploreFilter exploreFilter) {
+
+        List<String> categories = categoryService.getCategories();
+        List<String> chains = chainService.getChains();
+
         final ModelAndView mav = new ModelAndView("frontcontroller/explore");
-        return mav;
-    }
+        final List<NftCard> nfts = exploreService.getNFTs(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch());
 
-    @RequestMapping("category/{categoryName}")
-    public ModelAndView getCategory(@PathVariable String categoryName, @RequestParam(value="name", required=false) String name) {
-        List<String> categories = categoryService.getStaticCategories();
-        if(!categories.contains(categoryName))
-            return new ModelAndView("redirect:/explore");
-        final ModelAndView mav = new ModelAndView("frontcontroller/category");
-        final List<NftCard> nfts = exploreService.getNFTs(1, categoryName, name);
-
-        mav.addObject("category", categoryName.substring(0,1).toUpperCase()+categoryName.substring(1));
+        mav.addObject("category", exploreFilter.getCategory().substring(0,1).toUpperCase()+exploreFilter.getCategory().substring(1));
         mav.addObject("nfts", nfts);
         mav.addObject("pages", nfts.size()/12+1);
         mav.addObject("nftAmount", nfts.size());
+        mav.addObject("categories", categories);
+        mav.addObject("chains", chains);
+
         return mav;
     }
     

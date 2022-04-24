@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <nav class="flex items-center w-full justify-around h-16 lg:h-20 shadow-md lg:shadow-none">
@@ -9,11 +10,11 @@
     </div>
     </a>
     <div class="w-2/5 relative flex flex-row flex-start p-2 rounded border border-gray-300 text-cyan-800">
-        <c:url value="/category/all" var="postPath"/>
-        <form action="${postPath}" method="get" class="w-full flex m-0">
+        <c:url value="/explore" var="explorePath"/>
+        <form action="${explorePath}" method="get" class="w-full flex m-0">
             <img src="<c:url value='/resources/icsearch.svg' />" alt="icsearch" class="w-5" />
-        <input name="name" class="pl-2 outline-none w-full border-none p-0 focus:border-none focus:ring-0" type="text"
-            placeholder="Search items, collections and accounts" />
+        <input name="search" class="pl-2 outline-none w-full border-none p-0 focus:border-none focus:ring-0" type="text"
+            placeholder="Search items, collections and accounts" value="${param.search}" />
         </form>
         <!-- Search icon -->
     </div>
