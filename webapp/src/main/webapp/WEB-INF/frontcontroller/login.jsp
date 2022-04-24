@@ -23,11 +23,15 @@
                     <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm" placeholder="Password">
                 </div>
             </div>
-
+            <c:if test="${param.error != null}">
+            <div>
+                <p class="text-red-600">The username or password is incorrect</p>
+            </div>
+            </c:if>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded">
-                    <label for="remember-me" class="ml-2 block text-sm text-gray-900"> Remember me </label>
+                    <input id="rememberme" name="rememberme" type="checkbox" class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded">
+                    <label for="rememberme" class="ml-2 block text-sm text-gray-900"> Remember me </label>
                 </div>
                 <div class="text-sm">
                     <a href="<c:url value="/register"/>" class="font-medium text-cyan-600 hover:text-cyan-500"> Don't have an account ? Sign up </a>
