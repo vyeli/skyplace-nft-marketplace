@@ -25,7 +25,7 @@
             </svg>
         </button>
         <!-- Dropdown menu -->
-        <div id="profileMenu" class="hidden flex flex-col flex-grow z-10 w-44 rounded text-gray-700 border border-gray-300 text-sm divide-y divide-gray-300 shadow">
+        <div id="profileMenu" class="hidden z-10 w-44 bg-white flex flex-col flex-grow rounded text-gray-700 border border-gray-300 text-sm divide-y divide-gray-300 shadow">
             <ul class="py-1" aria-labelledby="profileButton">
                 <li>
                     <a href="<c:url value="/profile"/>" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
@@ -52,7 +52,7 @@
                     </a>
                 </li>
                 <!--
-                <li>
+                <li class="z-20">
                     <a href="<c:url value="/login"/>" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mx-2 h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"></path>

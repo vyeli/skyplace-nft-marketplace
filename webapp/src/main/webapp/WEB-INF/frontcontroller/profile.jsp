@@ -15,7 +15,7 @@
             <!-- Profile name, wallet and more options (aligned) -->
             <div class="flex flex-row flex-grow items-center justify-between">
                 <div class="flex flex-row">
-                    <span class="text-4xl font-semibold">space.invader01</span>
+                    <span class="text-4xl font-semibold">${user.username}</span>
                     <button class="flex flex-row items-center ml-5 lg:ml-10 px-2 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-dark" data-tooltip-placement="bottom" type="button" id="walletButton">
                         <img class="w-6 h-6" src="<c:url value='/resources/utility_icon.svg' />" alt="wallet_icon" />
                         <!--
@@ -25,23 +25,20 @@
                         </svg>
                         -->
                         <!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 512 512"><rect x="48" y="144" width="416" height="288" rx="48" ry="48" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"/><path d="M411.36 144v-30A50 50 0 00352 64.9L88.64 109.85A50 50 0 0048 159v49" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"/><path d="M368 320a32 32 0 1132-32 32 32 0 01-32 32z"/></svg> -->
-                        <span class="text-xl ml-1 text-gray-400 font-semibold truncate w-32 hover:text-gray-600" id="walletId">0xF00D0a7D9b36AeF74fddfA60A608e4770993Aff4</span>
+                        <span class="text-xl ml-1 text-gray-400 font-semibold truncate w-32 hover:text-gray-600" id="walletId">${user.wallet}</span>
                     </button>
                     <div id="tooltip-dark" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
                         Copy
                         <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
                 </div>
+                <!--
                 <button class="border border-gray-200 rounded-lg p-0.5 text-gray-400">
                     <img class="w-9 h-9" src="<c:url value='/resources/more_options.svg' />" alt="options_icon"/>
-                    <!--
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                    </svg>
-                    -->
                 </button>
+                -->
             </div>
-            <span class="text-lg font-light text-gray-400">space.invaderrr@gmail.com</span>
+            <span class="text-lg font-light text-gray-400">${user.email}</span>
             <!-- Rating -->
             <div class="flex flex-row items-center mt-3">
                 <svg class="w-9 h-9 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

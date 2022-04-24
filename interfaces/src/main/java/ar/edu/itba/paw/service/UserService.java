@@ -8,4 +8,8 @@ public interface UserService {
     User create(String email, String username, String wallet, String password);
 
     Optional<User> getUserByEmail(String email);
+
+    void setCurrentUser(User user);
+
+    User getCurrentUser();
 }

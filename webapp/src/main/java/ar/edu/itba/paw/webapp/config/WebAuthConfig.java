@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
-import io.github.cdimascio.dotenv.Dotenv;
-import ar.edu.itba.paw.webapp.auth.skyplaceUserDetailsService;
+import ar.edu.itba.paw.webapp.auth.SkyplaceUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,7 +23,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     public static final String REMEMBERME_KEY_PARAMETER = "REMEMBERME_KEY";
 
     @Autowired
-    private skyplaceUserDetailsService userDetailsService;
+    private SkyplaceUserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {

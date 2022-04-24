@@ -12,15 +12,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 
 @Component
-public class skyplaceUserDetailsService implements UserDetailsService {
+public class SkyplaceUserDetailsService implements UserDetailsService {
 
     private final UserService us;
 
     @Autowired
-    public skyplaceUserDetailsService(final UserService us) {
+    public SkyplaceUserDetailsService(final UserService us) {
         this.us = us;
     }
 
@@ -29,6 +28,7 @@ public class skyplaceUserDetailsService implements UserDetailsService {
         final User user = us.getUserByEmail(email).
                 orElseThrow(()->new UsernameNotFoundException("No such user with email: " + email));
 
+        us.setCurrentUser(user);
         final Collection<GrantedAuthority> roles = new ArrayList<>();
         roles.add(new SimpleGrantedAuthority("ROLE_USER"));
 

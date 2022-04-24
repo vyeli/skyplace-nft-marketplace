@@ -13,6 +13,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
+    private User currentUser;
 
     @Autowired
     public UserServiceImpl(final UserDao userDao, final PasswordEncoder passwordEncoder) {
@@ -28,5 +29,15 @@ public class UserServiceImpl implements UserService{
     @Override
     public Optional<User> getUserByEmail(String email) {
         return userDao.getUserByEmail(email);
+    }
+
+    @Override
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return currentUser;
     }
 }
