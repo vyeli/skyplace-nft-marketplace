@@ -157,7 +157,7 @@ public class FrontController {
         ModelAndView mav = new ModelAndView("frontcontroller/profile");
 
         final User user = userService.getCurrentUser();
-        final List<NftCard> nfts = exploreService.getNFTs(1, "All", null);
+        final List<NftCard> nfts = new ArrayList<>();
         mav.addObject("user", user);
         mav.addObject("nfts", nfts);
         return mav;

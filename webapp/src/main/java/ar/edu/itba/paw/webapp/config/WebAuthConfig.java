@@ -39,10 +39,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.sessionManagement()
-                    .invalidSessionUrl("/login")
+                    .invalidSessionUrl("/")
                 .and().authorizeRequests()
-                    .antMatchers("/login", "/register").anonymous()
-                    .antMatchers("/sell").hasRole("USER")
+                    .antMatchers("/login", "/register", "/", "/explore", "/product/**").anonymous()
+                    .antMatchers("/sell", "/explore", "/","/register", "/product/**").hasRole("USER")
                     .antMatchers("/**").authenticated()
                 .and().formLogin()
                     .usernameParameter("email")
@@ -53,8 +53,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .rememberMeParameter("rememberme")
                     .userDetailsService(userDetailsService)
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
-                //FIXME ADD OPENSSL 4K KEY FILE AS KEY
-                .key(Dotenv.load().get(REMEMBERME_KEY_PARAMETER)) // no hacer esto, crear una aleatoria segura suficiente mente grande y colocarla bajo src/main/resources
+                .key(Dotenv.load().get(REMEMBERME_KEY_PARAMETER))
                 .and().logout()
                     .logoutUrl("/logout")
                     .logoutSuccessUrl("/login")
