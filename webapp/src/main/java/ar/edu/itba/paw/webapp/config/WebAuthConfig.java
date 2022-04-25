@@ -53,7 +53,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
             .and().rememberMe()
                 .rememberMeParameter("rememberme")
                 .userDetailsService(userDetailsService)
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toDays(7))
+                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(7))
                 .key(Dotenv.load().get(REMEMBERME_KEY_PARAMETER))
             .and().logout()
                 .logoutUrl("/logout")
