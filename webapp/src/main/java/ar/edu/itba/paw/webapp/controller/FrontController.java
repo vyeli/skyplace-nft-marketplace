@@ -99,8 +99,11 @@ public class FrontController {
 
         final ModelAndView mav = new ModelAndView("frontcontroller/product");
         mav.addObject("nft", nft);
-        // TODO: pass current user mail to the view
-//        mav.addObject("userMail", );
+
+        User currentUser = userService.getCurrentUser();
+        if (currentUser != null)
+            mav.addObject("userEmail", currentUser.getEmail());
+        
         return mav;
     }
 
@@ -117,7 +120,8 @@ public class FrontController {
 
     @RequestMapping(value = "/product/update/{productId}", method = RequestMethod.GET)
     public ModelAndView updateSellOrder(@ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, @PathVariable long productId) {
-        // TODO: check if user is owner with sellorderservice, else redirect to /403
+        if (!sos.isUserOwner(productId))
+            return new ModelAndView("redirect:/403");
 
         final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
         SellOrder order = sos.getOrderById(productId).orElseThrow(() -> new SellOrderNotFoundException("No existing order with id " + productId));

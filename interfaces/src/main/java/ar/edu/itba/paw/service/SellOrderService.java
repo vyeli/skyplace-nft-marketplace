@@ -16,4 +16,6 @@ public interface SellOrderService {
 
     boolean delete(long id);
 
+    boolean isUserOwner(long id);
+
 }
