@@ -85,6 +85,7 @@ public class SellOrderJdbcDao implements SellOrderDao {
         sellOrderData.put("id_nft", nftId);
         sellOrderData.put("nft_addr", nftContract);
         sellOrderData.put("category", category);
+        sellOrderData.put("nft_chain", chain);
 
         final long sellOrderId = jdbcInsertSellOrder.executeAndReturnKey(sellOrderData).longValue();
         return new SellOrder(sellOrderId, email, description, price, nftId, nftContract, category);
