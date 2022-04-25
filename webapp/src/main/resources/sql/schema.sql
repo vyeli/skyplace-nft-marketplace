@@ -68,8 +68,3 @@ INSERT INTO chains VALUES('Ethereum');
 INSERT INTO chains VALUES('Rinkeby');
 INSERT INTO chains VALUES('Kovan');
 INSERT INTO chains VALUES('BSC');
-
-
-/* Version 2 - Adding password to User table */
-ALTER TABLE users ADD COLUMN password TEXT NOT NULL;
-ALTER TABLE users RENAME COLUMN mail to email;

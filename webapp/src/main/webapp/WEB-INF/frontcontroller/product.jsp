@@ -58,7 +58,7 @@
                 </div> <!-- Specification -->
             </div>
             <div class="flex flex-col">
-
+                <%-- TODO: if owner display update / delete btn, else display mail form --%>
                 <c:url value="/product/${nft.id_product}" var="postPath" />
                 <form:form modelAttribute="mailForm" action="${postPath}" method="post">
                     <div class="flex">

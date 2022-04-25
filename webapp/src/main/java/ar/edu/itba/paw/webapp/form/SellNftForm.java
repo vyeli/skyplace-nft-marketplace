@@ -6,11 +6,10 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 
-public class SellNftForm {
+public class SellNftForm extends UpdateSellOrderForm {
 
     @NotBlank
     private String name;
@@ -24,14 +23,6 @@ public class SellNftForm {
 
     @NotBlank
     private String chain;
-
-    private String category;
-
-    @Digits(integer=8, fraction=8, message = "Price is not a valid number or contains more than 8 decimals!")
-    @DecimalMin(value="0", message = "Price must be a positive number")
-    private double price;
-
-    private String description;
 
     @ImageConstraint(maxSize = 2097152)     // 2MB
     private MultipartFile image;
@@ -70,30 +61,6 @@ public class SellNftForm {
 
     public void setChain(String chain) {
         this.chain = chain;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public MultipartFile getImage() {

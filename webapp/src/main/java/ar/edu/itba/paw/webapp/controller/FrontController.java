@@ -5,8 +5,10 @@ import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.service.*;
+import ar.edu.itba.paw.webapp.exceptions.SellOrderNotFoundException;
 import ar.edu.itba.paw.webapp.form.MailForm;
 import ar.edu.itba.paw.webapp.form.SellNftForm;
+import ar.edu.itba.paw.webapp.form.UpdateSellOrderForm;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -63,7 +65,7 @@ public class FrontController {
 
         return mav;
     }
-    
+
     @RequestMapping(value = "/sell", method = RequestMethod.GET)
     public ModelAndView createNftForm(@ModelAttribute("sellNftForm") final SellNftForm form) {
         final ModelAndView mav = new ModelAndView("frontcontroller/sell");
@@ -97,6 +99,8 @@ public class FrontController {
 
         final ModelAndView mav = new ModelAndView("frontcontroller/product");
         mav.addObject("nft", nft);
+        // TODO: pass current user mail to the view
+//        mav.addObject("userMail", );
         return mav;
     }
 
@@ -111,6 +115,33 @@ public class FrontController {
         return new ModelAndView("redirect:/emailSent", model);
     }
 
+    @RequestMapping(value = "/product/update/{productId}", method = RequestMethod.GET)
+    public ModelAndView updateSellOrder(@ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, @PathVariable long productId) {
+        // TODO: check if user is owner with sellorderservice, else redirect to /403
+
+        final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
+        SellOrder order = sos.getOrderById(productId).orElseThrow(() -> new SellOrderNotFoundException("No existing order with id " + productId));
+        List<String> categories = categoryService.getCategories();
+        mav.addObject("categories", categories);
+        mav.addObject("order", order);
+        return mav;
+    }
+
+    @RequestMapping(value = "/product/update/{productId}", method = RequestMethod.POST)
+    public ModelAndView updateSellOrder(@Valid @ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, final BindingResult errors, @PathVariable long productId) {
+        if (errors.hasErrors()) {
+            return updateSellOrder(form, productId);
+        }
+
+        sos.update(productId, form.getCategory(), form.getPrice(), form.getDescription());
+        return new ModelAndView("redirect:/product/" + productId);
+    }
+
+    @RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
+    public ModelAndView deleteSellOrder(@PathVariable long productId) {
+        sos.delete(productId);
+        return new ModelAndView("redirect:/profile");
+    }
 
     @RequestMapping(value="/emailSent")
     public ModelAndView emailSent(@RequestParam(value="emailSent", required = false) String emailSent) {
@@ -142,8 +173,6 @@ public class FrontController {
         final ModelAndView mav = new ModelAndView("frontcontroller/login");
         return mav;
     }
-
-
 
     /* 404 */
     @RequestMapping("/**")
