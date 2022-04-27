@@ -2,6 +2,8 @@ package ar.edu.itba.paw.service;
 
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
@@ -22,9 +24,7 @@ public class MailingServiceImpl implements MailingService{
     public static final String MAIL_AUTH_PARAMETER = "MAIL_HAS_AUTH";
     public static final String MAIL_STARTTLS_PARAMETER = "MAIL_STARTTLS_ENABLE";
 
-    public MailingServiceImpl(){
-
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailingServiceImpl.class);
 
     public Properties getProperties(){
         Properties properties = System.getProperties();
@@ -36,8 +36,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public boolean sendMail(String buyerMail, String sellerMail,String nftName, String nftAddress, float nftPrice) {
-        // 1. Crear objeto sesion
+    public void sendOfferMail(String buyerMail, String sellerMail, String nftName, String nftAddress, float nftPrice) {
         Session session = Session.getInstance(getProperties(),
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
@@ -46,7 +45,6 @@ public class MailingServiceImpl implements MailingService{
                 });
 
         try {
-            // 2. Crear mensaje
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(Objects.requireNonNull(env.get(MAIL_USERNAME_PARAMETER))));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(sellerMail));
@@ -57,14 +55,37 @@ public class MailingServiceImpl implements MailingService{
                     "\n- Nft address: " + nftAddress +
                     "\n- Price: " + nftPrice);
 
-            // 3. Mandar el mensaje
             Transport.send(message);
-            return true;
 
         } catch (MessagingException e) {
-            e.printStackTrace();
-            return false;
+            LOGGER.error("Unexpected error sending email", e);
         }
 
     }
+
+    @Override
+    public void sendRegisterMail(String userEmail, String username) {
+        Session session = Session.getInstance(getProperties(),
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(env.get(MAIL_USERNAME_PARAMETER), env.get(MAIL_PASSWORD_PARAMETER));
+                    }
+                });
+
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(Objects.requireNonNull(env.get(MAIL_USERNAME_PARAMETER))));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(userEmail));
+            message.setSubject("Welcome to Skyplace");
+            message.setText("Hello, " + username + " welcome to Skyplace the best nft marketplace." +
+                    "\nThank you for registering in our website! ");
+
+            Transport.send(message);
+
+        } catch (MessagingException e) {
+            LOGGER.error("Unexpected error sending email", e);
+        }
+
+    }
+
 }

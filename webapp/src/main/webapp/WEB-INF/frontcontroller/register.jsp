@@ -20,7 +20,7 @@
             <div class="rounded-md shadow-sm -space-y-px">
                 <div>
                     <c:if test="${emailExist == true}">
-                        <p class="text-red-500 mb-4">Email already registered, would you like to <a href="<c:url value="/login"/>" class="text-cyan-400">Log in </a> ?</p>
+                        <p class="text-red-500 mb-4 text-center">Email already registered, would you like to <a href="<c:url value="/login"/>" class="text-cyan-400">Log in </a> ?</p>
                     </c:if>
                     <form:label path="email">Email</form:label>
                     <form:input path="email" type="email" autocomplete="email" required="true"

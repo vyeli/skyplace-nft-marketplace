@@ -4,7 +4,11 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ViewResolver;
@@ -20,8 +24,11 @@ import javax.sql.DataSource;
         "ar.edu.itba.paw.service",
         "ar.edu.itba.paw.persistence"
 })
+
+@EnableAsync
 @EnableWebMvc
 @Configuration
+@EnableTransactionManagement
 public class WebConfig extends WebMvcConfigurationSupport {
 
     public static final String DB_URL_PARAMETER = "DB_URL";
@@ -74,5 +81,11 @@ public class WebConfig extends WebMvcConfigurationSupport {
         handlerMapping.setOrder(-1);
         return handlerMapping;
     }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dataSource());
+    }
+
 
 }

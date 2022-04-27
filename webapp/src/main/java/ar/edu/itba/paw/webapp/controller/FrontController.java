@@ -14,6 +14,7 @@ import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -113,14 +114,16 @@ public class FrontController {
     }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("mailForm") final MailForm form, final BindingResult errors, @PathVariable String productId, ModelMap model) {
+    public ModelAndView createOrder(@Valid @ModelAttribute("mailForm") final MailForm form, final BindingResult errors, @PathVariable String productId) {
         if (errors.hasErrors()) {
             return product(form, productId);
         }
 
-        final boolean returnSatus = mailingService.sendMail(form.getBuyerMail(), form.getSellerMail(), form.getNftName(), form.getNftAddress(), form.getNftPrice());
-        model.addAttribute("emailSent", returnSatus);
-        return new ModelAndView("redirect:/emailSent", model);
+        mailingService.sendOfferMail(form.getBuyerMail(), form.getSellerMail(), form.getNftName(), form.getNftAddress(), form.getNftPrice());
+
+        ModelAndView mav = product(form,productId);
+        mav.addObject("emailSent", true);
+        return mav;
     }
 
     @RequestMapping(value = "/product/update/{productId}", method = RequestMethod.GET)
@@ -176,6 +179,8 @@ public class FrontController {
             final ModelAndView mav = new ModelAndView("frontcontroller/register");
             return mav.addObject("emailExist", Boolean.TRUE);
         }
+
+        mailingService.sendRegisterMail(user.get().getEmail(), user.get().getUsername());
         return new ModelAndView("redirect:/" );
     }
 

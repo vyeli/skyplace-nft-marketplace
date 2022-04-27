@@ -89,6 +89,9 @@
                     </c:otherwise>
                 </c:choose>
             </div>
+            <c:if test="${emailSent}">
+                <p class="text-lime-600 text-lg">Email sent!</p>
+            </c:if>
         </div> <!-- Pricing box-->
     </div>
 </body>
