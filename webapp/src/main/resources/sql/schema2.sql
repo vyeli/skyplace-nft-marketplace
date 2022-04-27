@@ -33,6 +33,16 @@ INSERT INTO categories VALUES('Collectible');
 UPDATE sellorders SET category = 'Collectible' WHERE category = 'Collections';
 DELETE FROM categories WHERE category = 'Collections';
 
+-- Add new table for favorited
+
+CREATE TABLE IF NOT EXISTS Favorited (
+    user_id INT NOT NULL,
+    nft_id INT NOT NULL,
+    nft_contract_addr TEXT NOT NULL,
+    nft_chain TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (nft_id, nft_contract_addr, nft_chain) REFERENCES nfts(id, contract_addr, chain) ON DELETE CASCADE
+);
 
 -- Update images
 CREATE TABLE IF NOT EXISTS images
@@ -44,13 +54,3 @@ CREATE TABLE IF NOT EXISTS images
 ALTER TABLE nfts RENAME COLUMN img TO id_image;
 ALTER TABLE nfts ALTER COLUMN id_image TYPE INT USING (id_image::INT);
 ALTER TABLE nfts ADD FOREIGN KEY(id_image) REFERENCES images(id_image);
-
-CREATE TABLE IF NOT EXISTS favorited
-(
-    user_id INT NOT NULL,
-    nft_id INT NOT NULL,
-    nft_contract_addr TEXT NOT NULL,
-    PRIMARY KEY (user_id, nft_id, nft_contract_addr),
-    FOREIGN KEY ( user_id ) REFERENCES users ( id ) ON DELETE CASCADE,
-    FOREIGN KEY ( nft_id, nft_contract_addr ) REFERENCES nfts ( id, contract_addr ) ON DELETE CASCADE
-)

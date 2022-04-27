@@ -201,11 +201,16 @@ public class FrontController {
     }
 
     @RequestMapping("/profile")
-    public ModelAndView profile(){
+    public ModelAndView profile(@RequestParam(required = false, name = "tab") String tab){
         ModelAndView mav = new ModelAndView("frontcontroller/profile");
 
         final User user = userService.getCurrentUser();
-        final List<NftCard> nfts = new ArrayList<>();
+        List<NftCard> nfts;
+        if(tab != null && tab.equals("favorited")){
+            nfts = sos.getUserFavorites(user);
+        } else {
+            nfts = sos.getUserSellOrders(user);
+        }
         mav.addObject("user", user);
         mav.addObject("nfts", nfts);
         return mav;

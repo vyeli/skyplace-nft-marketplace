@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.model.SellOrder;
+import ar.edu.itba.paw.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -36,9 +38,50 @@ public class SellOrderJdbcDao implements SellOrderDao {
                 .usingGeneratedKeyColumns("id_image");
     }
 
+    private List<NftCard> executeSelectNFTQuery(String query, Object[] args) {
+        return jdbcTemplate.query(query, args, (rs, i) -> {
+            String name = rs.getString("nft_name");
+            String contract_addr = rs.getString("contract_addr");
+            String chain = rs.getString("chain");
+            long id_product = rs.getLong("id_product");
+            long id_image = rs.getLong("id_image");
+            float price = rs.getFloat("price");
+            int score = 0;
+            long id_nft = rs.getLong("id_nft");
+            String seller_email = rs.getString("seller_email");
+            String descr = rs.getString("descr");
+            return new NftCard(id_image, name, chain, price, score, seller_email, descr, contract_addr, id_nft, id_product);
+        });
+    }
+
     @Override
     public Optional<SellOrder> getOrderById(long id) {
         return jdbcTemplate.query("SELECT * FROM SellOrders WHERE id = ?", new Object[]{ id }, ROW_MAPPER).stream().findFirst();
+    }
+
+    @Override
+    public List<NftCard> getUserSellOrders(User user){
+        List<Object> args = new ArrayList<>();
+        StringBuilder baseQuery = new StringBuilder("SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE seller_email LIKE ? ORDER BY nft_name");
+        args.add(user.getEmail());
+        return executeSelectNFTQuery(baseQuery.toString(), args.toArray());
+    }
+
+    @Override
+    public List<NftCard> getUserFavorites(User user) {
+        List<Object> args = new ArrayList<>();
+        StringBuilder baseQuery = new StringBuilder(
+                "SELECT sellorders.id AS id_product, category, fav_nfts.id AS id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email " +
+                "FROM sellorders INNER JOIN (" +
+                "SELECT user_id, id, contract_addr, chain, nft_name, id_image " +
+                "FROM favorited INNER JOIN nfts " +
+                "ON (id = nft_id AND contract_addr = nft_contract_addr AND nft_chain = chain)" +
+                ") AS fav_nfts " +
+                "ON (sellorders.id = fav_nfts.id AND nft_addr = contract_addr) " +
+                "WHERE user_id = ? " +
+                "ORDER BY nft_name");
+        args.add(user.getId());
+        return executeSelectNFTQuery(baseQuery.toString(), args.toArray());
     }
 
     @Override

@@ -1,12 +1,15 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.model.SellOrder;
+import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.SellOrderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,6 +28,11 @@ public class SellOrderServiceImpl implements SellOrderService {
     @Override
     public Optional<SellOrder> getOrderById(long id) {
         return sellOrderDao.getOrderById(id);
+    }
+
+    @Override
+    public List<NftCard> getUserSellOrders(User user) {
+        return sellOrderDao.getUserSellOrders(user);
     }
 
     @Override
@@ -53,4 +61,8 @@ public class SellOrderServiceImpl implements SellOrderService {
         return maybeOrder.isPresent() && Objects.equals(currentUserEmail, maybeOrder.get().getSellerEmail());
     }
 
+    @Override
+    public List<NftCard> getUserFavorites(User user) {
+        return sellOrderDao.getUserFavorites(user);
+    }
 }
