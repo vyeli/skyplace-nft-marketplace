@@ -15,8 +15,8 @@
             <!-- Description box -->
             <p class="text-2xl font-bold m-4 ">Description</p>
             <hr>
-            <p class="m-3 break-words">Created by</p>
-            <p class="mx-3 mt-1 mb-3 text-cyan-500 truncate"> <!-- <c:out value="${nft.seller_email}" /> --> aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            <p class="mx-3 mt-3 break-words">Created by</p>
+            <p class="mx-3 mb-3 text-cyan-500 truncate"><c:out value="${nft.seller_email}" /></p>
             <p class="m-3 break-words line-clamp-9">
                 <c:out value="${nft.descr}" />
             </p>
