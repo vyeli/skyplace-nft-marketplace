@@ -56,7 +56,7 @@
                         }
                     },
                     gridTemplateColumns: {
-                        'auto-fit': 'repeat(auto-fit, minmax(280px, 1fr))'
+                        'auto-fit': 'repeat(auto-fit, minmax(280px, 384px))'
                     },
                 }
             }
