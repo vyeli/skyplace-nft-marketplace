@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.NftCard;
+import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class ExploreJdbcDao implements ExploreDao{
 
     private final JdbcTemplate jdbcTemplate;
+    private final static Double JARO_WINKLER_UMBRAL = 0.8;
 
     @Autowired
     public ExploreJdbcDao(final DataSource ds) {
@@ -83,9 +85,11 @@ public class ExploreJdbcDao implements ExploreDao{
         }
 
         List<NftCard> result = executeSelectNFTQuery(sb.toString(), args.toArray());
+        JaroWinklerSimilarity jaroWinkler = new JaroWinklerSimilarity();
 
-        if(search != null)
-            result = result.stream().filter(nftCard -> calculateDistance(nftCard.getName(), search) < 4).collect(Collectors.toList());
+        if(search != null){
+            result = result.stream().filter(nftCard -> (jaroWinkler.apply(nftCard.getName(), search) >= JARO_WINKLER_UMBRAL || calculateDistance(nftCard.getName(), search) < 4)).collect(Collectors.toList());
+        }
 
         return result;
     }

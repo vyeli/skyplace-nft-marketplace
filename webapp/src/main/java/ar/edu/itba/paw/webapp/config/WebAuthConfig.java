@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import ar.edu.itba.paw.webapp.auth.SkyplaceLogoutHandler;
 import ar.edu.itba.paw.webapp.auth.SkyplaceUserDetailsService;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private SkyplaceUserDetailsService userDetailsService;
+
+    @Autowired
+    private SkyplaceLogoutHandler logoutHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -57,6 +61,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .key(Dotenv.load().get(REMEMBERME_KEY_PARAMETER))
             .and().logout()
                 .logoutUrl("/logout")
+                .logoutSuccessHandler(logoutHandler)
                 .logoutSuccessUrl("/")
             .and().exceptionHandling()
                 .accessDeniedPage("/403")
