@@ -15,8 +15,9 @@
             <!-- Description box -->
             <p class="text-2xl font-bold m-4 ">Description</p>
             <hr>
-            <p class="p-3 break-words">Created by&nbsp;<span class="text-cyan-500"><c:out value="${nft.seller_email}" /></span></p>
-            <p class="p-3 break-words">
+            <p class="mx-3 mt-3 break-words">Created by</p>
+            <p class="mx-3 mb-3 text-cyan-500 truncate"><c:out value="${nft.seller_email}" /></p>
+            <p class="m-3 break-words line-clamp-9">
                 <c:out value="${nft.descr}" />
             </p>
         </div> <!-- Description box -->
@@ -28,7 +29,7 @@
 
         <div class="flex flex-col gap-6 w-96">
             <!-- Pricing box-->
-            <h1 class="font-bold text-2xl"><c:out value="${nft.name}" /></h1>
+            <h1 class="font-bold text-2xl truncate"><c:out value="${nft.name}" /></h1>
             <div class="border-2 p-2 rounded-md">
                 <div class="flex mb-2">
                     <!-- Price -->
