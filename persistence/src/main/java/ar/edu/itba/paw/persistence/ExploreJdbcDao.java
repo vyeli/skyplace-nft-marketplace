@@ -55,15 +55,57 @@ public class ExploreJdbcDao implements ExploreDao{
 
         StringBuilder sb = new StringBuilder();
         List<Object> args = new ArrayList<>();
+
         sb.append("SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE true ");
-        if (!categoryName.equals("All")) {
-            sb.append(" AND category LIKE ? ");
-            args.add(categoryName);
+        String[] categories = categoryName.split(",");
+        StringBuilder categoryFilter = new StringBuilder();
+        List<Object> categoryArgs = new ArrayList<>();
+        boolean allNfts = false;
+        categoryFilter.append(" AND ( ");
+        for(int i = 0; i < categories.length; i++) {
+            if(categories[i].equals("all")) {
+                allNfts = true;
+                break;
+            }
+            String categoryAux = categories[i].substring(0,1).toUpperCase()+categories[i].substring(1);
+            if(i == 0)
+                categoryFilter.append(" category LIKE ? ");
+            else
+                categoryFilter.append(" OR category LIKE ? ");
+            categoryArgs.add(categoryAux);
         }
-        if (!chain.equals("All")) {
-            sb.append(" AND chain LIKE ? ");
-            args.add(chain);
+        categoryFilter.append(") ");
+
+        if(!allNfts) {
+            sb.append(categoryFilter);
+            args.addAll(categoryArgs);
         }
+
+        String[] chains = categoryName.split(",");
+        StringBuilder chainFilter = new StringBuilder();
+        List<Object> chainArgs = new ArrayList<>();
+        boolean allChains = false;
+
+        chainFilter.append(" AND ( ");
+        for(int i = 0; i < chains.length; i++) {
+            if(chains[i].equals("all")) {
+                allChains = true;
+                break;
+            }
+            String chainAux = chains[i].substring(0,1).toUpperCase()+chains[i].substring(1);
+            if(i == 0)
+                chainFilter.append(" chain LIKE ? ");
+            else
+                chainFilter.append(" OR chain LIKE ? ");
+            chainArgs.add(chainAux);
+        }
+        chainFilter.append(") ");
+
+        if(!allChains) {
+            sb.append(chainFilter);
+            args.addAll(chainArgs);
+        }
+
         if(minPrice > 0) {
             sb.append(" AND price >= ? ");
             args.add(minPrice);

@@ -6,9 +6,9 @@ import javax.validation.constraints.Digits;
 public class ExploreFilter {
     private String search;
 
-    private String category = "All";
+    private String category = "all";
 
-    private String chain = "All";
+    private String chain = "all";
 
     private String sort = "";
 
@@ -30,7 +30,7 @@ public class ExploreFilter {
 
     public String getCategory() {
         if(category.equals(""))
-            setCategory("All");
+            setCategory("all");
         return category;
     }
 
@@ -40,7 +40,7 @@ public class ExploreFilter {
 
     public String getChain() {
         if(chain.equals(""))
-            setChain("All");
+            setChain("all");
         return chain;
     }
 

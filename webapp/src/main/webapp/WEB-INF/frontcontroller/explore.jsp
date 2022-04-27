@@ -36,9 +36,9 @@
 
                             <form:label class="flex justify-between text-lg mb-6" path="category">
                                 <span>Category</span>
-                                <form:select id="categoryFilter"
+                                <form:select id="categoryFilter" multiple="true"
                                         class="border-2 rounded-xl text-sm pl-2 py-1 pr-8 cursor-pointer w-1/2 text-ellipsis" path="category">
-                                    <form:option value="all">All</form:option>
+                                    <form:option value="all" selected="true">All</form:option>
                                     <c:forEach var="categories_i" items="${categories}">
                                         <form:option value="${fn:toLowerCase(categories_i)}"><c:out value="${categories_i}"/></form:option>
                                     </c:forEach>
@@ -61,9 +61,9 @@
                             </div>
 
                             <form:label class="flex justify-between text-lg mb-6" path="chain">Chain
-                                <form:select id="chainFilter"
+                                <form:select id="chainFilter" multiple="true"
                                         class="border-2 rounded-xl text-sm pl-2 pr-8 cursor-pointer py-1 text-ellipsis w-1/2" path="chain">
-                                    <form:option value="all">All</form:option>
+                                    <form:option value="all" selected="true">All</form:option>
                                     <c:forEach var="chain_i" items="${chains}">
                                         <form:option value="${fn:toLowerCase(chain_i)}"><c:out value="${chain_i}"/></form:option>
                                     </c:forEach>

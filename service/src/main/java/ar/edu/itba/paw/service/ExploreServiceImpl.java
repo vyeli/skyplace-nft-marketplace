@@ -25,8 +25,8 @@ public class ExploreServiceImpl implements ExploreService{
     public List<NftCard> getNFTs(int page, String categoryName, String chain, double minPrice, double maxPrice, String sort, String search) {
         return exploreDao.getNFTs(
                 page,
-                categoryName.substring(0,1).toUpperCase()+categoryName.substring(1),
-                chain.substring(0,1).toUpperCase()+chain.substring(1),
+                categoryName,
+                chain,
                 minPrice,
                 maxPrice,
                 sort,

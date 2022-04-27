@@ -62,7 +62,12 @@ public class FrontController {
         final ModelAndView mav = new ModelAndView("frontcontroller/explore");
         final List<NftCard> nfts = exploreService.getNFTs(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch());
 
-        mav.addObject("category", exploreFilter.getCategory().substring(0,1).toUpperCase()+exploreFilter.getCategory().substring(1));
+        if(exploreFilter.getCategory().contains(","))
+            exploreFilter.setCategory("Various");
+        else
+            exploreFilter.setCategory(exploreFilter.getCategory().substring(0,1).toUpperCase()+exploreFilter.getCategory().substring(1));
+
+        mav.addObject("category", exploreFilter.getCategory());
         mav.addObject("nfts", nfts);
         mav.addObject("pages", nfts.size()/12+1);
         mav.addObject("nftAmount", nfts.size());
