@@ -31,8 +31,8 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public List<NftCard> getUserSellOrders(User user) {
-        return sellOrderDao.getUserSellOrders(user);
+    public List<NftCard> getUserSellOrders(String userEmail) {
+        return sellOrderDao.getUserSellOrders(userEmail);
     }
 
     @Override
@@ -64,7 +64,17 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public List<NftCard> getUserFavorites(User user) {
-        return sellOrderDao.getUserFavorites(user);
+    public List<NftCard> getUserFavorites(long userId) {
+        return sellOrderDao.getUserFavorites(userId);
+    }
+
+    @Override
+    public boolean addFavorite(long userId, long sellOrderId) {
+        return sellOrderDao.addFavorite(userId, sellOrderId);
+    }
+
+    @Override
+    public boolean removeFavorite(long userId, long sellOrderId) {
+        return sellOrderDao.removeFavorite(userId, sellOrderId);
     }
 }

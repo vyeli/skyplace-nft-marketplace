@@ -11,11 +11,15 @@ import java.util.Optional;
 
 public interface SellOrderService {
 
-    List<NftCard> getUserFavorites(User user);
+    boolean addFavorite(long userId, long sellOrderId);
+
+    boolean removeFavorite(long userId, long sellOrderId);
+
+    List<NftCard> getUserFavorites(long userId);
 
     Optional<SellOrder> getOrderById(long id);
 
-    List<NftCard> getUserSellOrders(User user);
+    List<NftCard> getUserSellOrders(String userEmail);
 
     SellOrder create(String name, int nftId, String nftContract, String chain, String category, BigDecimal price, String description, MultipartFile image);
 

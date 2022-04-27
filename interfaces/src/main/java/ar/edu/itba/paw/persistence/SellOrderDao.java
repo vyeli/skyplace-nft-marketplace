@@ -11,9 +11,13 @@ import java.util.Optional;
 
 public interface SellOrderDao {
 
-    List<NftCard> getUserFavorites(User user);
+    boolean addFavorite(long userId, long sellOrderId);
 
-    List<NftCard> getUserSellOrders(User user);
+    boolean removeFavorite(long userId, long sellOrderId);
+
+    List<NftCard> getUserFavorites(long userId);
+
+    List<NftCard> getUserSellOrders(String userEmail);
 
     Optional<SellOrder> getOrderById(long id);
 

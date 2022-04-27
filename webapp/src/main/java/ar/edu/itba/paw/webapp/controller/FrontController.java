@@ -217,13 +217,25 @@ public class FrontController {
         final User user = userService.getCurrentUser();
         List<NftCard> nfts;
         if(tab != null && tab.equals("favorited")){
-            nfts = sos.getUserFavorites(user);
+            nfts = sos.getUserFavorites(user.getId());
         } else {
-            nfts = sos.getUserSellOrders(user);
+            nfts = sos.getUserSellOrders(user.getEmail());
         }
         mav.addObject("user", user);
         mav.addObject("nfts", nfts);
         return mav;
+    }
+
+    @RequestMapping(value = "/favorite/add/{productId}", method = RequestMethod.POST)
+    public ModelAndView addFavorite(@PathVariable long productId){
+        final User user = userService.getCurrentUser();
+        return sos.addFavorite(user.getId(), productId) ? new ModelAndView("redirect:/") : new ModelAndView("redirect:/403");
+    }
+
+    @RequestMapping(value = "/favorite/remove/{productId}", method = RequestMethod.POST)
+    public ModelAndView removeFavorite(@PathVariable long productId){
+        final User user = userService.getCurrentUser();
+        return sos.removeFavorite(user.getId(), productId) ? new ModelAndView("redirect:/") : new ModelAndView("redirect:/403");
     }
 
 }

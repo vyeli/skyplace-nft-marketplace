@@ -58,14 +58,11 @@ WHERE category = 'Collections';
 
 -- Add new table for favorited
 
-CREATE TABLE IF NOT EXISTS Favorited
-(
-    user_id           INT  NOT NULL,
-    nft_id            INT  NOT NULL,
-    nft_contract_addr TEXT NOT NULL,
-    nft_chain         TEXT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (nft_id, nft_contract_addr, nft_chain) REFERENCES nfts (id, contract_addr, chain) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS Favorited (
+    user_id INT NOT NULL,
+    sellorder_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (sellorder_id) REFERENCES sellorders(id) ON DELETE CASCADE
 );
 
 -- Update images

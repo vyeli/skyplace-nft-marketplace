@@ -21,6 +21,7 @@ public class SellOrderJdbcDao implements SellOrderDao {
     private final SimpleJdbcInsert jdbcInsertSellOrder;
     private final SimpleJdbcInsert jdbcInsertNft;
     private final SimpleJdbcInsert jdbcInsertImage;
+    private final SimpleJdbcInsert jdbcInsertFavorited;
 
     private static final RowMapper<SellOrder> ROW_MAPPER = (rs, rowNum) ->
         new SellOrder(rs.getLong("id"), rs.getString("seller_email"), rs.getString("descr"), rs.getBigDecimal("price"), rs.getInt("id_nft"), rs.getString("nft_addr"), rs.getString("category"));
@@ -36,6 +37,8 @@ public class SellOrderJdbcDao implements SellOrderDao {
         jdbcInsertImage = new SimpleJdbcInsert(ds)
                 .withTableName("images")
                 .usingGeneratedKeyColumns("id_image");
+        jdbcInsertFavorited = new SimpleJdbcInsert(ds)
+                .withTableName("Favorited");
     }
 
     private List<NftCard> executeSelectNFTQuery(String query, Object[] args) {
@@ -61,28 +64,39 @@ public class SellOrderJdbcDao implements SellOrderDao {
     }
 
     @Override
-    public List<NftCard> getUserSellOrders(User user){
+    public List<NftCard> getUserSellOrders(String userEmail){
         List<Object> args = new ArrayList<>();
         StringBuilder baseQuery = new StringBuilder("SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE seller_email LIKE ? ORDER BY nft_name");
-        args.add(user.getEmail());
+        args.add(userEmail);
         return executeSelectNFTQuery(baseQuery.toString(), args.toArray());
     }
 
     @Override
-    public List<NftCard> getUserFavorites(User user) {
+    public List<NftCard> getUserFavorites(long userId) {
         List<Object> args = new ArrayList<>();
-        StringBuilder baseQuery = new StringBuilder(
-                "SELECT sellorders.id AS id_product, category, fav_nfts.id AS id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email " +
-                "FROM sellorders INNER JOIN (" +
-                "SELECT user_id, id, contract_addr, chain, nft_name, id_image " +
-                "FROM favorited INNER JOIN nfts " +
-                "ON (id = nft_id AND contract_addr = nft_contract_addr AND nft_chain = chain)" +
-                ") AS fav_nfts " +
-                "ON (sellorders.id = fav_nfts.id AND nft_addr = contract_addr) " +
-                "WHERE user_id = ? " +
-                "ORDER BY nft_name");
-        args.add(user.getId());
-        return executeSelectNFTQuery(baseQuery.toString(), args.toArray());
+        String baseQuery =
+                "SELECT sellorder_id AS id_product, category, id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email " +
+                        "FROM nfts INNER JOIN (" +
+                        "SELECT * FROM favorited INNER JOIN sellorders " +
+                        "ON (sellorder_id = id) WHERE user_id = ?) AS favs " +
+                        "ON (nfts.id = id_nft AND contract_addr = nft_addr AND chain = nft_chain) " +
+                        "ORDER BY nft_name;";
+        args.add(userId);
+        return executeSelectNFTQuery(baseQuery, args.toArray());
+    }
+
+    @Override
+    public boolean addFavorite(long userId, long sellOrderId) {
+        Map<String, Object> favoritedData = new HashMap<>();
+        favoritedData.put("user_id", userId);
+        favoritedData.put("sellorder_id", sellOrderId);
+        return jdbcInsertFavorited.execute(favoritedData) == 1;
+    }
+
+    @Override
+    public boolean removeFavorite(long userId, long sellOrderId) {
+        String deleteFavQuery = "DELETE FROM favorited WHERE user_id = ? AND sellorder_id = ?";
+        return jdbcTemplate.update(deleteFavQuery, userId, sellOrderId) == 1;
     }
 
     @Override
