@@ -88,7 +88,7 @@ public class FrontController {
             return createNftForm(form);
         }
 
-        final SellOrder order = sos.create(form.getName(), form.getNftId(), form.getNftContract(), form.getChain(), form.getCategory(), form.getPrice(), form.getDescription(), form.getImage(), form.getEmail());
+        final SellOrder order = sos.create(form.getName(), form.getNftId(), form.getNftContract(), form.getChain(), form.getCategory(), form.getPrice(), form.getDescription(), form.getImage());
         if(order.getId() == -1) {
             errors.rejectValue("publish", "publish.error", "Order can not be created with this information");
             return createNftForm(form);

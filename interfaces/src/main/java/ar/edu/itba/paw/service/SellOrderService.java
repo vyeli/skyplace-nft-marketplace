@@ -17,7 +17,7 @@ public interface SellOrderService {
 
     List<NftCard> getUserSellOrders(User user);
 
-    SellOrder create(String name, int nftId, String nftContract, String chain, String category, BigDecimal price, String description, MultipartFile image, String email);
+    SellOrder create(String name, int nftId, String nftContract, String chain, String category, BigDecimal price, String description, MultipartFile image);
 
     boolean update(long id, String category, BigDecimal price, String description);
 

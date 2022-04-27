@@ -112,24 +112,12 @@
           />
             <form:errors path="image" element="p" cssStyle="color: tomato" />
         </label>
-        <form:label path="email" class="flex flex-col gap-1">
-          <span class="text-slate-600">Email</span>
-          <form:input
-            type="email"
-            path="email"
-            required="true"
-            autoComplete="off"
-            placeholder="Your email"
-            class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
-          />
-            <form:errors path="email" element="p" cssStyle="color: tomato" />
-        </form:label>
-          <input
-            type="submit"
-            value="Publish"
-            class="p-1 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
-          />
-          <form:errors path="publish" element="p" cssStyle="color: tomato" />
+        <input
+          type="submit"
+          value="Publish"
+          class="px-1 py-4 col-start-2 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
+        />
+        <form:errors path="publish" element="p" cssStyle="color: tomato" />
       </form:form>
     </div>
 </body>
