@@ -78,7 +78,7 @@
           <form:errors path="category" element="p" cssStyle="color: tomato" />
         </form:label>
         <form:label path="price" class="flex flex-col gap-1">
-          <span class="text-slate-600">Price</span>
+          <span class="text-slate-600 flex">Price<img class="w-8" src="<c:url value="/resources/eth_logo.svg" />" alt="ETH_logo"/> </span>
           <form:input
             type="number"
             path="price"

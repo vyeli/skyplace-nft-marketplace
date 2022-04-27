@@ -52,6 +52,10 @@
                         <p class="w-3/5 overflow-hidden text-right"><c:out value="${nft.id_nft}" /></p>
                     </div>
                     <div class="flex justify-between">
+                        <p>Category</p>
+                        <p><c:out value="${nft.category}" /></p>
+                    </div>
+                    <div class="flex justify-between">
                         <p>Blockchain</p>
                         <p><c:out value="${nft.chain}" /></p>
                     </div>
@@ -71,7 +75,7 @@
                         </div>
                     </c:when>
                     <c:when test="${userEmail == null}">
-                        <p class="font-bold text-cyan-700">Login to place a bid</p>
+                        <p class="font-bold text-cyan-700"><a href="<c:url value="/login" />">Login to place a bid</a></p>
                     </c:when>
                     <c:otherwise>
                         <c:url value="/product/${nft.id_product}" var="postPath" />
