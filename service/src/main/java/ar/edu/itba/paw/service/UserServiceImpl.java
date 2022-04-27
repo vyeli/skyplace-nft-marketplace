@@ -22,7 +22,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User create(String email, String username, String wallet, String password) {
+    public Optional<User> create(String email, String username, String wallet, String password) {
+        if(!userDao.getUserByEmail(email).isPresent()) {
+            return Optional.empty();
+        }
+
         return userDao.create(email, username, wallet, passwordEncoder.encode(password));
     }
 

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
@@ -159,7 +160,7 @@ public class FrontController {
     }
 
     // Create
-    @RequestMapping(value = "/register", method = RequestMethod.GET)
+    @RequestMapping( value = "/register", method = RequestMethod.GET )
     public ModelAndView createUserForm(@ModelAttribute("userForm") final UserForm form) {
         final ModelAndView mav = new ModelAndView("frontcontroller/register");
         return mav;
@@ -170,8 +171,11 @@ public class FrontController {
         if (errors.hasErrors()) {
             return createUserForm(form);
         }
-
-        final User user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getPassword());
+        final Optional<User> user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getPassword());
+        if (!user.isPresent()) {
+            final ModelAndView mav = new ModelAndView("frontcontroller/register");
+            return mav.addObject("emailExist", Boolean.TRUE);
+        }
         return new ModelAndView("redirect:/" );
     }
 
