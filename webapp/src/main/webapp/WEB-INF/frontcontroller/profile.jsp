@@ -6,7 +6,7 @@
 <body class="min-h-screen flex flex-col max-w-[100vw]">
 <!-- Header -->
 <%@ include file="../components/navbar.jsp" %>
-<div class="flex flex-col flex-wrap mx-10 lg:mx-24 xl:mx-40">
+<div class="flex flex-col flex-wrap pb-8 gap-8 mt-8 mx-10 lg:mx-24 xl:mx-40">
     <!-- Profile -->
     <div class="flex flex-col flex-grow md:flex-row items-center mt-5 mb-2">
         <img class="rounded-full h-40 w-40" src="<c:url value='/resources/profile_picture.png' />" alt="profile_icon"/>
@@ -51,61 +51,55 @@
             -->
         </div>
     </div>
-    <div class="flex flex-col flex-grow">
-        <!-- Tabs -->
-        <div class="flex border-b border-gray-200">
-            <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500 dark:text-gray-400">
-                <li>
-                    <a href="<c:url value='/profile'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="sellingTab">
-                        <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
-                            <path d="M403.29 32H280.36a14.46 14.46 0 00-10.2 4.2L24.4 281.9a28.85 28.85 0 000 40.7l117 117a28.86 28.86 0 0040.71 0L427.8 194a14.46 14.46 0 004.2-10.2v-123A28.66 28.66 0 00403.29 32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
-                            <path d="M352 144a32 32 0 1132-32 32 32 0 01-32 32z"></path>
-                            <path d="M230 480l262-262a13.81 13.81 0 004-10V80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
-                        </svg>
-                        Selling
-                    </a>
-                </li>
-                <!--
-                <li>
-                    <a href="/profile?tab=purchased" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="purchasedTab">
-                        <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
-                            <circle cx="176" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
-                            <circle cx="400" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
-                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M48 80h64l48 272h256"></path>
-                            <path d="M160 288h249.44a8 8 0 007.85-6.43l28.8-144a8 8 0 00-7.85-9.57H128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
-                        </svg>
-                        Purchased
-                    </a>
-                </li>
-                -->
-                <li>
-                    <a href="<c:url value='/profile?tab=favorited'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="favoritedTab">
-                        <svg class="mr-2 h-6 w-6" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M26.0502 5.76252C25.4117 5.12378 24.6537 4.61708 23.8193 4.27138C22.985 3.92568 22.0908 3.74774 21.1877 3.74774C20.2845 3.74774 19.3903 3.92568 18.556 4.27138C17.7216 4.61708 16.9636 5.12378 16.3252 5.76252L15.0002 7.08752L13.6751 5.76252C12.3855 4.47291 10.6364 3.74841 8.81265 3.74841C6.98886 3.74841 5.23976 4.47291 3.95015 5.76252C2.66053 7.05214 1.93604 8.80123 1.93604 10.625C1.93604 12.4488 2.66053 14.1979 3.95015 15.4875L5.27515 16.8125L15.0002 26.5375L24.7252 16.8125L26.0502 15.4875C26.6889 14.8491 27.1956 14.091 27.5413 13.2567C27.887 12.4224 28.0649 11.5281 28.0649 10.625C28.0649 9.72191 27.887 8.82765 27.5413 7.99333C27.1956 7.15901 26.6889 6.40097 26.0502 5.76252V5.76252Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        </svg>
-                        Favorited
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <!-- NFTs -->
-        <div class="flex flex-col flex-grow my-5">
-            <div class="grid grid-cols-auto-fit justify-center gap-8 items-center overflow-x-hidden">
-                <c:forEach items="${nfts}" var="nft">
-                    <div class="flex justify-center place-items-center">
-                        <jsp:include page="../components/Card.jsp">
-                            <jsp:param name="name" value="${nft.name}" />
-                            <jsp:param name="descr" value="${nft.descr}" />
-                            <jsp:param name="img" value="${nft.img}" />
-                            <jsp:param name="price" value="${nft.price}" />
-                            <jsp:param name="score" value="${nft.score}" />
-                            <jsp:param name="seller_email" value="${nft.seller_email}" />
-                            <jsp:param name="id_product" value="${nft.id_product}"/>
-                        </jsp:include>
-                    </div>
-                </c:forEach>
-            </div>
-        </div>
+    <!-- Tabs -->
+    <div class="flex border-b border-gray-200">
+        <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500 dark:text-gray-400">
+            <li>
+                <a href="<c:url value='/profile'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="sellingTab">
+                    <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
+                        <path d="M403.29 32H280.36a14.46 14.46 0 00-10.2 4.2L24.4 281.9a28.85 28.85 0 000 40.7l117 117a28.86 28.86 0 0040.71 0L427.8 194a14.46 14.46 0 004.2-10.2v-123A28.66 28.66 0 00403.29 32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
+                        <path d="M352 144a32 32 0 1132-32 32 32 0 01-32 32z"></path>
+                        <path d="M230 480l262-262a13.81 13.81 0 004-10V80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
+                    </svg>
+                    Selling
+                </a>
+            </li>
+            <!--
+            <li>
+                <a href="/profile?tab=purchased" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="purchasedTab">
+                    <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
+                        <circle cx="176" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
+                        <circle cx="400" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M48 80h64l48 272h256"></path>
+                        <path d="M160 288h249.44a8 8 0 007.85-6.43l28.8-144a8 8 0 00-7.85-9.57H128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
+                    </svg>
+                    Purchased
+                </a>
+            </li>
+            -->
+            <li>
+                <a href="<c:url value='/profile?tab=favorited'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="favoritedTab">
+                    <svg class="mr-2 h-6 w-6" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M26.0502 5.76252C25.4117 5.12378 24.6537 4.61708 23.8193 4.27138C22.985 3.92568 22.0908 3.74774 21.1877 3.74774C20.2845 3.74774 19.3903 3.92568 18.556 4.27138C17.7216 4.61708 16.9636 5.12378 16.3252 5.76252L15.0002 7.08752L13.6751 5.76252C12.3855 4.47291 10.6364 3.74841 8.81265 3.74841C6.98886 3.74841 5.23976 4.47291 3.95015 5.76252C2.66053 7.05214 1.93604 8.80123 1.93604 10.625C1.93604 12.4488 2.66053 14.1979 3.95015 15.4875L5.27515 16.8125L15.0002 26.5375L24.7252 16.8125L26.0502 15.4875C26.6889 14.8491 27.1956 14.091 27.5413 13.2567C27.887 12.4224 28.0649 11.5281 28.0649 10.625C28.0649 9.72191 27.887 8.82765 27.5413 7.99333C27.1956 7.15901 26.6889 6.40097 26.0502 5.76252V5.76252Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    Favorited
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- NFTs -->
+    <div class="flex flex-wrap justify-center gap-8">
+        <c:forEach items="${nfts}" var="nft">
+            <jsp:include page="../components/Card.jsp">
+                <jsp:param name="name" value="${nft.name}" />
+                <jsp:param name="descr" value="${nft.descr}" />
+                <jsp:param name="img" value="${nft.img}" />
+                <jsp:param name="price" value="${nft.price}" />
+                <jsp:param name="score" value="${nft.score}" />
+                <jsp:param name="seller_email" value="${nft.seller_email}" />
+                <jsp:param name="id_product" value="${nft.id_product}"/>
+            </jsp:include>
+        </c:forEach>
     </div>
 </div>
 <script>
