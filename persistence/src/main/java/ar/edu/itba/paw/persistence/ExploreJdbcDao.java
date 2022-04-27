@@ -81,7 +81,7 @@ public class ExploreJdbcDao implements ExploreDao{
             args.addAll(categoryArgs);
         }
 
-        String[] chains = categoryName.split(",");
+        String[] chains = chain.split(",");
         StringBuilder chainFilter = new StringBuilder();
         List<Object> chainArgs = new ArrayList<>();
         boolean allChains = false;
