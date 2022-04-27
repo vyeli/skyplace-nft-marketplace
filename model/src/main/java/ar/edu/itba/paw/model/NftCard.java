@@ -15,8 +15,9 @@ public class NftCard {
     private String contract_addr;
     private long id_nft;
     private long id_product;
+    private boolean is_faved;
 
-    public NftCard(long img, String name, String chain, BigDecimal price, int score, String category, String seller_email, String descr, String contract_addr, long id_nft, long id_product) {
+    public NftCard(long img, String name, String chain, BigDecimal price, int score, String category, String seller_email, String descr, String contract_addr, long id_nft, long id_product, boolean is_faved) {
         this.img = img;
         this.name = name;
         this.chain = chain;
@@ -28,6 +29,7 @@ public class NftCard {
         this.contract_addr = contract_addr;
         this.id_nft = id_nft;
         this.id_product = id_product;
+        this.is_faved = is_faved;
     }
 
     public long getImg() {
@@ -68,4 +70,6 @@ public class NftCard {
     public long getId_product() {
         return id_product;
     }
+
+    public boolean getIs_faved() {return is_faved;}
 }

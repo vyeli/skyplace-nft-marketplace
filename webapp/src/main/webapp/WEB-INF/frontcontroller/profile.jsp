@@ -101,6 +101,7 @@
                             <jsp:param name="score" value="${nft.score}" />
                             <jsp:param name="seller_email" value="${nft.seller_email}" />
                             <jsp:param name="id_product" value="${nft.id_product}"/>
+                            <jsp:param name="is_faved" value="${nft.is_faved}" />
                         </jsp:include>
                     </div>
                 </c:forEach>

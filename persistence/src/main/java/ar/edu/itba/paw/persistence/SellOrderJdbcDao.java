@@ -54,7 +54,8 @@ public class SellOrderJdbcDao implements SellOrderDao {
             String category = rs.getString("category");
             String seller_email = rs.getString("seller_email");
             String descr = rs.getString("descr");
-            return new NftCard(id_image, name, chain, price, score, category, seller_email, descr, contract_addr, id_nft, id_product);
+            boolean is_faved = true;
+            return new NftCard(id_image, name, chain, price, score, category, seller_email, descr, contract_addr, id_nft, id_product, is_faved);
         });
     }
 

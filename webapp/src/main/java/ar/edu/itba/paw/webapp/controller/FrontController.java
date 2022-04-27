@@ -60,7 +60,8 @@ public class FrontController {
         List<String> chains = chainService.getChains();
 
         final ModelAndView mav = new ModelAndView("frontcontroller/explore");
-        final List<NftCard> nfts = exploreService.getNFTs(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch());
+
+        final List<NftCard> nfts = exploreService.getNFTs(1, userService.getCurrentUser(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch());
 
         if(exploreFilter.getCategory().contains(","))
             exploreFilter.setCategory("Various");
@@ -104,7 +105,7 @@ public class FrontController {
     /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
     public ModelAndView product(@ModelAttribute("mailForm") final MailForm form, @PathVariable String productId) {
-        final NftCard nft = exploreService.getNFTById(productId);
+        final NftCard nft = exploreService.getNFTById(productId, userService.getCurrentUser());
         if(nft == null)
             return notFound();
 
@@ -229,13 +230,13 @@ public class FrontController {
     @RequestMapping(value = "/favorite/add/{productId}", method = RequestMethod.POST)
     public ModelAndView addFavorite(@PathVariable long productId){
         final User user = userService.getCurrentUser();
-        return sos.addFavorite(user.getId(), productId) ? new ModelAndView("redirect:/") : new ModelAndView("redirect:/403");
+        return sos.addFavorite(user.getId(), productId) ? new ModelAndView("redirect:/explore") : new ModelAndView("redirect:/403");
     }
 
     @RequestMapping(value = "/favorite/remove/{productId}", method = RequestMethod.POST)
     public ModelAndView removeFavorite(@PathVariable long productId){
         final User user = userService.getCurrentUser();
-        return sos.removeFavorite(user.getId(), productId) ? new ModelAndView("redirect:/") : new ModelAndView("redirect:/403");
+        return sos.removeFavorite(user.getId(), productId) ? new ModelAndView("redirect:/explore") : new ModelAndView("redirect:/403");
     }
 
 }

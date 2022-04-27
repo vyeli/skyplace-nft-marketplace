@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.NftCard;
+import ar.edu.itba.paw.model.User;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,7 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,13 +20,40 @@ public class ExploreJdbcDao implements ExploreDao{
 
     private final JdbcTemplate jdbcTemplate;
     private final static Double JARO_WINKLER_UMBRAL = 0.8;
+    private final String SELECT_NFT_QUERY =
+            "SELECT sellorder.id AS id_product, " +
+                    "category, " +
+                    "nfts.id AS id_nft, " +
+                    "contract_addr, " +
+                    "nft_name, " +
+                    "id_image, " +
+                    "chain, " +
+                    "price, " +
+                    "descr, " +
+                    "seller_email, " +
+                    "user_favourites " +
+            "FROM nfts INNER JOIN" +
+                    "(SELECT " +
+                        "id, " +
+                        "seller_email, " +
+                        "descr, " +
+                        "price, " +
+                        "id_nft, " +
+                        "nft_addr, " +
+                        "category, " +
+                        "nft_chain, " +
+                        "array_agg(user_id) AS user_favourites " +
+                    "FROM sellorders LEFT OUTER JOIN favorited " +
+                    "ON sellorders.id = favorited.sellorder_id " +
+                    "GROUP BY sellorders.id) AS sellorder " +
+            "ON (sellorder.id_nft = nfts.id AND sellorder.nft_addr = nfts.contract_addr)";
 
     @Autowired
     public ExploreJdbcDao(final DataSource ds) {
         jdbcTemplate = new JdbcTemplate(ds);
     }
 
-    private List<NftCard> executeSelectNFTQuery(String query, Object[] args) {
+    private List<NftCard> executeSelectNFTQuery(String query, Object[] args, long user_id) {
         return jdbcTemplate.query(query, args, (rs, i) -> {
             String name = rs.getString("nft_name");
             String contract_addr = rs.getString("contract_addr");
@@ -36,16 +66,23 @@ public class ExploreJdbcDao implements ExploreDao{
             String category = rs.getString("category");
             String seller_email = rs.getString("seller_email");
             String descr = rs.getString("descr");
-            return new NftCard(id_image, name, chain, price, score, category, seller_email, descr, contract_addr, id_nft, id_product);
+            Array favs = rs.getArray("user_favourites");
+            Integer[] user_ids = (Integer[])favs.getArray();
+            boolean is_faved = false;
+            if(user_ids != null) {
+                ArrayList<Integer> user_ids_list = new ArrayList<>(Arrays.asList(user_ids));
+                is_faved = user_ids_list.contains((int)user_id);
+            }
+            return new NftCard(id_image, name, chain, price, score, category, seller_email, descr, contract_addr, id_nft, id_product, is_faved);
         });
     }
 
     @Override
-    public NftCard getNFTById(String id) {
+    public NftCard getNFTById(String id, User user) {
         try {
             long prodId = Long.parseLong(id);
-            String selectNFTByIdQuery = "SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE sellorders.id=?";
-            List<NftCard> r = executeSelectNFTQuery(selectNFTByIdQuery, new Object[]{prodId});
+            String selectNFTByIdQuery = SELECT_NFT_QUERY+" WHERE sellorder.id=?";
+            List<NftCard> r = executeSelectNFTQuery(selectNFTByIdQuery, new Object[]{prodId}, user != null ? user.getId(): -1);
             return r.size() > 0 ? r.get(0):null;
         } catch(NumberFormatException e) {
             return null;
@@ -53,12 +90,12 @@ public class ExploreJdbcDao implements ExploreDao{
     }
 
     @Override
-    public List<NftCard> getNFTs(int page, String categoryName, String chain, double minPrice, double maxPrice, String sort, String search) {
+    public List<NftCard> getNFTs(int page, User user, String categoryName, String chain, double minPrice, double maxPrice, String sort, String search) {
 
         StringBuilder sb = new StringBuilder();
         List<Object> args = new ArrayList<>();
 
-        sb.append("SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE true ");
+        sb.append(SELECT_NFT_QUERY).append(" WHERE true ");
         String[] categories = categoryName.split(",");
         StringBuilder categoryFilter = new StringBuilder();
         List<Object> categoryArgs = new ArrayList<>();
@@ -128,7 +165,7 @@ public class ExploreJdbcDao implements ExploreDao{
                 break;
         }
 
-        List<NftCard> result = executeSelectNFTQuery(sb.toString(), args.toArray());
+        List<NftCard> result = executeSelectNFTQuery(sb.toString(), args.toArray(), user != null ? user.getId():-1);
         JaroWinklerSimilarity jaroWinkler = new JaroWinklerSimilarity();
 
         if(search != null){
