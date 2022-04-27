@@ -113,7 +113,7 @@
             <%--        </div>--%>
             <%--      </div>--%>
 
-            <div class="px-8 pb-8 grid grid-cols-auto-fit gap-8 place-items-start overflow-x-hidden overflow-y-scroll">
+            <div class="px-8 pb-8 grid grid-cols-auto-fit gap-8 place-items-start overflow-x-hidden overflow-y-scroll justify-center">
                 <c:forEach items="${nfts}" var="nft">
                         <jsp:include page="../components/Card.jsp">
                             <jsp:param name="name" value="${nft.name}"/>

@@ -23,6 +23,7 @@
         <span class="max-w-[40ch] inline-block truncate"><c:out value="${param.seller_email}" /></span>
     </p>
     <!-- Fav button -->
+    <c:if test="${param.is_faved != null}">
     <c:choose>
     <c:when test="${param.is_faved}">
         <c:url value="/favorite/remove/${param.id_product}" var="favPath" />
@@ -50,4 +51,5 @@
             </button>
         </div>
     </form>
+    </c:if>
 </div>

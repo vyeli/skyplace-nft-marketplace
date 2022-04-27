@@ -53,8 +53,8 @@
     </div>
     <div class="flex flex-col flex-grow">
         <!-- Tabs -->
-        <div class="flex flex-row flex-grow border-b border-gray-200">
-            <ul class="flex flex-wrap flex-grow flex-row justify-evenly items-center font-medium text-lg text-center text-gray-500 dark:text-gray-400">
+        <div class="flex border-b border-gray-200">
+            <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500 dark:text-gray-400">
                 <li>
                     <a href="<c:url value='/profile'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="sellingTab">
                         <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
@@ -101,7 +101,6 @@
                             <jsp:param name="score" value="${nft.score}" />
                             <jsp:param name="seller_email" value="${nft.seller_email}" />
                             <jsp:param name="id_product" value="${nft.id_product}"/>
-                            <jsp:param name="is_faved" value="${nft.is_faved}" />
                         </jsp:include>
                     </div>
                 </c:forEach>
@@ -149,12 +148,33 @@
 
     function copyToClipboard(){
         // Copy text
-        const walletAddress = document.getElementById("walletId");
-        navigator.clipboard.writeText(walletAddress.textContent);
-        // Set text to Copied!
-        const tooltipText = document.getElementById("tooltip-dark");
-        tooltipText.firstChild.data = "Copied!";
-        setTimeout(() => tooltipText.firstChild.data = 'Copy', 1000);
+        const walletAddress = document.getElementById("walletId").textContent;
+        if (navigator.clipboard && window.isSecureContext) {
+            // navigator clipboard api method'
+            navigator.clipboard.writeText(walletAddress);
+            const tooltipText = document.getElementById("tooltip-dark");
+            tooltipText.firstChild.data = "Copied to clipboard!";
+            setTimeout(() => tooltipText.firstChild.data = 'Copy', 1000);
+        } else {
+            // text area method
+            let textArea = document.createElement("textarea");
+            textArea.value = walletAddress;
+            // make the textarea out of viewport
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            new Promise((res, rej) => {
+                // here the magic happens
+                document.execCommand('copy') ? res() : rej();
+                const tooltipText = document.getElementById("tooltip-dark");
+                tooltipText.firstChild.data = "Copied to clipboard!";
+                setTimeout(() => tooltipText.firstChild.data = 'Copy', 1000);
+                textArea.remove();
+            });
+        }
     }
 </script>
 </body>
