@@ -24,7 +24,6 @@ public class ImageJdbcDao implements ImageDao{
 
     public Image getImage(long id) {
         List<byte[]> result = jdbcTemplate.query("SELECT image FROM images WHERE id_image = ?", new Object[]{id}, ROW_MAPPER);
-        System.out.println(Arrays.toString(result.get(0)));
         return result.size() > 0 ? new Image(result.get(0)): null;
     }
 }

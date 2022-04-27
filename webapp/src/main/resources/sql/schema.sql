@@ -1,4 +1,4 @@
-DROP TABLE categories, chains, nfts, purchases, reviews, sellorders, users;
+DROP TABLE IF EXISTS categories, chains, nfts, purchases, reviews, sellorders, users;
 
 CREATE TABLE IF NOT EXISTS chains (
     chain TEXT PRIMARY KEY
