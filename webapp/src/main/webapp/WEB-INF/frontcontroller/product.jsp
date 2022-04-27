@@ -15,20 +15,20 @@
             <!-- Description box -->
             <p class="text-2xl font-bold m-4 ">Description</p>
             <hr>
-            <p class="p-3 break-words">Created by&nbsp;<span class="text-cyan-500">${nft.seller_email}</span></p>
+            <p class="p-3 break-words">Created by&nbsp;<span class="text-cyan-500"><c:out value="${nft.seller_email}" /></span></p>
             <p class="p-3 break-words">
-                ${nft.descr}
+                <c:out value="${nft.descr}" />
             </p>
         </div> <!-- Description box -->
         <div class="w-96 h-96">
             <!-- center img -->
             <img class="w-full h-full object-contain"
-                src="<c:url value="/images/${nft.img}" />" alt="${nft.name}">
+                src="<c:url value="/images/${nft.img}" />" alt="<c:out value="${nft.name}" />">
         </div> <!-- center img -->
 
         <div class="flex flex-col gap-6 w-96">
             <!-- Pricing box-->
-            <h1 class="font-bold text-2xl">${nft.name}</h1>
+            <h1 class="font-bold text-2xl"><c:out value="${nft.name}" /></h1>
             <div class="border-2 p-2 rounded-md">
                 <div class="flex mb-2">
                     <!-- Price -->
@@ -36,7 +36,7 @@
                         src="<c:url value="/resources/eth_logo.svg" />"
                         alt="eth">
                     <p class="my-auto text-sm"><span
-                            class="font-bold text-lg">${nft.price}</span></p>
+                            class="font-bold text-lg"><c:out value="${nft.price}" /></span></p>
                 </div> <!-- Price -->
                 <hr>
                 <div class="mt-2 py-2 flex flex-col gap-2">
@@ -44,16 +44,16 @@
                     <div class="flex justify-between">
                         <p>Contract address </p>
                         <p class="w-3/5 break-words max-h-20 overflow-hidden text-right">
-                            ${nft.contract_addr}
+                            <c:out value="${nft.contract_addr}" />
                         </p>
                     </div>
                     <div class="flex justify-between">
                         <p>Token ID</p>
-                        <p class="w-3/5 overflow-hidden text-right">${nft.id_nft}</p>
+                        <p class="w-3/5 overflow-hidden text-right"><c:out value="${nft.id_nft}" /></p>
                     </div>
                     <div class="flex justify-between">
                         <p>Blockchain</p>
-                        <p>${nft.chain}</p>
+                        <p><c:out value="${nft.chain}" /></p>
                     </div>
                 </div> <!-- Specification -->
             </div>

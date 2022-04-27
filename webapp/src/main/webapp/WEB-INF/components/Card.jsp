@@ -4,23 +4,23 @@
 <!-- Card -->
 <div class="relative rounded-lg group shadow-sm hover:shadow-xl w-full max-w-sm">
     <!-- NFT image -->
-    <img src="<c:url value="/images/${param.img}" />" alt="${param.name}" class="aspect-[4/3] w-full rounded-t-lg object-center object-cover group-hover:opacity-80" />
+    <img src="<c:url value="/images/${param.img}" />" alt="<c:out value="${param.name}" />" class="aspect-[4/3] w-full rounded-t-lg object-center object-cover group-hover:opacity-80" />
     <!-- Name and price -->
     <div class="pt-4 px-4 flex items-center justify-between text-base font-medium text-gray-900 border-x border-slate-300 space-x-8">
         <h3 class="max-w-[20ch] truncate text-lg">
             <a href="<c:url value="/product/${param.id_product}" />">
                 <span aria-hidden="true" class="absolute inset-0"></span>
-                ${param.name}
+                <c:out value="${param.name}" />
             </a>
         </h3>
         <p class="flex items-center">
             <img class="w-8" src="<c:url value="/resources/eth_logo.svg" />" alt="eth">
-            ${param.price}
+            <c:out value="${param.price}" />
         </p>
     </div>
     <!-- Seller email -->
     <p class="pt-1 pb-4 px-4 text-sm rounded-b-lg text-slate-500 border-x border-b border-gray-300">
-        <span class="max-w-[40ch] inline-block truncate">${param.seller_email}</span>
+        <span class="max-w-[40ch] inline-block truncate"><c:out value="${param.seller_email}" /></span>
     </p>
     <!-- Fav button -->
     <!-- <div class="absolute top-4 right-4 hidden group-hover:block bg-white p-2 rounded-full cursor-pointer">

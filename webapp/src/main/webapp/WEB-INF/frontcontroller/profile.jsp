@@ -15,7 +15,7 @@
             <!-- Profile name, wallet and more options (aligned) -->
             <div class="flex flex-row items-center justify-between">
                 <div class="flex flex-row">
-                    <span class="text-4xl font-semibold">${user.username}</span>
+                    <span class="text-4xl font-semibold"><c:out value="${user.username}" /></span>
                     <button class="flex flex-row items-center ml-5 lg:ml-10 px-2 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-dark" data-tooltip-placement="bottom" type="button" id="walletButton">
                         <img class="w-6 h-6" src="<c:url value='/resources/utility_icon.svg' />" alt="wallet_icon" />
                         <!--
@@ -37,7 +37,7 @@
                 </button>
                 -->
             </div>
-            <span class="text-lg font-light text-gray-400">${user.email}</span>
+            <span class="text-lg font-light text-gray-400"><c:out value="${user.email}" /></span>
             <!-- Rating -->
             <!--
             <div class="flex flex-row items-center mt-3">

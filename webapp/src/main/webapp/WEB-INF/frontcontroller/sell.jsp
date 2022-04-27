@@ -86,7 +86,7 @@
             required="true"
             placeholder="0.0"
             min="0"
-            step="0.00000001"
+            step="0.000000000000000001"
             class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
           />
           <form:errors path="price" element="p" cssStyle="color: tomato" />
