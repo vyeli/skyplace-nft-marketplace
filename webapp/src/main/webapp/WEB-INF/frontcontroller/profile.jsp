@@ -9,7 +9,7 @@
 <div class="flex flex-col flex-grow mx-10 lg:mx-24 xl:mx-40">
     <!-- Profile -->
     <div class="flex flex-col flex-grow md:flex-row items-center mt-5 mb-2">
-        <img class="rounded-full h-40 w-40" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="profile_icon"/>
+        <img class="rounded-full h-40 w-40" src="<c:url value='/resources/profile_picture.png' />" alt="profile_icon"/>
         <!-- Profile info -->
         <div class="flex flex-col flex-grow ml-5">
             <!-- Profile name, wallet and more options (aligned) -->
