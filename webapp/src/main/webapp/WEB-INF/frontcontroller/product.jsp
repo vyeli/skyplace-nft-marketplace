@@ -23,7 +23,7 @@
         <div class="w-96 h-96">
             <!-- center img -->
             <img class="w-full h-full object-contain"
-                src="data:image/jpg;base64,${nft.img}" alt="${nft.name}">
+                src="<c:url value="/images/${nft.img}" />" alt="${nft.name}">
         </div> <!-- center img -->
 
         <div class="flex flex-col gap-6 w-96">

@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Repository
@@ -19,6 +18,7 @@ public class SellOrderJdbcDao implements SellOrderDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertSellOrder;
     private final SimpleJdbcInsert jdbcInsertNft;
+    private final SimpleJdbcInsert jdbcInsertImage;
 
     private static final RowMapper<SellOrder> ROW_MAPPER = (rs, rowNum) ->
         new SellOrder(rs.getLong("id"), rs.getString("seller_email"), rs.getString("descr"), rs.getBigDecimal("price"), rs.getInt("id_nft"), rs.getString("nft_addr"), rs.getString("category"));
@@ -31,6 +31,9 @@ public class SellOrderJdbcDao implements SellOrderDao {
                 .usingGeneratedKeyColumns("id");
         jdbcInsertNft = new SimpleJdbcInsert(ds)
                 .withTableName("Nfts");
+        jdbcInsertImage = new SimpleJdbcInsert(ds)
+                .withTableName("images")
+                .usingGeneratedKeyColumns("id_image");
     }
 
     @Override
@@ -65,17 +68,18 @@ public class SellOrderJdbcDao implements SellOrderDao {
         nftData.put("nft_name", name);
         nftData.put("chain", chain);
 
-        String base64Encoded = "";
+        byte[] bytes = {};
         try {
-            byte[] bytes = image.getBytes();
-            byte[] encodedBase64 = Base64.getEncoder().encode(bytes);
-            base64Encoded = new String(encodedBase64, StandardCharsets.UTF_8);
+            bytes = image.getBytes();
         } catch(Exception e) {
             System.out.println("getbytes error");
         }
 
-        nftData.put("img", base64Encoded);
+        final Map<String, Object> imageData = new HashMap<>();
+        imageData.put("image", bytes);
+        final long imageId = jdbcInsertImage.executeAndReturnKey(imageData).longValue();
 
+        nftData.put("id_image", imageId);
         jdbcInsertNft.execute(nftData);
 
         final Map<String, Object> sellOrderData = new HashMap<>();

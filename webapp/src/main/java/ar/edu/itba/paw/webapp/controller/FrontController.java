@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.model.Image;
 import ar.edu.itba.paw.webapp.form.ExploreFilter;
 import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.model.SellOrder;
@@ -11,6 +12,7 @@ import ar.edu.itba.paw.webapp.form.SellNftForm;
 import ar.edu.itba.paw.webapp.form.UpdateSellOrderForm;
 import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -29,15 +31,17 @@ public class FrontController {
     private final ExploreService exploreService;
     private final MailingService mailingService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Autowired
-    public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, ExploreService exploreService, MailingService mailingService, UserService userService) {
+    public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, ExploreService exploreService, MailingService mailingService, UserService userService, ImageService imageService) {
         this.sos = sos;
         this.categoryService = categoryService;
         this.chainService = chainService;
         this.exploreService = exploreService;
         this.mailingService = mailingService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @RequestMapping(value="/")
@@ -176,6 +180,13 @@ public class FrontController {
     public ModelAndView login() {
         final ModelAndView mav = new ModelAndView("frontcontroller/login");
         return mav;
+    }
+
+    @RequestMapping(value = "/images/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseBody
+    public byte[] getImage(@PathVariable long id) {
+        Image image = imageService.getImage(id);
+        return image.getImage();
     }
 
     /* 404 */

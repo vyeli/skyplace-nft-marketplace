@@ -26,13 +26,13 @@ public class ExploreJdbcDao implements ExploreDao{
             String contract_addr = rs.getString("contract_addr");
             String chain = rs.getString("chain");
             long id_product = rs.getLong("id_product");
-            String img = rs.getString("img");
+            long id_image = rs.getLong("id_image");
             float price = rs.getFloat("price");
             int score = 0;
             long id_nft = rs.getLong("id_nft");
             String seller_email = rs.getString("seller_email");
             String descr = rs.getString("descr");
-            return new NftCard(img, name, chain, price, score, seller_email, descr, contract_addr, id_nft, id_product);
+            return new NftCard(id_image, name, chain, price, score, seller_email, descr, contract_addr, id_nft, id_product);
         });
     }
 
@@ -40,7 +40,7 @@ public class ExploreJdbcDao implements ExploreDao{
     public NftCard getNFTById(String id) {
         try {
             long prodId = Long.parseLong(id);
-            String selectNFTByIdQuery = "SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, img, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE sellorders.id=?";
+            String selectNFTByIdQuery = "SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE sellorders.id=?";
             List<NftCard> r = executeSelectNFTQuery(selectNFTByIdQuery, new Object[]{prodId});
             return r.size() > 0 ? r.get(0):null;
         } catch(NumberFormatException e) {
@@ -53,7 +53,7 @@ public class ExploreJdbcDao implements ExploreDao{
 
         StringBuilder sb = new StringBuilder();
         List<Object> args = new ArrayList<>();
-        sb.append("SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, img, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE true ");
+        sb.append("SELECT sellorders.id AS id_product, category, nfts.id AS id_nft, contract_addr, nft_name, id_image, chain, price, descr, seller_email FROM nfts NATURAL JOIN chains INNER JOIN sellorders ON (id_nft = nfts.id AND nft_addr = contract_addr) WHERE true ");
         if (!categoryName.equals("All")) {
             sb.append(" AND category LIKE ? ");
             args.add(categoryName);
