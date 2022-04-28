@@ -28,7 +28,6 @@ public class SkyplaceUserDetailsService implements UserDetailsService {
         final User user = us.getUserByEmail(email).
                 orElseThrow(()->new UsernameNotFoundException("No such user with email: " + email));
 
-        us.setCurrentUser(user);
         final Collection<GrantedAuthority> roles = new ArrayList<>();
         roles.add(new SimpleGrantedAuthority("ROLE_USER"));
 

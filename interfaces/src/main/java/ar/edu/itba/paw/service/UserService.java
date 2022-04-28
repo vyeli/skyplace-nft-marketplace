@@ -9,7 +9,5 @@ public interface UserService {
 
     Optional<User> getUserByEmail(String email);
 
-    void setCurrentUser(User user);
-
     User getCurrentUser();
 }
