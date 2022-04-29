@@ -3,6 +3,8 @@ package ar.edu.itba.paw.service;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,6 @@ public class UserServiceImpl implements UserService{
 
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
-    private User currentUser;
 
     @Autowired
     public UserServiceImpl(final UserDao userDao, final PasswordEncoder passwordEncoder) {
@@ -36,13 +37,14 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-    }
-
-    @Override
     public User getCurrentUser() {
-        return currentUser;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails){
+            Optional<User> currentUser = getUserByEmail(((UserDetails) principal).getUsername());
+            if(currentUser.isPresent())
+                return currentUser.get();
+        }
+        return null;
     }
 
 }
