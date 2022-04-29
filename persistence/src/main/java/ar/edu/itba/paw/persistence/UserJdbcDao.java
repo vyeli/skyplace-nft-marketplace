@@ -52,4 +52,8 @@ public class UserJdbcDao implements UserDao{
         return jdbcTemplate.query("SELECT * FROM users WHERE email = ?", new Object[]{ email }, ROW_MAPPER).stream().findFirst();
     }
 
+    @Override
+    public Optional<User> getUserById(final long id) {
+        return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ id }, ROW_MAPPER).stream().findFirst();
+    }
 }

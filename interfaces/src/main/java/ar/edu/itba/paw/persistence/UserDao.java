@@ -9,4 +9,6 @@ public interface UserDao {
     Optional<User> create(String email, String username, String wallet, String password);
 
     Optional<User> getUserByEmail(String email);
+
+    Optional<User> getUserById(long id);
 }

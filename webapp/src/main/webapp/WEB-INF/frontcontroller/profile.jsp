@@ -55,7 +55,7 @@
     <div class="flex border-b border-gray-200">
         <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500 dark:text-gray-400">
             <li>
-                <a href="<c:url value='/profile'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="sellingTab">
+                <a href="<c:url value='/profile/${user.id}'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="sellingTab">
                     <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
                         <path d="M403.29 32H280.36a14.46 14.46 0 00-10.2 4.2L24.4 281.9a28.85 28.85 0 000 40.7l117 117a28.86 28.86 0 0040.71 0L427.8 194a14.46 14.46 0 004.2-10.2v-123A28.66 28.66 0 00403.29 32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
                         <path d="M352 144a32 32 0 1132-32 32 32 0 01-32 32z"></path>
@@ -78,7 +78,7 @@
             </li>
             -->
             <li>
-                <a href="<c:url value='/profile?tab=favorited'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="favoritedTab">
+                <a href="<c:url value='/profile/${user.id}?tab=favorited'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="favoritedTab">
                     <svg class="mr-2 h-6 w-6" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M26.0502 5.76252C25.4117 5.12378 24.6537 4.61708 23.8193 4.27138C22.985 3.92568 22.0908 3.74774 21.1877 3.74774C20.2845 3.74774 19.3903 3.92568 18.556 4.27138C17.7216 4.61708 16.9636 5.12378 16.3252 5.76252L15.0002 7.08752L13.6751 5.76252C12.3855 4.47291 10.6364 3.74841 8.81265 3.74841C6.98886 3.74841 5.23976 4.47291 3.95015 5.76252C2.66053 7.05214 1.93604 8.80123 1.93604 10.625C1.93604 12.4488 2.66053 14.1979 3.95015 15.4875L5.27515 16.8125L15.0002 26.5375L24.7252 16.8125L26.0502 15.4875C26.6889 14.8491 27.1956 14.091 27.5413 13.2567C27.887 12.4224 28.0649 11.5281 28.0649 10.625C28.0649 9.72191 27.887 8.82765 27.5413 7.99333C27.1956 7.15901 26.6889 6.40097 26.0502 5.76252V5.76252Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>

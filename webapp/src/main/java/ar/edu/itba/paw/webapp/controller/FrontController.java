@@ -22,6 +22,8 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
 
 import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import javax.validation.Valid;
 
 @Controller
@@ -211,20 +213,35 @@ public class FrontController {
         return mav;
     }
 
-    @RequestMapping("/profile")
+    @RequestMapping("/current-user")
     public ModelAndView profile(@RequestParam(required = false, name = "tab") String tab){
-        ModelAndView mav = new ModelAndView("frontcontroller/profile");
-
-        final User user = userService.getCurrentUser();
-        List<NftCard> nfts;
-        if(tab != null && tab.equals("favorited")){
-            nfts = sos.getUserFavorites(user.getId());
-        } else {
-            nfts = sos.getUserSellOrders(user.getEmail());
+        final long userId = userService.getCurrentUser().getId();
+        StringBuilder redirectUrl = new StringBuilder("redirect:/profile/" + userId);
+        if(tab != null){
+            redirectUrl.append("?tab=").append(tab);
         }
-        mav.addObject("user", user);
-        mav.addObject("nfts", nfts);
-        return mav;
+        return new ModelAndView(redirectUrl.toString());
+    }
+
+    @RequestMapping("/profile/{userId}")
+    public ModelAndView getUser(@PathVariable long userId, @RequestParam(required = false, name = "tab") String tab){
+        ModelAndView mav = new ModelAndView("frontcontroller/profile");
+        final Optional<User> user = userService.getUserById(userId);
+        if(user.isPresent()){
+            mav.addObject("user", user.get());
+            List<NftCard> nfts;
+            if(tab == null){
+                // First tab
+                nfts = sos.getUserSellOrders(user.get().getEmail());
+            }
+            else {
+                // TODO: Make switch when more than 2 tabs
+                nfts = sos.getUserFavorites(user.get().getId());
+            }
+            mav.addObject("nfts", nfts);
+            return mav;
+        }
+        return new ModelAndView("redirect:/500");
     }
 
     @RequestMapping(value = "/favorite/add/{productId}", method = RequestMethod.POST)
