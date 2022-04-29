@@ -10,13 +10,22 @@
         <h3 class="max-w-[20ch] truncate text-lg">
             <a href="<c:url value="/product/${param.id_product}" />">
                 <span aria-hidden="true" class="absolute inset-0"></span>
-                <c:out value="${param.name}" />
+                <c:out value="${param.name}" /> #<c:out value="${param.nft_id}" />
             </a>
         </h3>
-        <p class="flex items-center">
-            <img class="w-8" src="<c:url value="/resources/eth_logo.svg" />" alt="eth">
-            <c:out value="${param.price}" />
-        </p>
+        <c:choose>
+            <c:when test="${param.on_sale}">
+                <p class="flex items-center">
+                    <img class="w-8" src="<c:url value="/resources/eth_logo.svg" />" alt="eth">
+                    <c:out value="${param.price}" />
+                </p>
+            </c:when>
+            <c:otherwise>
+                <p class="flex items-center">
+                    Not for sale
+                </p>
+            </c:otherwise>
+        </c:choose>
     </div>
     <!-- Seller email -->
     <p class="pt-1 pb-4 px-4 text-sm rounded-b-lg text-slate-500 border-x border-b border-gray-300">

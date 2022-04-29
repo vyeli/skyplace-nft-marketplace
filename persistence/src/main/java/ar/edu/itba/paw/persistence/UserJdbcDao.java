@@ -21,7 +21,7 @@ public class UserJdbcDao implements UserDao{
     private final SimpleJdbcInsert jdbcInsertSellOrder;
 
     private static final RowMapper<User> ROW_MAPPER = (rs, rowNum) ->
-            new User(rs.getLong("id"), rs.getString("email"), rs.getString("username"), rs.getString("wallet"), rs.getString("password"));
+            new User(rs.getLong("id"), rs.getString("email"), rs.getString("username"), rs.getString("wallet"), "chain", rs.getString("password"));
 
     @Autowired
     public UserJdbcDao(final DataSource ds) {
@@ -41,7 +41,7 @@ public class UserJdbcDao implements UserDao{
 
         try {
             final long userId = jdbcInsertSellOrder.executeAndReturnKey(userData).longValue();
-            return Optional.of(new User(userId, email, username, wallet, password));
+            return Optional.of(new User(userId, email, username, "chain", wallet, password));
         } catch (DuplicateKeyException e) {
             return Optional.empty();
         }

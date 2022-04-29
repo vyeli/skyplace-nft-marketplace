@@ -1,22 +1,12 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.model.Image;
-import ar.edu.itba.paw.webapp.form.ExploreFilter;
-import ar.edu.itba.paw.model.NftCard;
-import ar.edu.itba.paw.model.SellOrder;
-import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.model.*;
+import ar.edu.itba.paw.webapp.form.*;
 import ar.edu.itba.paw.service.*;
 import ar.edu.itba.paw.webapp.exceptions.SellOrderNotFoundException;
-import ar.edu.itba.paw.webapp.form.MailForm;
-import ar.edu.itba.paw.webapp.form.SellNftForm;
-import ar.edu.itba.paw.webapp.form.UpdateSellOrderForm;
-import ar.edu.itba.paw.webapp.form.UserForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
@@ -32,20 +22,20 @@ public class FrontController {
     private final SellOrderService sos;
     private final CategoryService categoryService;
     private final ChainService chainService;
-    private final ExploreService exploreService;
     private final MailingService mailingService;
     private final UserService userService;
     private final ImageService imageService;
+    private final NftService nftService;
 
     @Autowired
-    public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, ExploreService exploreService, MailingService mailingService, UserService userService, ImageService imageService) {
+    public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, MailingService mailingService, UserService userService, ImageService imageService, NftService nftService) {
         this.sos = sos;
         this.categoryService = categoryService;
         this.chainService = chainService;
-        this.exploreService = exploreService;
         this.mailingService = mailingService;
         this.userService = userService;
         this.imageService = imageService;
+        this.nftService = nftService;
     }
 
     @RequestMapping(value="/")
@@ -63,7 +53,10 @@ public class FrontController {
 
         final ModelAndView mav = new ModelAndView("frontcontroller/explore");
 
-        final List<NftCard> nfts = exploreService.getNFTs(1, userService.getCurrentUser(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch());
+        final Optional<List<Publication>> publicationsOptional = nftService.getAllPublications(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch());
+        if(!publicationsOptional.isPresent())
+            return notFound();
+        final List<Publication> publications = publicationsOptional.get();
 
         if(exploreFilter.getCategory().contains(","))
             exploreFilter.setCategory("Various");
@@ -71,9 +64,9 @@ public class FrontController {
             exploreFilter.setCategory(exploreFilter.getCategory().substring(0,1).toUpperCase()+exploreFilter.getCategory().substring(1));
 
         mav.addObject("category", exploreFilter.getCategory());
-        mav.addObject("nfts", nfts);
-        mav.addObject("pages", nfts.size()/12+1);
-        mav.addObject("nftAmount", nfts.size());
+        mav.addObject("publications", publications);
+        mav.addObject("pages", publications.size()/12+1);
+        mav.addObject("publicationsAmount", publications.size());
         mav.addObject("categories", categories);
         mav.addObject("chains", chains);
 
@@ -92,27 +85,26 @@ public class FrontController {
 
     @RequestMapping(value = "/sell", method = RequestMethod.POST)
     public ModelAndView createSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors) {
-        if (errors.hasErrors()) {
-            return createNftForm(form);
-        }
-
-        final SellOrder order = sos.create(form.getName(), form.getNftId(), form.getNftContract(), form.getChain(), form.getCategory(), form.getPrice(), form.getDescription(), form.getImage());
-        if(order.getId() == -1) {
-            errors.rejectValue("publish", "publish.error", "Order can not be created with this information");
-            return createNftForm(form);
-        }
-        return new ModelAndView("redirect:/product/" + order.getId());
+        return null;
     }
 
     /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
     public ModelAndView product(@ModelAttribute("mailForm") final MailForm form, @PathVariable String productId) {
-        final NftCard nft = exploreService.getNFTById(productId, userService.getCurrentUser());
-        if(nft == null)
+        //final NftCard nft = exploreService.getNFTById(productId, userService.getCurrentUser());
+        final Optional<Nft> nft = nftService.getNFTById(productId);
+        if(!nft.isPresent())
             return notFound();
+        Optional<User> owner = userService.getUserById(nft.get().getId_owner());
+
+        Optional<SellOrder> sellOrder = Optional.empty();
+        if(nft.get().getSell_order() != null)
+            sellOrder = sos.getOrderById(nft.get().getSell_order());
 
         final ModelAndView mav = new ModelAndView("frontcontroller/product");
-        mav.addObject("nft", nft);
+        mav.addObject("nft", nft.get());
+        sellOrder.ifPresent(order -> mav.addObject("sellorder", order));
+        owner.ifPresent(user -> mav.addObject("owner", user));
 
         User currentUser = userService.getCurrentUser();
         if (currentUser != null)
@@ -190,6 +182,28 @@ public class FrontController {
 
         mailingService.sendRegisterMail(user.get().getEmail(), user.get().getUsername());
         return new ModelAndView("redirect:/" );
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public ModelAndView createNft(@ModelAttribute("createNftForm") final CreateNftForm form) {
+        final ModelAndView mav = new ModelAndView("frontcontroller/create");
+        List<String> categories = categoryService.getCategories();
+        List<String> chains = chainService.getChains();
+        mav.addObject("categories", categories);
+        mav.addObject("chains", chains);
+        return mav;
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public ModelAndView publishNft(@Valid @ModelAttribute("createNftForm") final CreateNftForm form, final BindingResult errors) {
+        if(errors.hasErrors())
+            return createNft(form);
+        final Optional<Nft> nft = nftService.create(form.getNft_id(), form.getContract_addr(), form.getName(), form.getChain(), form.getImage(), userService.getCurrentUser().getId(), form.getCollection(), form.getDescription(), form.getProperties());
+        if(!nft.isPresent()) {
+            errors.rejectValue("publish", "publish.error", "Nft can not be created with this information");
+            return createNft(form);
+        }
+        return new ModelAndView("redirect:/product/"+nft.get().getId());
     }
 
     // Login

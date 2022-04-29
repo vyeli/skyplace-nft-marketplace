@@ -6,13 +6,15 @@ public class User {
     private String email;
     private String username;
     private String wallet;
+    private String chain;
     private String password;
 
-    public User(long id, String email, String username, String wallet, String password) {
+    public User(long id, String email, String username, String wallet, String chain, String password) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.wallet = wallet;
+        this.chain = chain;
         this.password = password;
     }
 
@@ -31,6 +33,8 @@ public class User {
     public String getWallet() {
         return wallet;
     }
+
+    public String getChain() { return chain; }
 
     public String getPassword() {
         return password;

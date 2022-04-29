@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.form;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
+import java.math.BigDecimal;
 
 public class ExploreFilter {
     private String search;
@@ -14,11 +15,11 @@ public class ExploreFilter {
 
     @DecimalMin(value="0")
     @Digits(integer=8, fraction=8)
-    private double minPrice = 0;
+    private BigDecimal minPrice = new BigDecimal(0);
 
     @DecimalMin(value="0")
     @Digits(integer=8, fraction=8)
-    private double maxPrice = 0;
+    private BigDecimal maxPrice = new BigDecimal(0);
 
     public String getSearch() {
         return search;
@@ -56,19 +57,19 @@ public class ExploreFilter {
         this.sort = sort;
     }
 
-    public double getMinPrice() {
+    public BigDecimal getMinPrice() {
         return minPrice;
     }
 
-    public void setMinPrice(double minPrice) {
+    public void setMinPrice(BigDecimal minPrice) {
         this.minPrice = minPrice;
     }
 
-    public double getMaxPrice() {
+    public BigDecimal getMaxPrice() {
         return maxPrice;
     }
 
-    public void setMaxPrice(double maxPrice) {
+    public void setMaxPrice(BigDecimal maxPrice) {
         this.maxPrice = maxPrice;
     }
 }

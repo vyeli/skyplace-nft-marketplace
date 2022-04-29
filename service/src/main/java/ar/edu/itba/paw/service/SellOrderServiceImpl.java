@@ -36,13 +36,6 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public SellOrder create(String name, int nftId, String nftContract, String chain, String category, BigDecimal price, String description, MultipartFile image) {
-        String email = userService.getCurrentUser().getEmail();
-        System.out.println("USER EMAIL " + email);
-        return sellOrderDao.create(name, nftId, nftContract, chain, category, price, description, image, email);
-    }
-
-    @Override
     public boolean update(long id, String category, BigDecimal price, String description) {
         if (!isUserOwner(id))
             return false;

@@ -113,44 +113,4 @@ public class SellOrderJdbcDao implements SellOrderDao {
         return jdbcTemplate.update(updateQuery, id) == 1;
     }
 
-    @Override
-    public SellOrder create(String name, int nftId, String nftContract, String chain, String category, BigDecimal price, String description, MultipartFile image, String email) {
-        List<String> chains = jdbcTemplate.query("SELECT chain FROM chains", (rs, i) -> rs.getString("chain"));
-        List<String> categories = jdbcTemplate.query("SELECT category FROM categories", (rs, i) -> rs.getString("category"));
-
-        if(!chains.contains(chain) || !categories.contains(category))
-            return new SellOrder(-1, email, description, price, nftId, nftContract, category);
-
-        final Map<String, Object> nftData = new HashMap<>();
-        nftData.put("id", nftId);
-        nftData.put("contract_addr", nftContract);
-        nftData.put("nft_name", name);
-        nftData.put("chain", chain);
-
-        byte[] bytes = {};
-        try {
-            bytes = image.getBytes();
-        } catch(Exception e) {
-            System.out.println("getbytes error");
-        }
-
-        final Map<String, Object> imageData = new HashMap<>();
-        imageData.put("image", bytes);
-        final long imageId = jdbcInsertImage.executeAndReturnKey(imageData).longValue();
-
-        nftData.put("id_image", imageId);
-        jdbcInsertNft.execute(nftData);
-
-        final Map<String, Object> sellOrderData = new HashMap<>();
-        sellOrderData.put("seller_email", email);
-        sellOrderData.put("descr", description);
-        sellOrderData.put("price", price);
-        sellOrderData.put("id_nft", nftId);
-        sellOrderData.put("nft_addr", nftContract);
-        sellOrderData.put("category", category);
-        sellOrderData.put("nft_chain", chain);
-
-        final long sellOrderId = jdbcInsertSellOrder.executeAndReturnKey(sellOrderData).longValue();
-        return new SellOrder(sellOrderId, email, description, price, nftId, nftContract, category);
-    }
 }

@@ -30,3 +30,27 @@ ALTER TABLE Purchases
     ADD COLUMN price NUMERIC(36, 18) NOT NULL default 0;
 ALTER TABLE Purchases
     ADD COLUMN buy_date TIMESTAMP NOT NULL default CURRENT_DATE;
+
+-- Nfts, create id serial primary key and remove old primary key
+
+
+ALTER TABLE sellorders DROP CONSTRAINT sellorders_nft_addr_id_nft_nft_chain_fkey
+ALTER TABLE sellorders DROP COLUMN nft_addr;
+ALTER TABLE sellorders DROP COLUMN nft_chain;
+
+ALTER TABLE purchases DROP CONSTRAINT purchases_nft_addr_id_nft_nft_chain_fkey;
+ALTER TABLE purchases DROP COLUMN nft_addr;
+ALTER TABLE purchases DROP COLUMN nft_chain;
+
+ALTER TABLE nfts DROP CONSTRAINT nfts_pkey;
+ALTER TABLE nfts RENAME COLUMN id TO nft_id;
+ALTER TABLE nfts ADD COLUMN id SERIAL;
+ALTER TABLE nfts ADD PRIMARY KEY(id);
+
+ALTER TABLE sellorders ADD FOREIGN KEY(id_nft) REFERENCES nfts(id);
+ALTER TABLE purchases ADD FOREIGN KEY(id_nft) REFERENCES nfts(id);
+
+-- Change favourites to nft
+ALTER TABLE favorited DROP CONSTRAINT favorited_sellorder_id_fkey;
+ALTER TABLE favorited RENAME COLUMN sellorder_id TO id_nft;
+ALTER TABLE favorited ADD FOREIGN KEY(id_nft) REFERENCES nfts(id);

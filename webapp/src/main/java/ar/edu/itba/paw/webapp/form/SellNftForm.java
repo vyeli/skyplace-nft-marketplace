@@ -14,10 +14,10 @@ public class SellNftForm extends UpdateSellOrderForm {
 
     @Digits(message = "Id is not a valid number!", integer = 8, fraction = 0)
     @Min(value=0L, message = "ID must be a positive number")
-    private int nftId;
+    private int id;
 
     @NotBlank
-    private String nftContract;
+    private String contract;
 
     @NotBlank
     private String chain;
@@ -33,20 +33,20 @@ public class SellNftForm extends UpdateSellOrderForm {
         this.name = name;
     }
 
-    public int getNftId() {
-        return nftId;
+    public int getId() {
+        return id;
     }
 
-    public void setNftId(int nftId) {
-        this.nftId = nftId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getNftContract() {
-        return nftContract;
+    public String getContract() {
+        return contract;
     }
 
-    public void setNftContract(String nftContract) {
-        this.nftContract = nftContract;
+    public void setContract(String contract) {
+        this.contract = contract;
     }
 
     public String getChain() {

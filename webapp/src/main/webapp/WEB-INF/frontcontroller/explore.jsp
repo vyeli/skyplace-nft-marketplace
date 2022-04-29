@@ -22,7 +22,7 @@
     <div class="grow flex pt-16 max-h-[calc(100vh-5rem)] divide-x divide-slate-300">
         <div class="flex flex-col w-72 min-w-[250px] items-center">
             <span class="text-4xl"><c:out value="${category}"/></span>
-            <span><c:out value="${nftAmount}" /> resultados</span>
+            <span><c:out value="${publicationsAmount}" /> resultados</span>
 
             <div class="grow w-full">
                 <div class="py-4 flex flex-col w-full px-4">
@@ -44,7 +44,6 @@
                                     </c:forEach>
                                 </form:select>
                             </form:label>
-
                             <div class="flex justify-between mb-6">
                                 <span>Price</span>
                                 <div class="flex justify-end">
@@ -114,16 +113,22 @@
             <%--      </div>--%>
 
             <div class="px-8 pb-8 grid grid-cols-auto-fit gap-8 place-items-start overflow-x-hidden overflow-y-scroll justify-center">
-                <c:forEach items="${nfts}" var="nft">
+                <c:forEach items="${publications}" var="publication">
+                    <c:if test="${publication.nft.sell_order != null}">
+                        <c:set value="${publication.sellOrder.price}" var="sellPrice" />
+                        <c:set value="${publication.sellOrder.category}" var="sellCategory" />
+                    </c:if>
                         <jsp:include page="../components/Card.jsp">
-                            <jsp:param name="name" value="${nft.name}"/>
-                            <jsp:param name="descr" value="${nft.descr}"/>
-                            <jsp:param name="img" value="${nft.img}"/>
-                            <jsp:param name="price" value="${nft.price}"/>
-                            <jsp:param name="score" value="${nft.score}"/>
-                            <jsp:param name="seller_email" value="${nft.seller_email}"/>
-                            <jsp:param name="id_product" value="${nft.id_product}"/>
-                            <jsp:param name="is_faved" value="${nft.is_faved}" />
+                            <jsp:param name="name" value="${publication.nft.nft_name}"/>
+                            <jsp:param name="nft_id" value="${publication.nft.nft_id}" />
+                            <jsp:param name="descr" value="${publication.nft.description}"/>
+                            <jsp:param name="img" value="${publication.nft.id_image}"/>
+                            <jsp:param name="on_sale" value="${publication.nft.sell_order != null}"/>
+                            <jsp:param name="price" value="${sellPrice}" />
+                            <jsp:param name="category" value="${sellCategory}"/>
+                            <jsp:param name="seller_email" value="${publication.user.email}"/>
+                            <jsp:param name="id_product" value="${publication.nft.id}"/>
+                            <jsp:param name="is_faved" value="false" />
                         </jsp:include>
                 </c:forEach>
             </div>
