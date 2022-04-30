@@ -32,8 +32,8 @@ public class FrontController {
     private final ImageService imageService;
     private final NftService nftService;
 
-//    @Autowired
-//    protected AuthenticationManager authenticationManager;
+    @Autowired
+    protected AuthenticationManager authenticationManager;
 
     @Autowired
     public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, MailingService mailingService, UserService userService, ImageService imageService, NftService nftService) {
@@ -194,10 +194,10 @@ public class FrontController {
             return mav;
         }
 
-//        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.get().getUsername(), user.get().getPassword());
-//        authToken.setDetails(new WebAuthenticationDetails(request));
-//        Authentication authentication = authenticationManager.authenticate(authToken);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.get().getUsername(), user.get().getPassword());
+        authToken.setDetails(new WebAuthenticationDetails(request));
+        Authentication authentication = authenticationManager.authenticate(authToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         mailingService.sendRegisterMail(user.get().getEmail(), user.get().getUsername());
         return new ModelAndView("redirect:/" );
