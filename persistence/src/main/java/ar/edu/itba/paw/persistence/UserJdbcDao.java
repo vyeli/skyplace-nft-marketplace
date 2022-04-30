@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,18 +13,19 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Repository
 public class UserJdbcDao implements UserDao{
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserJdbcDao.class);
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertSellOrder;
 
     private static final RowMapper<User> ROW_MAPPER = (rs, rowNum) ->
-            new User(rs.getLong("id"), rs.getString("email"), rs.getString("username"), rs.getString("wallet"), "chain", rs.getString("password"));
+            new User(rs.getLong("id"), rs.getString("email"), rs.getString("username"), rs.getString("wallet"), rs.getString("wallet_chain"), rs.getString("password"));
 
     @Autowired
     public UserJdbcDao(final DataSource ds) {
@@ -32,17 +36,23 @@ public class UserJdbcDao implements UserDao{
     }
 
     @Override
-    public Optional<User> create(String email, String username, String wallet, String password) {
+    public Optional<User> create(String email, String username, String wallet, String walletChain, String password) {
         final Map<String, Object> userData = new HashMap<>();
         userData.put("email", email);
         userData.put("username", username);
         userData.put("wallet", wallet);
+        userData.put("wallet_chain", walletChain);
         userData.put("password", password);
+        userData.put("role", "User");
 
         try {
             final long userId = jdbcInsertSellOrder.executeAndReturnKey(userData).longValue();
-            return Optional.of(new User(userId, email, username, "chain", wallet, password));
+            return Optional.of(new User(userId, email, username, wallet, walletChain, password));
         } catch (DuplicateKeyException e) {
+            LOGGER.error("User already exists", e);
+            return Optional.empty();
+        } catch (DataIntegrityViolationException e) {
+            LOGGER.error("Invalid user data", e);
             return Optional.empty();
         }
     }

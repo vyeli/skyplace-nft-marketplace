@@ -17,7 +17,7 @@ public class CreateNftForm {
     private long nft_id;
 
     @NotBlank
-    @Pattern(regexp = "^0x[a-fA-F0-9]{40}$", message = "Contract must begin with 0x and contain 40 caracters (a-f or 0-9)")
+    @Pattern(regexp = "^0x[a-fA-F0-9]{40}$", message = "Contract must begin with 0x and contain 40 characters (a-f or 0-9)")
     private String contract_addr;
 
     @NotBlank

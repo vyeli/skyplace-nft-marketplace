@@ -6,7 +6,7 @@ public class User {
     private String email;
     private String username;
     private String wallet;
-    private String chain;
+    private String walletChain;
     private String password;
 
     public User(long id, String email, String username, String wallet, String chain, String password) {
@@ -14,7 +14,7 @@ public class User {
         this.email = email;
         this.username = username;
         this.wallet = wallet;
-        this.chain = chain;
+        this.walletChain = chain;
         this.password = password;
     }
 
@@ -34,7 +34,7 @@ public class User {
         return wallet;
     }
 
-    public String getChain() { return chain; }
+    public String getWalletChain() { return walletChain; }
 
     public String getPassword() {
         return password;

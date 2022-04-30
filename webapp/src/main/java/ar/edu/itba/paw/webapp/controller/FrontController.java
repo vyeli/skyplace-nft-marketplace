@@ -12,8 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
 
 import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -163,25 +163,31 @@ public class FrontController {
     }
 
     // Create
-    @RequestMapping( value = "/register", method = RequestMethod.GET )
+    @RequestMapping( value = "/register", method = RequestMethod.GET)
     public ModelAndView createUserForm(@ModelAttribute("userForm") final UserForm form) {
         final ModelAndView mav = new ModelAndView("frontcontroller/register");
+        List<String> chains = chainService.getChains();
+        mav.addObject("chains", chains);
         return mav;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ModelAndView createUser(@Valid @ModelAttribute("userForm") final UserForm form, final BindingResult errors) {
+    public ModelAndView createUser(@Valid @ModelAttribute("userForm") final UserForm form, final BindingResult errors, HttpServletRequest request) {
         if (errors.hasErrors()) {
             return createUserForm(form);
         }
-        final Optional<User> user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getPassword());
+        final Optional<User> user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getWalletChain(), form.getPassword());
+
         if (!user.isPresent()) {
             final ModelAndView mav = new ModelAndView("frontcontroller/register");
-            return mav.addObject("emailExist", Boolean.TRUE);
+            List<String> chains = chainService.getChains();
+            mav.addObject("chains", chains);
+            mav.addObject("error", Boolean.TRUE);
+            return mav;
         }
 
         mailingService.sendRegisterMail(user.get().getEmail(), user.get().getUsername());
-        return new ModelAndView("redirect:/" );
+        return new ModelAndView("redirect:/login" );
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
