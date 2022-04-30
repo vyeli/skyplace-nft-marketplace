@@ -4,6 +4,7 @@ import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Publication;
 import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.persistence.FavoriteDao;
 import ar.edu.itba.paw.persistence.NftDao;
 import ar.edu.itba.paw.persistence.SellOrderDao;
 import ar.edu.itba.paw.persistence.UserDao;
@@ -15,18 +16,22 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class NftServiceImpl implements NftService{
     private final NftDao nftDao;
     private final SellOrderDao sellOrderDao;
     private final UserDao userDao;
+    private final FavoriteDao favoriteDao;
 
     @Autowired
-    public NftServiceImpl(NftDao nftDao, SellOrderDao sellOrderDao, UserDao userDao) {
+    public NftServiceImpl(NftDao nftDao, SellOrderDao sellOrderDao, UserDao userDao, FavoriteDao favoriteDao) {
         this.nftDao = nftDao;
         this.sellOrderDao = sellOrderDao;
         this.userDao = userDao;
+        this.favoriteDao = favoriteDao;
     }
 
     @Override
@@ -40,8 +45,8 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public Optional<List<Publication>> getAllPublications(int page, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search) {
-        Optional<List<Nft>> nftsOptional = nftDao.getAllNFTs(1, chain, search);
+    public Optional<List<Publication>> getAllPublications(int page, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
+        Optional<List<Nft>> nftsOptional = nftDao.getAllNFTs(page, chain, search);
         if(!nftsOptional.isPresent())
             return Optional.empty();
         List<Nft> nfts = nftsOptional.get();
@@ -53,7 +58,39 @@ public class NftServiceImpl implements NftService{
             Optional<SellOrder> sellOrder = Optional.empty();
             if(nft.getSell_order() != null)
                 sellOrder = sellOrderDao.getOrderById(nft.getSell_order());
-            publications.add(new Publication(nft, sellOrder.orElse(null), user.get()));
+            boolean isFaved = false;
+            if(currentUser != null)
+                isFaved = favoriteDao.userFavedNft(currentUser.getId(), nft.getId());
+
+            publications.add(new Publication(nft, sellOrder.orElse(null), user.get(), isFaved));
+        });
+
+        return Optional.of(publications);
+    }
+
+    @Override
+    public Optional<List<Publication>> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
+        Optional<List<Nft>> nftsOptional = nftDao.getAllNFTsByUser(page, user);
+        if(!nftsOptional.isPresent())
+            return Optional.empty();
+        List<Nft> nfts = nftsOptional.get();
+        List<Publication> publications = new ArrayList<>();
+        nfts.forEach(nft -> {
+            if(onlyFaved && !favoriteDao.userFavedNft(user.getId(), nft.getId()))
+                return;
+
+            Optional<SellOrder> sellOrder = Optional.empty();
+            if(nft.getSell_order() != null)
+                sellOrder = sellOrderDao.getOrderById(nft.getSell_order());
+
+            if(onlyOnSale && !sellOrder.isPresent())
+                return;
+
+            boolean isFaved = false;
+            if(currentUser != null)
+                isFaved = favoriteDao.userFavedNft(currentUser.getId(), nft.getId());
+
+            publications.add(new Publication(nft, sellOrder.orElse(null), user, isFaved));
         });
 
         return Optional.of(publications);

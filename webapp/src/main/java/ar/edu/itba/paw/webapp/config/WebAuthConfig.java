@@ -43,7 +43,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
             .and().authorizeRequests()
                 .antMatchers("/login", "/register").anonymous()
                 .antMatchers("/create", "/product/update/*", "/product/delete/*").hasRole("USER")
-                .antMatchers("/","/explore","/product/*", "/images/**").permitAll()
+                .antMatchers("/","/explore","/product/*").permitAll()
                 .antMatchers("/**").authenticated()
             .and().formLogin()
                 .usernameParameter("email")
@@ -66,7 +66,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(final WebSecurity web) throws Exception {
         web.ignoring()
-                .antMatchers("/favicon.ico", "/css/**", "/js/**", "/resources/**", "/403");
+                .antMatchers("/favicon.ico", "/css/**", "/js/**", "/resources/**", "/403", "/images/**");
     }
 
 }

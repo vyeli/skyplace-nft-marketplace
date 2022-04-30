@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
+import java.util.function.Consumer;
 
 import org.springframework.validation.BindingResult;
 
@@ -19,23 +20,27 @@ import javax.validation.Valid;
 @Controller
 public class FrontController {
 
-    private final SellOrderService sos;
+    private final SellOrderService sellOrderService;
     private final CategoryService categoryService;
     private final ChainService chainService;
     private final MailingService mailingService;
     private final UserService userService;
     private final ImageService imageService;
     private final NftService nftService;
+    private final BuyOrderService buyOrderService;
+    private final FavoriteService favoriteService;
 
     @Autowired
-    public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, MailingService mailingService, UserService userService, ImageService imageService, NftService nftService) {
-        this.sos = sos;
+    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, MailingService mailingService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService) {
+        this.sellOrderService = sellOrderService;
         this.categoryService = categoryService;
         this.chainService = chainService;
         this.mailingService = mailingService;
         this.userService = userService;
         this.imageService = imageService;
         this.nftService = nftService;
+        this.buyOrderService = buyOrderService;
+        this.favoriteService = favoriteService;
     }
 
     @RequestMapping(value="/")
@@ -53,7 +58,12 @@ public class FrontController {
 
         final ModelAndView mav = new ModelAndView("frontcontroller/explore");
 
-        final Optional<List<Publication>> publicationsOptional = nftService.getAllPublications(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch());
+        Optional<User> currentUserOptional = userService.getCurrentUser();
+        User currentUser = null;
+        if(currentUserOptional.isPresent())
+            currentUser = currentUserOptional.get();
+
+        final Optional<List<Publication>> publicationsOptional = nftService.getAllPublications(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), currentUser);
         if(!publicationsOptional.isPresent())
             return notFound();
         final List<Publication> publications = publicationsOptional.get();
@@ -73,25 +83,30 @@ public class FrontController {
         return mav;
     }
 
-    @RequestMapping(value = "/sell", method = RequestMethod.GET)
-    public ModelAndView createNftForm(@ModelAttribute("sellNftForm") final SellNftForm form) {
+    @RequestMapping(value = "/sell/{productId}", method = RequestMethod.GET)
+    public ModelAndView createSellOrderForm(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
         final ModelAndView mav = new ModelAndView("frontcontroller/sell");
+        Optional<Nft> nft = nftService.getNFTById(productId);
+        if(!nft.isPresent())
+            return notFound();
+        mav.addObject("nft", nft.get());
         List<String> categories = categoryService.getCategories();
-        List<String> chains = chainService.getChains();
         mav.addObject("categories", categories);
-        mav.addObject("chains", chains);
         return mav;
     }
 
-    @RequestMapping(value = "/sell", method = RequestMethod.POST)
-    public ModelAndView createSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors) {
-        return null;
+    @RequestMapping(value = "/sell/{productId}", method = RequestMethod.POST)
+    public ModelAndView createSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors, @PathVariable String productId) {
+        if(errors.hasErrors())
+            return createSellOrderForm(form, productId);
+
+        Optional<SellOrder> sellOrder = sellOrderService.create(form.getPrice(), productId, form.getCategory());
+        return sellOrder.map(order -> new ModelAndView("redirect:/product/" + order.getNft_id())).orElseGet(() -> createSellOrderForm(form, productId));
     }
 
     /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("mailForm") final MailForm form, @PathVariable String productId) {
-        //final NftCard nft = exploreService.getNFTById(productId, userService.getCurrentUser());
+    public ModelAndView product(@ModelAttribute("buyNftForm") final BuyNftForm form, @PathVariable String productId) {
         final Optional<Nft> nft = nftService.getNFTById(productId);
         if(!nft.isPresent())
             return notFound();
@@ -99,27 +114,41 @@ public class FrontController {
 
         Optional<SellOrder> sellOrder = Optional.empty();
         if(nft.get().getSell_order() != null)
-            sellOrder = sos.getOrderById(nft.get().getSell_order());
+            sellOrder = sellOrderService.getOrderById(nft.get().getSell_order());
 
         final ModelAndView mav = new ModelAndView("frontcontroller/product");
         mav.addObject("nft", nft.get());
         sellOrder.ifPresent(order -> mav.addObject("sellorder", order));
         owner.ifPresent(user -> mav.addObject("owner", user));
 
-        User currentUser = userService.getCurrentUser();
-        if (currentUser != null)
-            mav.addObject("userEmail", currentUser.getEmail());
         
         return mav;
     }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("mailForm") final MailForm form, final BindingResult errors, @PathVariable String productId) {
+    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final BuyNftForm form, final BindingResult errors, @PathVariable String productId) {
         if (errors.hasErrors()) {
             return product(form, productId);
         }
 
-        mailingService.sendOfferMail(form.getBuyerMail(), form.getSellerMail(), form.getNftName(), form.getNftAddress(), form.getNftPrice());
+        Optional<Nft> nft = nftService.getNFTById(productId);
+        if(!nft.isPresent())
+            return product(form, productId);
+        if(nft.get().getSell_order() == null)
+            return product(form, productId);
+        Optional<SellOrder> sellOrder = sellOrderService.getOrderById(nft.get().getSell_order());
+        if(!sellOrder.isPresent())
+            return product(form, productId);
+        Optional<User> currentUser = userService.getCurrentUser();
+
+        if(!currentUser.isPresent())
+            return product(form, productId);
+        Optional<User> seller = userService.getUserById(nft.get().getId_owner());
+        if(!seller.isPresent())
+            return product(form, productId);
+        buyOrderService.create(sellOrder.get().getId(), form.getPrice(), currentUser.get().getId());
+
+        mailingService.sendOfferMail(currentUser.get().getEmail(), seller.get().getEmail(), nft.get().getNft_name(), nft.get().getContract_addr(), form.getPrice());
 
         ModelAndView mav = product(form,productId);
         mav.addObject("emailSent", true);
@@ -128,11 +157,11 @@ public class FrontController {
 
     @RequestMapping(value = "/product/update/{productId}", method = RequestMethod.GET)
     public ModelAndView updateSellOrder(@ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, @PathVariable long productId) {
-        if (!sos.isUserOwner(productId))
+        if (!sellOrderService.isUserOwner(productId))
             return new ModelAndView("redirect:/403");
 
         final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
-        SellOrder order = sos.getOrderById(productId).orElseThrow(() -> new SellOrderNotFoundException("No existing order with id " + productId));
+        SellOrder order = sellOrderService.getOrderById(productId).orElseThrow(() -> new SellOrderNotFoundException("No existing order with id " + productId));
         List<String> categories = categoryService.getCategories();
         mav.addObject("categories", categories);
         mav.addObject("order", order);
@@ -145,13 +174,13 @@ public class FrontController {
             return updateSellOrder(form, productId);
         }
 
-        sos.update(productId, form.getCategory(), form.getPrice(), form.getDescription());
+        sellOrderService.update(productId, form.getCategory(), form.getPrice(), form.getDescription());
         return new ModelAndView("redirect:/product/" + productId);
     }
 
     @RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
     public ModelAndView deleteSellOrder(@PathVariable long productId) {
-        sos.delete(productId);
+        sellOrderService.delete(productId);
         return new ModelAndView("redirect:/profile");
     }
 
@@ -204,7 +233,10 @@ public class FrontController {
     public ModelAndView publishNft(@Valid @ModelAttribute("createNftForm") final CreateNftForm form, final BindingResult errors) {
         if(errors.hasErrors())
             return createNft(form);
-        final Optional<Nft> nft = nftService.create(form.getNft_id(), form.getContract_addr(), form.getName(), form.getChain(), form.getImage(), userService.getCurrentUser().getId(), form.getCollection(), form.getDescription(), form.getProperties());
+        Optional<User> user = userService.getCurrentUser();
+        if(!user.isPresent())
+            return createNft(form);
+        final Optional<Nft> nft = nftService.create(form.getNft_id(), form.getContract_addr(), form.getName(), form.getChain(), form.getImage(), user.get().getId(), form.getCollection(), form.getDescription(), form.getProperties());
         if(!nft.isPresent()) {
             errors.rejectValue("publish", "publish.error", "Nft can not be created with this information");
             return createNft(form);
@@ -229,13 +261,15 @@ public class FrontController {
     /* 404 */
     @RequestMapping("/**")
     public ModelAndView notFound() {
-        final ModelAndView mav = new ModelAndView("error/404");
-        return mav;
+        return new ModelAndView("error/404");
     }
 
     @RequestMapping("/current-user")
     public ModelAndView profile(@RequestParam(required = false, name = "tab") String tab){
-        final long userId = userService.getCurrentUser().getId();
+        Optional<User> user = userService.getCurrentUser();
+        if(!user.isPresent())
+            return notFound();
+        final long userId = user.get().getId();
         StringBuilder redirectUrl = new StringBuilder("redirect:/profile/" + userId);
         if(tab != null){
             redirectUrl.append("?tab=").append(tab);
@@ -244,36 +278,43 @@ public class FrontController {
     }
 
     @RequestMapping("/profile/{userId}")
-    public ModelAndView getUser(@PathVariable long userId, @RequestParam(required = false, name = "tab") String tab){
+    public ModelAndView getUser(@PathVariable String userId, @RequestParam(required = false, name = "tab") String tab){
         ModelAndView mav = new ModelAndView("frontcontroller/profile");
         final Optional<User> user = userService.getUserById(userId);
+        User currentUser = null;
+        Optional<User> optionalCurrentUser = userService.getCurrentUser();
+        if(optionalCurrentUser.isPresent())
+            currentUser = optionalCurrentUser.get();
         if(user.isPresent()){
             mav.addObject("user", user.get());
-            List<NftCard> nfts;
-            if(tab == null){
-                // First tab
-                nfts = sos.getUserSellOrders(user.get().getEmail());
-            }
-            else {
-                // TODO: Make switch when more than 2 tabs
-                nfts = sos.getUserFavorites(user.get().getId());
-            }
-            mav.addObject("nfts", nfts);
+            Optional<List<Publication>> publications;
+            if(tab == null)
+                publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, false);
+            else if(tab.equals("favorited"))
+                publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, true, false);
+            else
+                publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, true);
+            publications.ifPresent(publication -> {
+                mav.addObject("publications", publication);
+                mav.addObject("publicationsSize", publication.size());
+            });
             return mav;
         }
-        return new ModelAndView("redirect:/500");
+        return new ModelAndView("redirect:/404");
     }
 
     @RequestMapping(value = "/favorite/add/{productId}", method = RequestMethod.POST)
-    public ModelAndView addFavorite(@PathVariable long productId){
-        final User user = userService.getCurrentUser();
-        return sos.addFavorite(user.getId(), productId) ? new ModelAndView("redirect:/explore") : new ModelAndView("redirect:/403");
+    public String addFavorite(@PathVariable String productId, HttpServletRequest request){
+        userService.getCurrentUser().ifPresent(user -> favoriteService.addNftFavorite(productId, user));
+        String referer = request.getHeader("Referer");
+        return "redirect:"+ referer;
     }
 
     @RequestMapping(value = "/favorite/remove/{productId}", method = RequestMethod.POST)
-    public ModelAndView removeFavorite(@PathVariable long productId){
-        final User user = userService.getCurrentUser();
-        return sos.removeFavorite(user.getId(), productId) ? new ModelAndView("redirect:/explore") : new ModelAndView("redirect:/403");
+    public String removeFavorite(@PathVariable String productId, HttpServletRequest request){
+        userService.getCurrentUser().ifPresent(user -> favoriteService.removeNftFavorite(productId, user));
+        String referer = request.getHeader("Referer");
+        return "redirect:"+ referer;
     }
 
     @RequestMapping("/newProduct")

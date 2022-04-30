@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.Nft;
-import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.model.User;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -133,6 +131,12 @@ public class NftJdbcDao implements NftDao{
             result = result.stream().filter(nft -> (jaroWinkler.apply(nft.getNft_name().toLowerCase(), search.toLowerCase()) >= JARO_WINKLER_UMBRAL || calculateDistance(nft.getNft_name().toLowerCase(), search.toLowerCase()) < 4)).collect(Collectors.toList());
         }
 
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public Optional<List<Nft>> getAllNFTsByUser(int page, User user) {
+        List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE id_owner=?", new Object[]{user.getId()}, SELECT_MAPPER);
         return Optional.ofNullable(result);
     }
 

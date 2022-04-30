@@ -120,6 +120,7 @@
                     </c:if>
                         <jsp:include page="../components/Card.jsp">
                             <jsp:param name="name" value="${publication.nft.nft_name}"/>
+                            <jsp:param name="is_faved" value="${publication.isFaved}"/>
                             <jsp:param name="nft_id" value="${publication.nft.nft_id}" />
                             <jsp:param name="descr" value="${publication.nft.description}"/>
                             <jsp:param name="img" value="${publication.nft.id_image}"/>

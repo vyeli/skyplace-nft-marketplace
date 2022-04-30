@@ -55,28 +55,22 @@
     <div class="flex border-b border-gray-200">
         <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500 dark:text-gray-400">
             <li>
-                <a href="<c:url value='/profile/${user.id}'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="sellingTab">
-                    <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
-                        <path d="M403.29 32H280.36a14.46 14.46 0 00-10.2 4.2L24.4 281.9a28.85 28.85 0 000 40.7l117 117a28.86 28.86 0 0040.71 0L427.8 194a14.46 14.46 0 004.2-10.2v-123A28.66 28.66 0 00403.29 32z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
-                        <path d="M352 144a32 32 0 1132-32 32 32 0 01-32 32z"></path>
-                        <path d="M230 480l262-262a13.81 13.81 0 004-10V80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
-                    </svg>
-                    Selling
+                <a href="<c:url value='/profile/${user.id}'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="inventoryTab">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    Inventory
                 </a>
             </li>
-            <!--
             <li>
-                <a href="/profile?tab=purchased" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="purchasedTab">
+                <a href="<c:url value='/profile/${user.id}?tab=selling'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="sellingTab">
                     <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
                         <circle cx="176" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
                         <circle cx="400" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
                         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M48 80h64l48 272h256"></path>
                         <path d="M160 288h249.44a8 8 0 007.85-6.43l28.8-144a8 8 0 00-7.85-9.57H128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
                     </svg>
-                    Purchased
+                    Selling
                 </a>
             </li>
-            -->
             <li>
                 <a href="<c:url value='/profile/${user.id}?tab=favorited'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="favoritedTab">
                     <svg class="mr-2 h-6 w-6" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -89,22 +83,33 @@
     </div>
     <!-- NFTs -->
     <div class="flex flex-wrap justify-center gap-8">
-        <c:forEach items="${nfts}" var="nft">
+        <c:forEach items="${publications}" var="publication">
+            <c:if test="${publication.nft.sell_order != null}">
+                <c:set value="${publication.sellOrder.price}" var="sellPrice" />
+                <c:set value="${publication.sellOrder.category}" var="sellCategory" />
+            </c:if>
             <jsp:include page="../components/Card.jsp">
-                <jsp:param name="name" value="${nft.name}" />
-                <jsp:param name="descr" value="${nft.descr}" />
-                <jsp:param name="img" value="${nft.img}" />
-                <jsp:param name="price" value="${nft.price}" />
-                <jsp:param name="score" value="${nft.score}" />
-                <jsp:param name="seller_email" value="${nft.seller_email}" />
-                <jsp:param name="id_product" value="${nft.id_product}"/>
+                <jsp:param name="name" value="${publication.nft.nft_name}"/>
+                <jsp:param name="is_faved" value="${publication.isFaved}"/>
+                <jsp:param name="nft_id" value="${publication.nft.nft_id}" />
+                <jsp:param name="descr" value="${publication.nft.description}"/>
+                <jsp:param name="img" value="${publication.nft.id_image}"/>
+                <jsp:param name="on_sale" value="${publication.nft.sell_order != null}"/>
+                <jsp:param name="price" value="${sellPrice}" />
+                <jsp:param name="category" value="${sellCategory}"/>
+                <jsp:param name="seller_email" value="${publication.user.email}"/>
+                <jsp:param name="id_product" value="${publication.nft.id}"/>
+                <jsp:param name="is_faved" value="false" />
             </jsp:include>
         </c:forEach>
+        <c:if test="${publicationsSize == 0}">
+            <span>No NFTs to show</span>
+        </c:if>
     </div>
 </div>
 <script>
     const tabMap = new Map();       // tablink -> tab
-    // tabMap.set('purchased', document.getElementById('purchasedTab'));
+    tabMap.set('inventory', document.getElementById('inventoryTab'));
     tabMap.set('selling', document.getElementById('sellingTab'));
     tabMap.set('favorited', document.getElementById('favoritedTab'));
 
@@ -112,22 +117,20 @@
         const params = new URLSearchParams(window.location.search);
         const tabName = params.get('tab');
         switch(tabName){
-            /*
-            case 'purchased':
-                setActiveTab(tabMap.get('purchased'));
-                // setInactiveTab(tabMap.get('favorited'));
-                setInactiveTab(tabMap.get('selling'));
-                break;
-                */
-            case 'favorited':
-                setActiveTab(tabMap.get('favorited'));
-                setInactiveTab(tabMap.get('selling'));
-                // setInactiveTab(tabMap.get('purchased'));
-                break;
-            default:
+            case 'selling':
                 setActiveTab(tabMap.get('selling'));
                 setInactiveTab(tabMap.get('favorited'));
-                // setInactiveTab(tabMap.get('purchased'));
+                setInactiveTab(tabMap.get('inventory'));
+                break;
+            case 'favorited':
+                setActiveTab(tabMap.get('favorited'));
+                setInactiveTab(tabMap.get('inventory'));
+                setInactiveTab(tabMap.get('selling'));
+                break;
+            default:
+                setActiveTab(tabMap.get('inventory'));
+                setInactiveTab(tabMap.get('favorited'));
+                setInactiveTab(tabMap.get('selling'));
                 break;
         }
     };

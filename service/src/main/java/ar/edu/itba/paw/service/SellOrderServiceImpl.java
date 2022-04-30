@@ -1,38 +1,31 @@
 package ar.edu.itba.paw.service;
 
-import ar.edu.itba.paw.model.NftCard;
 import ar.edu.itba.paw.model.SellOrder;
-import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.SellOrderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class SellOrderServiceImpl implements SellOrderService {
 
     private final SellOrderDao sellOrderDao;
-    private final UserService userService;
 
     @Autowired
-    public SellOrderServiceImpl(SellOrderDao sellOrderDao, UserService userService) {
+    public SellOrderServiceImpl(SellOrderDao sellOrderDao) {
         this.sellOrderDao = sellOrderDao;
-        this.userService = userService;
+    }
+
+    @Override
+    public Optional<SellOrder> create(BigDecimal price, String id_nft, String category) {
+        return sellOrderDao.create(price, id_nft, category);
     }
 
     @Override
     public Optional<SellOrder> getOrderById(long id) {
         return sellOrderDao.getOrderById(id);
-    }
-
-    @Override
-    public List<NftCard> getUserSellOrders(String userEmail) {
-        return sellOrderDao.getUserSellOrders(userEmail);
     }
 
     @Override
@@ -50,24 +43,7 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public boolean isUserOwner(long sellOrderId) {
-        Optional<SellOrder> maybeOrder = getOrderById(sellOrderId);
-        String currentUserEmail = userService.getCurrentUser().getEmail();
-        return maybeOrder.isPresent() && Objects.equals(currentUserEmail, maybeOrder.get().getSellerEmail());
-    }
-
-    @Override
-    public List<NftCard> getUserFavorites(long userId) {
-        return sellOrderDao.getUserFavorites(userId);
-    }
-
-    @Override
-    public boolean addFavorite(long userId, long sellOrderId) {
-        return sellOrderDao.addFavorite(userId, sellOrderId);
-    }
-
-    @Override
-    public boolean removeFavorite(long userId, long sellOrderId) {
-        return sellOrderDao.removeFavorite(userId, sellOrderId);
+    public boolean isUserOwner(long id){
+        return true;
     }
 }

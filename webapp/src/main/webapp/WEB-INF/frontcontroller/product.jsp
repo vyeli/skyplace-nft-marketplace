@@ -73,36 +73,16 @@
                 </div> <!-- Specification -->
             </div>
             <div class="flex flex-col">
-                <c:choose>
-                    <c:when test="${userEmail == sellorder.sellerEmail}">
-                        <c:url value="/product/delete/${nft.id}" var="deletePath" />
-                        <div class="flex gap-4">
-                            <a href="<c:url value="/product/update/${nft.id}" />" class="px-2 py-3 font-bold rounded-lg shadow-sm bg-cyan-100 text-cyan-700 hover:bg-cyan-200">
-                                Update order
-                            </a>
-                            <form action="${deletePath}" method="post">
-                                <input type="submit" value="Delete order" class="px-2 py-3 font-bold rounded-lg shadow-sm cursor-pointer border border-cyan-700 text-cyan-700 hover:bg-cyan-700 hover:text-white" />
-                            </form>
+                <c:if test="${sellorder != null}">
+                    <c:url value="/product/${nft.id}" var="postPath" />
+                    <form:form modelAttribute="buyNftForm" action="${postPath}" method="post">
+                        <div class="flex">
+                            <form:input path="price" type="number" value="${sellorder.price}" step="0.000000000000000001" />
+                            <input type="submit" value="Place bid" class="px-1 py-3 w-28 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200" />
                         </div>
-                    </c:when>
-                    <c:when test="${userEmail == null}">
-                        <p class="font-bold text-cyan-700"><a href="<c:url value="/login" />">Login to place a bid</a></p>
-                    </c:when>
-                    <c:otherwise>
-                        <c:url value="/product/${nft.id}" var="postPath" />
-                        <form:form modelAttribute="mailForm" action="${postPath}" method="post">
-                            <div class="flex">
-                                <form:input path="buyerMail" type="email" hidden="hidden" value="${userEmail}" />
-                                <form:input path="sellerMail" type="hidden" value="${sellorder.sellerEmail}"/>
-                                <form:input path="nftName" type="hidden" value="${nft.nft_name}"/>
-                                <form:input path="nftAddress" type="hidden" value="${nft.contract_addr}"/>
-                                <form:input path="nftPrice" type="hidden" value="${sellorder.price}"/>
-                                <input type="submit" value="Place bid" class="px-1 py-3 w-28 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200" />
-                            </div>
-                            <form:errors path="buyerMail" element="p" cssStyle="color: tomato" />
-                        </form:form>
-                    </c:otherwise>
-                </c:choose>
+                        <form:errors path="price" element="p" cssStyle="color: tomato" />
+                    </form:form>
+                </c:if>
             </div>
             <c:if test="${emailSent != null}">
                 <p class="text-lime-600 text-lg">Email sent!</p>

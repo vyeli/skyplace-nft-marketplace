@@ -5,49 +5,31 @@ import java.math.BigDecimal;
 public class SellOrder {
 
     private long id;
-    private String sellerEmail;
-    private String description;
     private String category;
     private BigDecimal price;
-    private int nftId;
-    private String nftAddress;
+    private long nft_id;
 
-    public SellOrder(long id, String sellerEmail, String description, BigDecimal price, int nftId, String nftAddress, String category) {
+    public SellOrder(long id, BigDecimal price, long nft_id, String category) {
         this.id = id;
-        this.sellerEmail = sellerEmail;
-        this.description = description;
         this.price = price;
-        this.nftId = nftId;
-        this.nftAddress = nftAddress;
         this.category = category;
+        this.nft_id = nft_id;
     }
 
     public long getId() {
         return id;
     }
 
-    public String getSellerEmail() {
-        return sellerEmail;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public BigDecimal getPrice() {
-        return price;
-    }
-
-    public int getNftId() {
-        return nftId;
-    }
-
-    public String getNftAddress() {
-        return nftAddress;
+        return price != null ? price.stripTrailingZeros():null;
     }
 
     public String getCategory() {
         return category;
+    }
+
+    public long getNft_id() {
+        return nft_id;
     }
 
 }

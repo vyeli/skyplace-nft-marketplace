@@ -11,5 +11,7 @@ public interface UserService {
 
     Optional<User> getUserById(long id);
 
-    User getCurrentUser();
+    Optional<User> getUserById(String id);
+
+    Optional<User> getCurrentUser();
 }

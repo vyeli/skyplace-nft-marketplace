@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -36,7 +37,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendOfferMail(String buyerMail, String sellerMail, String nftName, String nftAddress, float nftPrice) {
+    public void sendOfferMail(String buyerMail, String sellerMail, String nftName, String nftAddress, BigDecimal nftPrice) {
         Session session = Session.getInstance(getProperties(),
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {

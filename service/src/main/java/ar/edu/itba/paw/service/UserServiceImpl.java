@@ -42,14 +42,17 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getCurrentUser() {
+    public Optional<User> getUserById(String id) {
+        return userDao.getUserById(id);
+    }
+
+    @Override
+    public Optional<User> getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal instanceof UserDetails){
-            Optional<User> currentUser = getUserByEmail(((UserDetails) principal).getUsername());
-            if(currentUser.isPresent())
-                return currentUser.get();
+            return getUserByEmail(((UserDetails) principal).getUsername());
         }
-        return null;
+        return Optional.empty();
     }
 
 }

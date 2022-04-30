@@ -40,7 +40,7 @@ public class CreateNftForm {
         return nft_id;
     }
 
-    public void setId(long nft_id) {
+    public void setNft_id(long nft_id) {
         this.nft_id = nft_id;
     }
 

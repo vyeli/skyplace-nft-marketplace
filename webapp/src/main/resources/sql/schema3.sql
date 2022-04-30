@@ -52,3 +52,6 @@ ALTER TABLE purchases ADD FOREIGN KEY(id_nft) REFERENCES nfts(id);
 ALTER TABLE favorited DROP CONSTRAINT favorited_sellorder_id_fkey;
 ALTER TABLE favorited RENAME COLUMN sellorder_id TO id_nft;
 ALTER TABLE favorited ADD FOREIGN KEY(id_nft) REFERENCES nfts(id);
+ALTER TABLE favorited ADD CONSTRAINT favorited_unique UNIQUE(user_id, id_nft);
+
+ALTER TABLE sellorders ADD CONSTRAINT nft_unique UNIQUE(id_nft);

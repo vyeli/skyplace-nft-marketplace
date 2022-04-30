@@ -66,4 +66,13 @@ public class UserJdbcDao implements UserDao{
     public Optional<User> getUserById(final long id) {
         return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ id }, ROW_MAPPER).stream().findFirst();
     }
+
+    @Override
+    public Optional<User> getUserById(final String id) {
+        try {
+            return getUserById(Long.parseLong(id));
+        } catch(Exception e) {
+            return Optional.empty();
+        }
+    }
 }
