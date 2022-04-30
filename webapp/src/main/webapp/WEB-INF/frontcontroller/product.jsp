@@ -129,25 +129,25 @@
                                 </c:otherwise>
                             </c:choose>
 
-                                <div class="flex items-center space-x-1 rounded-l-xl border bg-white py-2 px-2">
-                                    <form action="${favPath}" method="post" class="m-auto">
-                                        <button type="submit" class="flex">
-                                            <c:choose>
-                                                <c:when test="${isFaved}">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-700 fill-current hover:fill-transparent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                                    </svg>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-700 hover:fill-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                                    </svg>
-                                                </c:otherwise>
-                                            </c:choose>
-                                          <span class="pl-1 text-base"><c:out value="${favorites}" /></span>
-                                        </button>
-                                    </form>
-                                </div>
+                            <div class="flex items-center space-x-1 rounded-l-xl border bg-white py-2 px-2">
+                                <form action="${favPath}" method="post" class="m-auto">
+                                    <button type="submit" class="flex">
+                                        <c:choose>
+                                            <c:when test="${isFaved}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-700 fill-current hover:fill-transparent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                                </svg>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-700 hover:fill-current" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                                </svg>
+                                            </c:otherwise>
+                                        </c:choose>
+                                      <span class="pl-1 text-base"><c:out value="${favorites}" /></span>
+                                    </button>
+                                </form>
+                            </div>
                             <c:if test="${currentUser.id == owner.id}">
                                 <button id="productButton" data-dropdown-toggle="productMenu" type="button" class="flex items-center space-x-1 rounded-r-xl border bg-white py-2 px-2">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
@@ -156,43 +156,33 @@
                             <div id="productMenu" class="hidden z-10 w-44 bg-white flex flex-col flex-grow rounded text-gray-700 border border-gray-300 text-sm divide-y divide-gray-300 shadow">
                                 <ul class="py-1" aria-labelledby="productButton">
                                     <c:if test="${currentUser.id == owner.id}">
-                                        <c:if test="${sellorder == null}">
-                                            <li class="z-20">
-                                                <a href="<c:url value="/sell/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                    <span>Sell nft</span>
-                                                </a>
-                                            </li>
-                                        </c:if>
-                                        <c:if test="${sellorder != null}">
-                                            <li class="z-20">
-                                                <a href="<c:url value="/sell/update/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                    <span>Update sell</span>
-                                                </a>
-                                            </li>
-                                            <li class="z-20">
-                                                <c:url value="/sell/delete/${productId}" var="deleteSellPath" />
-                                                <form:form action="${deleteSellPath}" method="post" class="mb-0">
-                                                    <button type="submit" class="block flex flex-row items-center w-full justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                        <span>Delete sell</span>
-                                                    </button>
-                                                </form:form>
-                                            </li>
-                                            <li class="z-20">
-                                                <a href="<c:url value="/sell/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                    <span>Confirm sell</span>
-                                                </a>
-                                            </li>
-                                        </c:if>
-                                        <li class="z-20">
-                                            <a href="<c:url value="/sell/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                <span>Update nft</span>
-                                            </a>
-                                        </li>
-                                        <li class="z-20">
-                                            <a href="<c:url value="/sell/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                <span>Delete nft</span>
-                                            </a>
-                                        </li>
+                                        <c:choose>
+                                            <c:when test="${sellorder != null}">
+                                                <li class="z-20">
+                                                    <a href="<c:url value="/sell/update/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                                                        <span>Update sell</span>
+                                                    </a>
+                                                </li>
+                                                <li class="z-20">
+                                                    <span id="open-delete-modal" class="block cursor-pointer flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                                                        Delete sell
+                                                    </span>
+                                                </li>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <li class="z-20">
+                                                    <a href="<c:url value="/sell/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                                                        <span>Sell nft</span>
+                                                    </a>
+                                                </li>
+                                                <li class="z-20">
+                                                    <span id="open-delete-modal" class="block cursor-pointer flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                                                        Delete nft
+                                                    </span>
+                                                </li>
+                                            </c:otherwise>
+                                        </c:choose>
+
                                     </c:if>
                                 </ul>
                             </div>
@@ -202,20 +192,18 @@
                     <!--Name and ID-->
                     <h1 class="font-display text-jacarta-700 mb-2 text-4xl font-semibold"><c:out value="${nft.nft_name}" /><span>#<c:out value="${nft.nft_id}" /></span></h1>
                     <!-- Owner -->
-                    <div class="mb-4 flex">
-                        <div class="flex">
-                            <span class="text-jacarta-400 block text-sm">Owned by </span>
-                            <a href="<c:url value="/profile/${owner.id}" />" class="text-accent block">
-                                <span class="text-sm font-bold pl-2"><c:out value="${owner.email}" /></span>
-                            </a>
-                        </div>
+                    <div class="flex pt-2 pb-4">
+                        <span class="text-jacarta-400 block text-sm">Owned by </span>
+                        <a href="<c:url value="/profile/${owner.id}" />" class="text-accent block">
+                            <span class="text-sm font-bold pl-2 text-cyan-600"><c:out value="${owner.email}" /></span>
+                        </a>
                     </div>
                     <div class="mb-8 flex items-center space-x-4 whitespace-nowrap">
                         <div class="flex text-xl items-center">
                             <!--ETH SVG-->
                             <span class="-ml-1" data-tippy-content="ETH">
                               <svg x="0" y="0" viewBox="0 0 1920 1920"
-                                   xml:space="preserve" class="mr-1 h-8 w-8">
+                                   xml:space="preserve" class="mr-1 h-7 w-7">
                                 <path fill="#8A92B2" d="M959.8 80.7L420.1 976.3 959.8 731z"></path>
                                 <path fill="#62688F" d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"></path>
                                 <path fill="#454A75" d="M959.8 1295.4l539.8-319.1L959.8 731z"></path>
@@ -228,7 +216,7 @@
                                     <span class="text-green font-bold tracking-tight">${sellorder.price}</span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="text-green font-bold tracking-tight">Not for sale</span>
+                                    <span class="text-green text-[1.1rem] font-bold tracking-tight">Not for sale</span>
                                 </c:otherwise>
                             </c:choose>
                         </div>
@@ -275,5 +263,21 @@
             </div>
     </section>
 </main>
+<c:choose>
+    <c:when test="${sellorder != null}">
+        <jsp:include page="../components/DeleteModal.jsp">
+            <jsp:param name="title" value="Delete Sell Order"/>
+            <jsp:param name="description" value="Are you sure you want to delete this sell order? All buy orders for this NFT will be lost."/>
+            <jsp:param name="deletePath" value="/sell/delete/${nft.nft_id}"/>
+        </jsp:include>
+    </c:when>
+    <c:otherwise>
+        <jsp:include page="../components/DeleteModal.jsp">
+            <jsp:param name="title" value="Delete NFT"/>
+            <jsp:param name="description" value="Are you sure you want to delete this NFT? This action is irreversible."/>
+            <jsp:param name="deletePath" value="/product/delete/${nft.nft_id}"/>
+        </jsp:include>
+    </c:otherwise>
+</c:choose>
 </body>
 </html>
