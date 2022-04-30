@@ -29,21 +29,17 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public boolean update(long id, String category, BigDecimal price, String description) {
-        if (!isUserOwner(id))
-            return false;
-        return sellOrderDao.update(id, category, price, description);
+    public void update(long id, String category, BigDecimal price) {
+        sellOrderDao.update(id, category, price);
     }
 
     @Override
-    public boolean delete(long id) {
-        if (!isUserOwner(id))
-            return false;
-        return sellOrderDao.delete(id);
+    public void delete(long id) {
+        sellOrderDao.delete(id);
     }
 
     @Override
-    public boolean isUserOwner(long id){
-        return true;
+    public long getNftWithOrder(String id) {
+        return sellOrderDao.getNftWithOrder(id);
     }
 }

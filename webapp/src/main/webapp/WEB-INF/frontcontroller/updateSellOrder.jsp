@@ -11,18 +11,18 @@
       <h1 class="text-3xl text-center mb-12">
         Update sell order
       </h1>
-      <c:url value="/product/update/${order.id}" var="postPath"/>
-      <form:form modelAttribute="UpdateSellOrderForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
+      <c:url value="/sell/update/${nft.id}" var="postPath"/>
+      <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">
             <span class="font-bold">NFT id: </span> 
-            ${order.id}
+            ${nft.nft_id}
           </p>
         </div>
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">
             <span class="font-bold">NFT contract: </span> 
-            ${order.nftAddress}
+            ${nft.contract_addr}
           </p>
         </div>
         <form:label path="category" class="flex flex-col gap-1">
@@ -60,16 +60,6 @@
           />
           <form:errors path="price" element="p" cssStyle="color: tomato" />
         </form:label>
-        <form:label path="description" class="flex flex-col gap-1">
-          <span class="text-slate-600">Description</span>
-          <form:textarea
-            id="description"
-            path="description"
-            autoComplete="off"
-            placeholder="Nft description"
-            class="min-h-16 max-h-32 pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
-          />
-        </form:label>
         <input
           type="submit"
           value="Update"
@@ -77,9 +67,5 @@
         />
       </form:form>
     </div>
-
-    <script>
-      document.getElementById("description").defaultValue = "${order.description}"
-    </script>
 </body>
 </html>

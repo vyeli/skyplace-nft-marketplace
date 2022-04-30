@@ -10,4 +10,8 @@ public interface FavoriteService {
     void addNftFavorite(String productId, User user);
 
     void removeNftFavorite(String productId, User user);
+
+    long getNftFavorites(String productId);
+
+    boolean userFavedNft(long user_id, long id_nft);
 }

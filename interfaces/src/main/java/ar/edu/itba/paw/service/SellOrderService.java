@@ -11,10 +11,10 @@ public interface SellOrderService {
 
     Optional<SellOrder> getOrderById(long id);
 
-    boolean update(long id, String category, BigDecimal price, String description);
+    void update(long id, String category, BigDecimal price);
 
-    boolean delete(long id);
+    void delete(long id);
 
-    boolean isUserOwner(long id);
+    long getNftWithOrder(String id);
 
 }

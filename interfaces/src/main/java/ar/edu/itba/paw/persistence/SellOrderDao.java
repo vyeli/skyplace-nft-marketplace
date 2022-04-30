@@ -11,8 +11,10 @@ public interface SellOrderDao {
 
     Optional<SellOrder> getOrderById(long id);
 
-    boolean update(long id, String category, BigDecimal price, String description);
+    boolean update(long id, String category, BigDecimal price);
 
     boolean delete(long id);
+
+    long getNftWithOrder(String id);
 
 }

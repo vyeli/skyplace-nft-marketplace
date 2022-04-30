@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -67,5 +68,18 @@ public class FavoriteJdbcDao implements FavoriteDao{
     @Override
     public boolean userFavedNft(long user_id, long id_nft) {
         return jdbcTemplate.query("SELECT * FROM favorited WHERE user_id=? AND id_nft=?", new Object[]{user_id, id_nft}, (rs, rownum) -> rs.getString("id_nft")).size() > 0;
+    }
+
+    @Override
+    public long getNftFavorites(String productId) {
+        try {
+            long nftId = Long.parseLong(productId);
+            List<Long> res = jdbcTemplate.query("SELECT count(*) FROM favorited WHERE id_nft=?", new Object[]{nftId}, (rs, rownum) -> rs.getLong("count"));
+            if(res.size() > 0)
+                return res.get(0);
+            return 0;
+        } catch(Exception e) {
+            return 0;
+        }
     }
 }

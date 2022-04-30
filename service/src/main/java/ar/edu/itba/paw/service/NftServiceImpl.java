@@ -96,4 +96,9 @@ public class NftServiceImpl implements NftService{
         return Optional.of(publications);
     }
 
+    @Override
+    public boolean userOwnsNft(String productId, User user) {
+        return getNFTById(productId).filter(value -> value.getId_owner() == user.getId()).isPresent();
+    }
+
 }

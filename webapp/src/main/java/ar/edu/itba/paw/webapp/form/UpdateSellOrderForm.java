@@ -12,7 +12,6 @@ public class UpdateSellOrderForm {
     @DecimalMin(value="0", message = "Price must be a positive number")
     private BigDecimal price;
 
-    private String description;
 
     public String getCategory() {
         return category;
@@ -29,13 +28,4 @@ public class UpdateSellOrderForm {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
 }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
-import java.util.function.Consumer;
 
 import org.springframework.validation.BindingResult;
 
@@ -89,6 +88,11 @@ public class FrontController {
         Optional<Nft> nft = nftService.getNFTById(productId);
         if(!nft.isPresent())
             return notFound();
+        Optional<User> user = userService.getCurrentUser();
+        if(!user.isPresent())
+            return notFound();
+        if(user.get().getId() != nft.get().getId_owner())
+            return new ModelAndView("redirect:/403");
         mav.addObject("nft", nft.get());
         List<String> categories = categoryService.getCategories();
         mav.addObject("categories", categories);
@@ -104,6 +108,67 @@ public class FrontController {
         return sellOrder.map(order -> new ModelAndView("redirect:/product/" + order.getNft_id())).orElseGet(() -> createSellOrderForm(form, productId));
     }
 
+    @RequestMapping(value = "/sell/update/{productId}", method = RequestMethod.GET)
+    public ModelAndView getUpdateSellOrder(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
+        System.out.println("HOLA?");
+        Optional<User> currentUser = userService.getCurrentUser();
+        if(!currentUser.isPresent())
+            return new ModelAndView("redirect:/403");
+
+        if (!nftService.userOwnsNft(productId, currentUser.get()))
+            return new ModelAndView("redirect:/403");
+
+        final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
+        List<String> categories = categoryService.getCategories();
+        mav.addObject("categories", categories);
+        Optional<Nft> nft = nftService.getNFTById(productId);
+        if(!nft.isPresent() || nft.get().getSell_order() == null)
+            return notFound();
+        mav.addObject(  "nft", nft.get());
+        Optional<SellOrder> order = sellOrderService.getOrderById(nft.get().getSell_order());
+        if(!order.isPresent())
+            return notFound();
+        mav.addObject("order",order.get());
+        return mav;
+    }
+
+    @RequestMapping(value = "/sell/update/{productId}", method = RequestMethod.POST)
+    public ModelAndView updateSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors, @PathVariable String productId) {
+        if (errors.hasErrors()) {
+            return getUpdateSellOrder(form, productId);
+        }
+
+        Optional<User> currentUser = userService.getCurrentUser();
+        if(!currentUser.isPresent())
+            return new ModelAndView("redirect:/403");
+
+        if (!nftService.userOwnsNft(productId, currentUser.get()))
+            return new ModelAndView("redirect:/403");
+
+        Optional<Nft> nft = nftService.getNFTById(productId);
+        if(!nft.isPresent() || nft.get().getSell_order() == null)
+            return notFound();
+        sellOrderService.update(nft.get().getSell_order(), form.getCategory(), form.getPrice());
+        return new ModelAndView("redirect:/product/" + nft.get().getId());
+    }
+
+    @RequestMapping(value = "/sell/delete/{productId}", method = RequestMethod.POST)
+    public ModelAndView deleteSellOrder(@PathVariable String productId) {
+        Optional<User> currentUser = userService.getCurrentUser();
+        if(!currentUser.isPresent())
+            return new ModelAndView("redirect:/403");
+
+        if (!nftService.userOwnsNft(productId, currentUser.get()))
+            return new ModelAndView("redirect:/403");
+
+        Optional<Nft> nft = nftService.getNFTById(productId);
+        if(!nft.isPresent() || nft.get().getSell_order() == null)
+            return notFound();
+
+        sellOrderService.delete(nft.get().getSell_order());
+        return new ModelAndView("redirect:/product/" + nft.get().getId());
+    }
+
     /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
     public ModelAndView product(@ModelAttribute("buyNftForm") final BuyNftForm form, @PathVariable String productId) {
@@ -111,15 +176,23 @@ public class FrontController {
         if(!nft.isPresent())
             return notFound();
         Optional<User> owner = userService.getUserById(nft.get().getId_owner());
-
+        Optional<User> currentUser = userService.getCurrentUser();
         Optional<SellOrder> sellOrder = Optional.empty();
         if(nft.get().getSell_order() != null)
             sellOrder = sellOrderService.getOrderById(nft.get().getSell_order());
 
+        long favorites = favoriteService.getNftFavorites(productId);
+        boolean isFaved = false;
+        if(currentUser.isPresent())
+            isFaved = favoriteService.userFavedNft(currentUser.get().getId(), nft.get().getId());
+
         final ModelAndView mav = new ModelAndView("frontcontroller/product");
+        mav.addObject("favorites", favorites);
         mav.addObject("nft", nft.get());
+        mav.addObject("isFaved", isFaved);
         sellOrder.ifPresent(order -> mav.addObject("sellorder", order));
         owner.ifPresent(user -> mav.addObject("owner", user));
+        currentUser.ifPresent(user -> mav.addObject("currentUser", currentUser.get()));
 
         
         return mav;
@@ -143,6 +216,8 @@ public class FrontController {
 
         if(!currentUser.isPresent())
             return product(form, productId);
+        if(currentUser.get().getId() == nft.get().getId_owner())
+            return product(form, productId);
         Optional<User> seller = userService.getUserById(nft.get().getId_owner());
         if(!seller.isPresent())
             return product(form, productId);
@@ -156,31 +231,21 @@ public class FrontController {
     }
 
     @RequestMapping(value = "/product/update/{productId}", method = RequestMethod.GET)
-    public ModelAndView updateSellOrder(@ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, @PathVariable long productId) {
-        if (!sellOrderService.isUserOwner(productId))
-            return new ModelAndView("redirect:/403");
-
-        final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
-        SellOrder order = sellOrderService.getOrderById(productId).orElseThrow(() -> new SellOrderNotFoundException("No existing order with id " + productId));
-        List<String> categories = categoryService.getCategories();
-        mav.addObject("categories", categories);
-        mav.addObject("order", order);
-        return mav;
+    public ModelAndView getUpdateNft(@ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, @PathVariable long productId) {
+        return null;
     }
 
     @RequestMapping(value = "/product/update/{productId}", method = RequestMethod.POST)
-    public ModelAndView updateSellOrder(@Valid @ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, final BindingResult errors, @PathVariable long productId) {
+    public ModelAndView updateNft(@Valid @ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, final BindingResult errors, @PathVariable String productId) {
         if (errors.hasErrors()) {
-            return updateSellOrder(form, productId);
+            return null;
         }
 
-        sellOrderService.update(productId, form.getCategory(), form.getPrice(), form.getDescription());
         return new ModelAndView("redirect:/product/" + productId);
     }
 
     @RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
-    public ModelAndView deleteSellOrder(@PathVariable long productId) {
-        sellOrderService.delete(productId);
+    public ModelAndView deleteNft(@PathVariable String productId) {
         return new ModelAndView("redirect:/profile");
     }
 
@@ -319,7 +384,7 @@ public class FrontController {
 
     @RequestMapping("/newProduct")
     public ModelAndView newProduct() {
-        final ModelAndView mav = new ModelAndView("frontcontroller/newProduct");
+        final ModelAndView mav = new ModelAndView("product");
         return mav;
     }
 
