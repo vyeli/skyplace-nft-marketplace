@@ -13,9 +13,12 @@ public class UserForm {
     @Email
     private String email;
 
-    //TODO: VALIDATE WALLET ADDRESS FORMAT
     @NotBlank
+    @Pattern(regexp = "^0x[a-fA-F0-9]{40}$", message = "Wallet must begin with 0x and contain 40 characters (a-f or 0-9)")
     private String walletAddress;
+
+    @NotBlank
+    private String walletChain;
 
     @NotBlank
     @Size(min = 6, max = 100)
@@ -56,5 +59,13 @@ public class UserForm {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getWalletChain() {
+        return walletChain;
+    }
+
+    public void setWalletChain(String walletChain) {
+        this.walletChain = walletChain;
     }
 }

@@ -6,14 +6,19 @@ import ar.edu.itba.paw.service.*;
 import ar.edu.itba.paw.webapp.exceptions.SellOrderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
 
 import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -26,6 +31,9 @@ public class FrontController {
     private final UserService userService;
     private final ImageService imageService;
     private final NftService nftService;
+
+//    @Autowired
+//    protected AuthenticationManager authenticationManager;
 
     @Autowired
     public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, MailingService mailingService, UserService userService, ImageService imageService, NftService nftService) {
@@ -163,22 +171,33 @@ public class FrontController {
     }
 
     // Create
-    @RequestMapping( value = "/register", method = RequestMethod.GET )
+    @RequestMapping( value = "/register", method = RequestMethod.GET)
     public ModelAndView createUserForm(@ModelAttribute("userForm") final UserForm form) {
         final ModelAndView mav = new ModelAndView("frontcontroller/register");
+        List<String> chains = chainService.getChains();
+        mav.addObject("chains", chains);
         return mav;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ModelAndView createUser(@Valid @ModelAttribute("userForm") final UserForm form, final BindingResult errors) {
+    public ModelAndView createUser(@Valid @ModelAttribute("userForm") final UserForm form, final BindingResult errors, HttpServletRequest request) {
         if (errors.hasErrors()) {
             return createUserForm(form);
         }
-        final Optional<User> user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getPassword());
+        final Optional<User> user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getWalletChain(), form.getPassword());
+
         if (!user.isPresent()) {
             final ModelAndView mav = new ModelAndView("frontcontroller/register");
-            return mav.addObject("emailExist", Boolean.TRUE);
+            List<String> chains = chainService.getChains();
+            mav.addObject("chains", chains);
+            mav.addObject("error", Boolean.TRUE);
+            return mav;
         }
+
+//        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.get().getUsername(), user.get().getPassword());
+//        authToken.setDetails(new WebAuthenticationDetails(request));
+//        Authentication authentication = authenticationManager.authenticate(authToken);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         mailingService.sendRegisterMail(user.get().getEmail(), user.get().getUsername());
         return new ModelAndView("redirect:/" );

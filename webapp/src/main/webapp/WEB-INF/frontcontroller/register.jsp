@@ -19,8 +19,9 @@
         <form:form modelAttribute="userForm" action="${postPath}" method="post" class="mt-8 space-y-6">
             <div class="rounded-md shadow-sm -space-y-px">
                 <div>
-                    <c:if test="${emailExist == true}">
-                        <p class="text-red-500 mb-4 text-center">Email already registered, would you like to <a href="<c:url value="/login"/>" class="text-cyan-400">Log in </a> ?</p>
+                    <c:if test="${error == true}">
+<%--                        <p class="text-red-500 mb-4 text-center">Email already registered, would you like to <a href="<c:url value="/login"/>" class="text-cyan-400">Log in </a> ?</p>--%>
+                        <p class="text-red-500 mb-4 text-center">Error creating user, invalid or duplicate data.</p>
                     </c:if>
                     <form:label path="email">Email</form:label>
                     <form:input path="email" type="email" autocomplete="email" required="true"
@@ -32,6 +33,20 @@
                     <form:input path="walletAddress" type="text" required="true"
                                 class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm"/>
                     <form:errors path="walletAddress" element="p" cssStyle="color: tomato" />
+                </div>
+                <div class="pt-4 flex flex-col">
+                    <form:label  path="walletChain">Wallet chain</form:label>
+                    <form:select
+                            path="walletChain"
+                            required="true"
+                            class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
+                    >
+                        <option disabled selected>Select a blockchain</option>
+                        <c:forEach var="chain" items="${chains}">
+                            <form:option value="${chain}"><c:out value="${chain}" /></form:option>
+                        </c:forEach>
+                    </form:select>
+                    <form:errors path="walletChain" element="p" cssStyle="color: tomato" />
                 </div>
                 <div class="pt-4">
                     <form:label path="username">Username</form:label>

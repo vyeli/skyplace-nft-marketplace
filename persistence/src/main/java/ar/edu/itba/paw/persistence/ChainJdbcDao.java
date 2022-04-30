@@ -22,6 +22,6 @@ public class ChainJdbcDao implements ChainDao {
 
     @Override
     public List<String> getChains() {
-        return jdbcTemplate.query("SELECT * FROM Chains", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM Chains ORDER BY chain ASC", ROW_MAPPER);
     }
 }
