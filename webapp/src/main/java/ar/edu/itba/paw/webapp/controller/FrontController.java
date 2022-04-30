@@ -6,11 +6,6 @@ import ar.edu.itba.paw.service.*;
 import ar.edu.itba.paw.webapp.exceptions.SellOrderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,9 +26,6 @@ public class FrontController {
     private final UserService userService;
     private final ImageService imageService;
     private final NftService nftService;
-
-    @Autowired
-    protected AuthenticationManager authenticationManager;
 
     @Autowired
     public FrontController(SellOrderService sos, CategoryService categoryService, ChainService chainService, MailingService mailingService, UserService userService, ImageService imageService, NftService nftService) {
@@ -194,13 +186,8 @@ public class FrontController {
             return mav;
         }
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.get().getUsername(), user.get().getPassword());
-        authToken.setDetails(new WebAuthenticationDetails(request));
-        Authentication authentication = authenticationManager.authenticate(authToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
         mailingService.sendRegisterMail(user.get().getEmail(), user.get().getUsername());
-        return new ModelAndView("redirect:/" );
+        return new ModelAndView("redirect:/login" );
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
