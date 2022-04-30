@@ -270,4 +270,10 @@ public class FrontController {
         return sos.removeFavorite(user.getId(), productId) ? new ModelAndView("redirect:/explore") : new ModelAndView("redirect:/403");
     }
 
+    @RequestMapping("/newProduct")
+    public ModelAndView newProduct() {
+        final ModelAndView mav = new ModelAndView("frontcontroller/newProduct");
+        return mav;
+    }
+
 }
