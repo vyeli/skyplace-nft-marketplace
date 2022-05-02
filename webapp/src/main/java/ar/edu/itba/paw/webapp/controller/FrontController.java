@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 import org.springframework.validation.BindingResult;
@@ -340,6 +342,13 @@ public class FrontController {
             redirectUrl.append("?tab=").append(tab);
         }
         return new ModelAndView(redirectUrl.toString());
+    }
+
+    @RequestMapping("/mail")
+    public ModelAndView mailTest(){
+        // mailingService.sendRegisterMail("spiegarejr@gmail.com", "spiegarejr");
+        mailingService.sendOfferMail("mlbanchini1970@gmail.com", "spiegarejr@gmail.com", "monkey wrench", "0x70edA274b0ac62830feDa8AdE17746fEf997230E", BigDecimal.valueOf((float)0.000015));
+        return new ModelAndView("redirect:/");
     }
 
     @RequestMapping("/profile/{userId}")

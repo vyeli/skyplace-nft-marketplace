@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bid placed for your NFT</title>
+</head>
+<body style="background-color: #E5E7EB; display: flex;">
+    <div style="background-color: #FFFFFF; color: #1F2937; padding: 1rem; width: 60%; max-width: 42rem; margin: 2rem auto; border-radius: 0.375rem; font-family: Roboto, sans-serif;">
+        <div style="text-align: center">
+            <img src="cid:logo" th:src="|cid:${logoResourceName}|" alt="skyplace_logo"/>
+            <h2 style="font-size: 1.875rem; line-height: 2.25rem; margin-top: 0.125rem;">Skyplace</h2>
+        </div>
+        <p>Hello <span th:text="${sellerMail}">someuser</span>,</p>
+        <p>We wanted to inform you that user <span th:text="${buyerMail}">someuser</span> has just placed a bid for your NFT <span th:text="${nftName}">someNFT</span>.</p>
+        <hr style="color: #E5E7EB;">
+        <ul>
+            <li>Buyer: <span th:text="${buyerMail}"></span></li>
+            <li>Nft name: <span th:text="${nftName}"></span></li>
+            <li>Nft address: <span th:text="${nftAddress}"></span></li>
+            <li>Price: <span th:text="${nftPrice}"></span></li>
+        </ul>
+    </div>
+</body>
+</html>

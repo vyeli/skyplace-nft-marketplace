@@ -33,6 +33,7 @@
         <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
         <spring-security-taglibs.version>5.2.2.RELEASE</spring-security-taglibs.version>
         <commons-text.version>1.9</commons-text.version>
+        <thymeleaf.version>3.0.15.RELEASE</thymeleaf.version>
     </properties>
 
     <dependencyManagement>
@@ -129,10 +130,10 @@
                 <version>${org.slf4j.version}</version>
             </dependency>
             <dependency>
-            <groupId>org.logback-extensions</groupId>
-            <artifactId>logback-ext-spring</artifactId>
-            <version>${logback-ext-spring.version}</version>
-            <scope>runtime</scope>
+                <groupId>org.logback-extensions</groupId>
+                <artifactId>logback-ext-spring</artifactId>
+                <version>${logback-ext-spring.version}</version>
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security</groupId>
@@ -148,6 +149,21 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
                 <version>${commons-text.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.thymeleaf</groupId>
+                <artifactId>thymeleaf</artifactId>
+                <version>${thymeleaf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.thymeleaf</groupId>
+                <artifactId>thymeleaf-spring4</artifactId>
+                <version>${thymeleaf.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
