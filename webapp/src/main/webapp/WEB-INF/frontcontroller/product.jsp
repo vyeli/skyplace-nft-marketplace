@@ -17,16 +17,27 @@
                         <img src="<c:url value="/images/${nft.id_image}" />"
                              alt="<c:out value="${nft.nft_name}" />" class="rounded-2xl">
                     </figure>
-                    <!--TAGS-->
+                    <!--TAGS -->
+                    <c:choose>
+                        <c:when test="${showOfferTab}">
+                            <c:set value="active" var="offerActive" />
+                            <c:set value="show" var="showOffer" />
+                        </c:when>
+                        <c:otherwise>
+                            <c:set value="active" var="detailActive" />
+                            <c:set value="show" var="showDetail" />
+                        </c:otherwise>
+                    </c:choose>
+
                     <div class="rounded-lg border-2">
                         <ul class="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0 border-b"
                             id="tabs-tab" role="tablist">
                             <!--Details -->
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active hover:text-cyan-700 text-cyan-400 relative flex items-center whitespace-nowrap py-3 px-6"
+                                <button class="nav-link hover:text-cyan-700 text-cyan-400 relative flex items-center whitespace-nowrap py-3 px-6 ${detailActive}"
                                         id="tabs-home-tab" data-bs-toggle="tab" data-bs-target="#tabs-home"
                                         type="button"
-                                        role="tab" aria-controls="tabs-home" aria-selected="true">
+                                        role="tab" aria-controls="tabs-home" aria-selected="${detailActive != null}">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
                                          class="mr-1 h-5 w-5 fill-current">
                                         <path fill="none" d="M0 0h24v24H0z"></path>
@@ -51,9 +62,9 @@
 
                             <!-- Offers -->
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link hover:text-cyan-700 text-cyan-400 relative flex items-center whitespace-nowrap py-3 px-6"
+                                <button class="nav-link hover:text-cyan-700 text-cyan-400 relative flex items-center whitespace-nowrap py-3 px-6 ${offerActive}"
                                         id="tabs-messages-tab" data-bs-toggle="tab" data-bs-target="#tabs-messages"
-                                        type="button" role="tab" aria-controls="tabs-messages" aria-selected="false">
+                                        type="button" role="tab" aria-controls="tabs-messages" aria-selected="${offerActive != null}">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
                                          class="mr-1 h-5 w-5 fill-current">
                                         <path fill="none" d="M0 0h24v24H0z"></path>
@@ -65,7 +76,7 @@
                         </ul>
                         <!-- TAB CONTENT-->
                         <div class="tab-content p-4 pt-6 bg-slate-50" id="tabs-tabContent">
-                            <div class="tab-pane fade show active" id="tabs-home" role="tabpanel"
+                            <div class="tab-pane fade ${showDetail} ${detailActive}" id="tabs-home" role="tabpanel"
                                  aria-labelledby="tabs-home-tab">
                                 <div class="flex flex-col gap-2">
                                     <div class="flex justify-between">
@@ -78,10 +89,10 @@
                                         <p>Token ID</p>
                                         <p class="w-3/5 overflow-hidden text-right"><c:out value="${nft.nft_id}" /></p>
                                     </div>
-                                    <c:if test="${sellorder != null}">
+                                    <c:if test="${sellOrder != null}">
                                         <div class="flex justify-between">
                                             <p>Category</p>
-                                            <p><c:out value="${sellorder.category}" /></p>
+                                            <p><c:out value="${sellOrder.category}" /></p>
                                         </div>
                                     </c:if>
                                     <div class="flex justify-between">
@@ -92,11 +103,135 @@
                             </div>
                             <div class="tab-pane fade" id="tabs-profile" role="tabpanel"
                                  aria-labelledby="tabs-profile-tab">
-                                Tab 2 content
+                                This NFT does not contain any special property
                             </div>
-                            <div class="tab-pane fade" id="tabs-messages" role="tabpanel"
+                            <div class="tab-pane fade ${showOffer} ${offerActive}" id="tabs-messages" role="tabpanel"
                                  aria-labelledby="tabs-profile-tab">
-                                Tab 3 content
+                                <div class="flex flex-col divide-y">
+<%--                                    <c:if test="${(edit == null || edit != true) && sellOrder != null && owner.id == currentUser.id}">--%>
+<%--                                    <div class="flex justify-end">--%>
+<%--                                        <form action="<c:url value="/product/${productId}#tabs-tab" />" class="mb-0">--%>
+<%--                                            <input type="hidden" value="true" name="edit" />--%>
+<%--                                            <input type="hidden" value="${offerPage}" name="offerPage" />--%>
+<%--                                            <button type="submit" class="flex items-center">--%>
+<%--                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>--%>
+<%--                                                <span>Edit</span>--%>
+<%--                                            </button>--%>
+<%--                                        </form>--%>
+<%--                                    </div>--%>
+<%--                                    </c:if>--%>
+                                    <c:set var="offerCount" value="1" scope="page" />
+                                    <c:forEach items="${buyOffer}" var="offer">
+                                        <div class="flex items-center justify-between py-3">
+                                            <div class="flex flex-col">
+                                                <div class="flex gap-1">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                                                    <span class="font-semibold">Offer #${offerCount+5*(offerPage-1)}</span>
+                                                </div>
+                                                <p class="text-sm">
+                                                    by
+                                                    <a href="<c:url value="/profile/${offer.buyer.id}" />" class="text-cyan-600">
+                                                        ${offer.buyer.email}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                            <div class="flex flex-col gap-1 items-end">
+                                                <div class="flex">
+                                                    <svg x="0" y="0" viewBox="0 0 1920 1920" xml:space="preserve" class="mr-1 h-5 w-5">
+                                                        <path fill="#8A92B2" d="M959.8 80.7L420.1 976.3 959.8 731z"></path>
+                                                        <path fill="#62688F" d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"></path>
+                                                        <path fill="#454A75" d="M959.8 1295.4l539.8-319.1L959.8 731z"></path>
+                                                        <path fill="#8A92B2" d="M420.1 1078.7l539.7 760.6v-441.7z"></path>
+                                                        <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
+                                                    </svg>
+                                                    <span class="text-slate-700">
+                                                        ${offer.buyOrder.amount}
+                                                    </span>
+                                                </div>
+                                                <c:if test="${sellOrder != null && owner.id == currentUser.id}">
+                                                    <div class="flex gap-2">
+                                                        <button onclick="handleReject(${offer.buyOrder.id_sellorder}, ${offer.buyOrder.id_buyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
+                                                            Reject
+                                                        </button>
+                                                        <button onclick="handleAccept(${offer.buyOrder.id_sellorder}, ${offer.buyOrder.id_buyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
+                                                            Accept
+                                                        </button>
+                                                    </div>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                        <c:set var="offerCount" value="${offerCount + 1}" scope="page"/>
+                                    </c:forEach>
+                                    <c:choose>
+                                        <c:when test="${sellOrder == null}">
+                                            <span>This NFT is not for sale!</span>
+                                        </c:when>
+                                        <c:when test="${offerCount == 1}">
+                                            <span>There are no offers for this NFT yet</span>
+                                        </c:when>
+                                    </c:choose>
+                                    <c:if test="${amountOfferPages > 1 && offerPage <= amountOfferPages}">
+                                    <div class="flex justify-center pt-4">
+                                        <c:if test="${offerPage > 1}">
+                                            <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" class="pr-2">
+                                                <input type="hidden" name="offerPage" value="${offerPage-1}" />
+                                                <input type="hidden" name="edit" value="${edit}" />
+                                                <button type="submit" class="text-cyan-700 text-lg">
+                                                    Previous
+                                                </button>
+                                            </form>
+                                            <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get">
+                                                <input type="hidden" name="offerPage" value="1" />
+                                                <input type="hidden" name="edit" value="${edit}" />
+                                                <button type="submit" class="text-cyan-700 text-lg px-2">
+                                                    1
+                                                </button>
+                                            </form>
+                                        </c:if>
+                                        <c:if test="${offerPage == 1}">
+                                            <span class="text-slate-400 text-lg pr-2">Previous</span>
+                                        </c:if>
+                                        <c:if test="${offerPage-1 > 1}">
+                                            <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" >
+                                                <input type="hidden" name="offerPage" value="${offerPage-1}" />
+                                                <input type="hidden" name="edit" value="${edit}" />
+                                                <button type="submit" class="text-cyan-700 text-lg px-2">
+                                                    ...${offerPage-1}
+                                                </button>
+                                            </form>
+                                        </c:if>
+                                        <span class="text-lg px-2">${offerPage}</span>
+                                        <c:if test="${offerPage+1 < amountOfferPages}">
+                                            <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get">
+                                                <input type="hidden" name="offerPage" value="${offerPage+1}" />
+                                                <input type="hidden" name="edit" value="${edit}" />
+                                                <button type="submit" class="text-cyan-700 text-lg px-2">
+                                                    ${offerPage+1}...
+                                                </button>
+                                            </form>
+                                        </c:if>
+                                        <c:if test="${offerPage < amountOfferPages}">
+                                            <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get">
+                                                <input type="hidden" name="offerPage" value="${amountOfferPages}" />
+                                                <input type="hidden" name="edit" value="${edit}" />
+                                                <button type="submit" class="text-cyan-700 text-lg px-2">
+                                                        ${amountOfferPages}
+                                                </button>
+                                            </form>
+                                            <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" class="px-2">
+                                                <input type="hidden" name="offerPage" value="${offerPage+1}" />
+                                                <input type="hidden" name="edit" value="${edit}" />
+                                                <button type="submit" class="text-cyan-700 text-lg">
+                                                    Next
+                                                </button>
+                                            </form>
+                                        </c:if>
+                                        <c:if test="${offerPage == amountOfferPages}">
+                                            <span class="text-slate-400 text-lg px-2">Next</span>
+                                        </c:if>
+                                    </div>
+                                    </c:if>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -182,7 +317,6 @@
                                                 </li>
                                             </c:otherwise>
                                         </c:choose>
-
                                     </c:if>
                                 </ul>
                             </div>
@@ -212,8 +346,8 @@
                               </svg>
                             </span>
                             <c:choose>
-                                <c:when test="${sellorder != null}">
-                                    <span class="text-green font-bold tracking-tight">${sellorder.price}</span>
+                                <c:when test="${sellOrder != null}">
+                                    <span class="text-green font-bold tracking-tight">${sellOrder.price}</span>
                                 </c:when>
                                 <c:otherwise>
                                     <span class="text-green text-[1.1rem] font-bold tracking-tight">Not for sale</span>
@@ -232,7 +366,7 @@
                         </p>
                     </div>
                     <!-- Bid -->
-                    <c:if test="${sellorder != null && (currentUser == null || owner.email != currentUser.email)}">
+                    <c:if test="${sellOrder != null && (currentUser == null || owner.id != currentUser.id)}">
                     <div class=" border-gray-200 rounded-2xl border bg-white pb-4 flex-col justify-between mb-8 bg-slate-50">
                         <div class="flex text-xl px-4  py-2 border-b bg-white rounded-t-2xl">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
@@ -242,7 +376,7 @@
                             <c:url value="/product/${nft.id}" var="postPath" />
                             <form:form modelAttribute="buyNftForm" action="${postPath}" method="post">
                                 <label class="flex mb-4 items-center">
-                                    <span class="text-lg pr-2">Offer</span>
+                                    <span class="text-lg pr-2">Your offer</span>
                                     <svg x="0" y="0" viewBox="0 0 1920 1920" xml:space="preserve" class="mr-1 h-6 w-6">
                                     <path fill="#8A92B2" d="M959.8 80.7L420.1 976.3 959.8 731z"></path>
                                         <path fill="#62688F" d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"></path>
@@ -250,9 +384,9 @@
                                         <path fill="#8A92B2" d="M420.1 1078.7l539.7 760.6v-441.7z"></path>
                                         <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
                                     </svg>
-                                    <form:input type="number" value="${sellorder.price}" class="rounded-lg border-slate-300" min="0" step="0.000000000000000001" path="price" />
+                                    <form:input type="number" value="${sellOrder.price}" class="rounded-lg border-slate-300" min="0" step="0.000000000000000001" path="price" />
                                 </label>
-                                <input type="submit" class="bg-cyan-600 shadow-accent-volume hover:bg-cyan-700 inline-block w-1/2 rounded-lg py-3 px-8 text-center font-semibold text-white transition-all" value="Make offer">
+                                <input type="submit" class="bg-cyan-600 shadow-accent-volume hover:bg-cyan-700 inline-block w-1/2 rounded-lg py-3 px-8 text-center font-semibold text-white transition-all cursor-pointer" value="Make offer">
                                 <form:errors path="price" element="p" cssStyle="color: tomato" />
                             </form:form>
                         </div>
@@ -263,6 +397,7 @@
             </div>
     </section>
 </main>
+<%@ include file="../components/OfferModal.jsp" %>
 <c:choose>
     <c:when test="${sellorder != null}">
         <jsp:include page="../components/DeleteModal.jsp">

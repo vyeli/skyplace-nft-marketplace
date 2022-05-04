@@ -22,7 +22,7 @@ public class UpdateSellOrderForm {
     }
 
     public BigDecimal getPrice() {
-        return price;
+        return new BigDecimal(price.stripTrailingZeros().toPlainString());
     }
 
     public void setPrice(BigDecimal price) {

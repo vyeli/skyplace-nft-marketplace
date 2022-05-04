@@ -20,7 +20,7 @@ public class SellNftForm {
     }
 
     public BigDecimal getPrice() {
-        return price.stripTrailingZeros();
+        return new BigDecimal(price.stripTrailingZeros().toPlainString());
     }
 
     public void setPrice(BigDecimal price) {

@@ -7,6 +7,7 @@ import ar.edu.itba.paw.webapp.exceptions.SellOrderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -112,7 +113,6 @@ public class FrontController {
 
     @RequestMapping(value = "/sell/update/{productId}", method = RequestMethod.GET)
     public ModelAndView getUpdateSellOrder(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
-        System.out.println("HOLA?");
         Optional<User> currentUser = userService.getCurrentUser();
         if(!currentUser.isPresent())
             return new ModelAndView("redirect:/403");
@@ -173,16 +173,22 @@ public class FrontController {
 
     /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("buyNftForm") final BuyNftForm form, @PathVariable String productId) {
+    public ModelAndView product(@ModelAttribute("buyNftForm") final BuyNftForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
         final Optional<Nft> nft = nftService.getNFTById(productId);
         if(!nft.isPresent())
             return notFound();
         Optional<User> owner = userService.getUserById(nft.get().getId_owner());
         Optional<User> currentUser = userService.getCurrentUser();
-        Optional<SellOrder> sellOrder = Optional.empty();
-        if(nft.get().getSell_order() != null)
-            sellOrder = sellOrderService.getOrderById(nft.get().getSell_order());
-
+        Optional<SellOrder> sellOrders = Optional.empty();
+        Optional<List<BuyOffer>> buyOffers = Optional.empty();
+        long amountOfferPages = 0;
+        if(nft.get().getSell_order() != null) {
+            sellOrders = sellOrderService.getOrderById(nft.get().getSell_order());
+            if(sellOrders.isPresent()) {
+                buyOffers = buyOrderService.getOrdersBySellOrderId(offerPage, sellOrders.get().getId());
+                amountOfferPages = buyOrderService.getAmountPagesBySellOrderId(sellOrders.get().getId());
+            }
+        }
         long favorites = favoriteService.getNftFavorites(productId);
         boolean isFaved = false;
         if(currentUser.isPresent())
@@ -192,42 +198,66 @@ public class FrontController {
         mav.addObject("favorites", favorites);
         mav.addObject("nft", nft.get());
         mav.addObject("isFaved", isFaved);
-        sellOrder.ifPresent(order -> mav.addObject("sellorder", order));
+        long offPage = 1;
+        try {
+            offPage = Long.parseLong(offerPage);
+        } catch(Exception ignored){}
+        if(offPage < 1)
+            offPage = 1;
+        mav.addObject("offerPage", offPage);
+        mav.addObject("showOfferTab", offerPage != null);
+        mav.addObject("amountOfferPages", amountOfferPages);
+        sellOrders.ifPresent(sellOrder -> mav.addObject("sellOrder", sellOrder));
+        buyOffers.ifPresent(buyOffer -> mav.addObject("buyOffer", buyOffer));
         owner.ifPresent(user -> mav.addObject("owner", user));
         currentUser.ifPresent(user -> mav.addObject("currentUser", currentUser.get()));
 
-        
+        mav.addObject("productId", productId);
         return mav;
     }
 
+    @RequestMapping(value="/buyorder/confirm", method = RequestMethod.POST)
+    public ModelAndView confirmBuyOrder(@RequestParam(value = "sellOrder") String sellorder, @RequestParam(value = "buyer") String buyer, @RequestParam(value = "product") String productId) {
+        buyOrderService.confirmBuyOrder(sellorder, buyer);
+
+        return new ModelAndView("redirect:/product/" + productId);
+    }
+
+    @RequestMapping(value="/buyorder/delete", method = RequestMethod.POST)
+    public ModelAndView deleteBuyOrder(@RequestParam(value = "sellOrder") String sellorder, @RequestParam(value = "buyer") String buyer, @RequestParam(value = "product") String productId) {
+        buyOrderService.deleteBuyOrder(sellorder, buyer);
+
+        return new ModelAndView("redirect:/product/" + productId);
+    }
+
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final BuyNftForm form, final BindingResult errors, @PathVariable String productId) {
+    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final BuyNftForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
         if (errors.hasErrors()) {
-            return product(form, productId);
+            return product(form, productId, offerPage);
         }
 
         Optional<Nft> nft = nftService.getNFTById(productId);
         if(!nft.isPresent())
-            return product(form, productId);
+            return product(form, productId, offerPage);
         if(nft.get().getSell_order() == null)
-            return product(form, productId);
+            return product(form, productId, offerPage);
         Optional<SellOrder> sellOrder = sellOrderService.getOrderById(nft.get().getSell_order());
         if(!sellOrder.isPresent())
-            return product(form, productId);
+            return product(form, productId, offerPage);
         Optional<User> currentUser = userService.getCurrentUser();
 
         if(!currentUser.isPresent())
-            return product(form, productId);
+            return product(form, productId, offerPage);
         if(currentUser.get().getId() == nft.get().getId_owner())
-            return product(form, productId);
+            return product(form, productId, offerPage);
         Optional<User> seller = userService.getUserById(nft.get().getId_owner());
         if(!seller.isPresent())
-            return product(form, productId);
+            return product(form, productId, offerPage);
         buyOrderService.create(sellOrder.get().getId(), form.getPrice(), currentUser.get().getId());
 
         mailingService.sendOfferMail(currentUser.get().getEmail(), seller.get().getEmail(), nft.get().getNft_name(), nft.get().getContract_addr(), form.getPrice());
 
-        ModelAndView mav = product(form,productId);
+        ModelAndView mav = product(form,productId, offerPage);
         mav.addObject("emailSent", true);
         return mav;
     }

@@ -140,6 +140,11 @@ public class NftJdbcDao implements NftDao{
         return Optional.ofNullable(result);
     }
 
+    @Override
+    public void updateOwner(long nft_id, long id_buyer) {
+        jdbcTemplate.update("UPDATE nfts SET id_owner = ? WHERE id = ?", id_buyer, nft_id);
+    }
+
     // Code extracted from https://github.com/crwohlfeil/damerau-levenshtein/blob/master/src/main/java/com/codeweasel/DamerauLevenshtein.java
     private int calculateDistance(CharSequence source, CharSequence target) {
         if (source == null || target == null) {

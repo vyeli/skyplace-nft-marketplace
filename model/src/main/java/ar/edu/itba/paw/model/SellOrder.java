@@ -21,7 +21,9 @@ public class SellOrder {
     }
 
     public BigDecimal getPrice() {
-        return price != null ? price.stripTrailingZeros():null;
+        if(price == null)
+            return price;
+        return new BigDecimal(price.stripTrailingZeros().toPlainString());
     }
 
     public String getCategory() {

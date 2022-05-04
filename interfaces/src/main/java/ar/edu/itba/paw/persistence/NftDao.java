@@ -15,4 +15,6 @@ public interface NftDao {
     Optional<List<Nft>> getAllNFTs(int page, String chain, String search);
 
     Optional<List<Nft>> getAllNFTsByUser(int page, User user);
+
+    void updateOwner(long nft_id, long id_buyer);
 }
