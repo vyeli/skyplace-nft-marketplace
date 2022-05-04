@@ -8,10 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class BuyOrderJdbcDao implements BuyOrderDao{
@@ -44,7 +41,7 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
     }
 
     @Override
-    public Optional<List<BuyOrder>> getOrdersBySellOrderId(String offerPage, long idSellOrder) {
+    public List<BuyOrder> getOrdersBySellOrderId(String offerPage, long idSellOrder) {
         long page;
         if(offerPage == null)
             page = 1;
@@ -52,7 +49,7 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
             try {
                 page = Long.parseLong(offerPage);
             } catch(Exception e) {
-                return Optional.empty();
+                return Collections.emptyList();
             }
         if(page < 1)
             page = 1;
@@ -63,7 +60,7 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
            return new BuyOrder(idSellOrder, amount, idBuyer);
         } );
 
-        return Optional.of(res);
+        return res;
     }
 
     @Override

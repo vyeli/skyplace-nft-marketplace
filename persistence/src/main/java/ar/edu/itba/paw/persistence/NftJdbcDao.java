@@ -93,7 +93,7 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public Optional<List<Nft>> getAllNFTs(int page, String chain, String search) {
+    public List<Nft> getAllNFTs(int page, String chain, String search) {
         StringBuilder sb = new StringBuilder();
         List<Object> args = new ArrayList<>();
 
@@ -131,13 +131,12 @@ public class NftJdbcDao implements NftDao{
             result = result.stream().filter(nft -> (jaroWinkler.apply(nft.getNftName().toLowerCase(), search.toLowerCase()) >= JARO_WINKLER_UMBRAL || calculateDistance(nft.getNftName().toLowerCase(), search.toLowerCase()) < 4)).collect(Collectors.toList());
         }
 
-        return Optional.ofNullable(result);
+        return result;
     }
 
     @Override
-    public Optional<List<Nft>> getAllNFTsByUser(int page, User user) {
-        List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE id_owner=?", new Object[]{user.getId()}, SELECT_MAPPER);
-        return Optional.ofNullable(result);
+    public List<Nft> getAllNFTsByUser(int page, User user) {
+        return jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE id_owner=?", new Object[]{user.getId()}, SELECT_MAPPER);
     }
 
     @Override

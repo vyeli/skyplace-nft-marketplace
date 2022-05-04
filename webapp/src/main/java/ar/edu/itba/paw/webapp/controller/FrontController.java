@@ -66,10 +66,9 @@ public class FrontController {
         if(currentUserOptional.isPresent())
             currentUser = currentUserOptional.get();
 
-        final Optional<List<Publication>> publicationsOptional = nftService.getAllPublications(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), currentUser);
-        if(!publicationsOptional.isPresent())
+        final List<Publication> publications = nftService.getAllPublications(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), currentUser);
+        if(publications.isEmpty())
             return notFound();
-        final List<Publication> publications = publicationsOptional.get();
 
         if(exploreFilter.getCategory().contains(","))
             exploreFilter.setCategory("Various");
@@ -181,7 +180,7 @@ public class FrontController {
         Optional<User> owner = userService.getUserById(nft.get().getIdOwner());
         Optional<User> currentUser = userService.getCurrentUser();
         Optional<SellOrder> sellOrders = Optional.empty();
-        Optional<List<BuyOffer>> buyOffers = Optional.empty();
+        List<BuyOffer> buyOffers = new ArrayList<>();
         long amountOfferPages = 0;
         if(nft.get().getSellOrder() != null) {
             sellOrders = sellOrderService.getOrderById(nft.get().getSellOrder());
@@ -209,7 +208,7 @@ public class FrontController {
         mav.addObject("showOfferTab", offerPage != null);
         mav.addObject("amountOfferPages", amountOfferPages);
         sellOrders.ifPresent(sellOrder -> mav.addObject("sellOrder", sellOrder));
-        buyOffers.ifPresent(buyOffer -> mav.addObject("buyOffer", buyOffer));
+        mav.addObject("buyOffer", buyOffers);
         owner.ifPresent(user -> mav.addObject("owner", user));
         currentUser.ifPresent(user -> mav.addObject("currentUser", currentUser.get()));
 
@@ -382,17 +381,15 @@ public class FrontController {
             currentUser = optionalCurrentUser.get();
         if(user.isPresent()){
             mav.addObject("user", user.get());
-            Optional<List<Publication>> publications;
+            List<Publication> publications;
             if(tab == null)
                 publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, false);
             else if(tab.equals("favorited"))
                 publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, true, false);
             else
                 publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, true);
-            publications.ifPresent(publication -> {
-                mav.addObject("publications", publication);
-                mav.addObject("publicationsSize", publication.size());
-            });
+            mav.addObject("publications", publications);
+            mav.addObject("publicationsSize", publications.size());
             return mav;
         }
         return new ModelAndView("redirect:/404");

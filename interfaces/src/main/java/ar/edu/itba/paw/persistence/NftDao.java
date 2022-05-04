@@ -12,9 +12,9 @@ public interface NftDao {
 
     Optional<Nft> getNFTById(String nftId);
 
-    Optional<List<Nft>> getAllNFTs(int page, String chain, String search);
+    List<Nft> getAllNFTs(int page, String chain, String search);
 
-    Optional<List<Nft>> getAllNFTsByUser(int page, User user);
+    List<Nft> getAllNFTsByUser(int page, User user);
 
     void updateOwner(long nftId, long idBuyer);
 }

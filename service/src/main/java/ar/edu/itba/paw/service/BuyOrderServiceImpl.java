@@ -36,14 +36,14 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public Optional<List<BuyOffer>> getOrdersBySellOrderId(String offerPage, long idSellOrder) {
-        Optional<List<BuyOrder>> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder);
+    public List<BuyOffer> getOrdersBySellOrderId(String offerPage, long idSellOrder) {
+        List<BuyOrder> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder);
         List<BuyOffer> buyOffers = new ArrayList<>();
-        buyOrders.ifPresent(orders -> orders.forEach(buyOrder -> {
+        buyOrders.forEach(buyOrder -> {
             Optional<User> user = userDao.getUserById(buyOrder.getIdBuyer());
             user.ifPresent(value -> buyOffers.add(new BuyOffer(buyOrder, value)));
-        }));
-        return Optional.of(buyOffers);
+        });
+        return buyOffers;
     }
 
     @Override
