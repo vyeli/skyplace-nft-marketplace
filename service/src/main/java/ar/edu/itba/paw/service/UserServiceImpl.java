@@ -55,4 +55,10 @@ public class UserServiceImpl implements UserService{
         return Optional.empty();
     }
 
+    @Override
+    public boolean isAdmin(){
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+    }
+
 }

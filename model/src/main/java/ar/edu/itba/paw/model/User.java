@@ -8,14 +8,16 @@ public class User {
     private String wallet;
     private String walletChain;
     private String password;
+    private String role;
 
-    public User(long id, String email, String username, String wallet, String chain, String password) {
+    public User(long id, String email, String username, String wallet, String chain, String password, String role) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.wallet = wallet;
         this.walletChain = chain;
         this.password = password;
+        this.role = role;
     }
 
     public long getId() {
@@ -38,5 +40,9 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

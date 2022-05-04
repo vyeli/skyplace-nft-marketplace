@@ -29,9 +29,10 @@ public class SkyplaceUserDetailsService implements UserDetailsService {
                 orElseThrow(()->new UsernameNotFoundException("No such user with email: " + email));
 
         final Collection<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-        // if (user. ...) roles.add(new SimpleGrantedAuthority("ROLE_EDITOR"));
+        roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+        if(user.getRole().equals("Admin"))
+            roles.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), roles);
     }

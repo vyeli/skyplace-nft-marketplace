@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.model.Image;
 import org.springframework.scheduling.annotation.Async;
 
 import java.math.BigDecimal;
@@ -7,7 +8,7 @@ import java.math.BigDecimal;
 public interface MailingService {
 
     @Async
-    void sendOfferMail(String buyerEmail, String sellerMail, String nftName, String nftAddress, BigDecimal nftPrice);
+    void sendOfferMail(String buyerEmail, String sellerMail, String nftName, long nftId, String nftAddress, BigDecimal nftPrice, Image image);
 
     @Async
     void sendRegisterMail(String userEmail, String username);

@@ -1,10 +1,9 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.model.Image;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
@@ -14,8 +13,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
@@ -23,10 +20,16 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-import javax.imageio.ImageIO;
+import javax.activation.MimetypesFileTypeMap;
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URLConnection;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -35,8 +38,8 @@ public class MailingServiceImpl implements MailingService{
 
     private final Dotenv env = Dotenv.load();
 
-    private TemplateEngine templateEngine;
-    private JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
+    private final JavaMailSender mailSender;
 
     private final static String MAIL_USERNAME_PARAMETER = "MAIL_USERNAME";
     private final static String MAIL_PASSWORD_PARAMETER = "MAIL_PASSWORD";
@@ -104,12 +107,13 @@ public class MailingServiceImpl implements MailingService{
             helper.setSubject("Welcome to Skyplace");
 
             Context context = new Context();
-            context.setVariable("username", username);
+
             context.setVariable("logoResourceName", "logo");
             context.setVariable("exploreResourceName", "explore");
             context.setVariable("buyResourceName", "buy");
             context.setVariable("sellResourceName", "sell");
 
+            context.setVariable("username", username);
             String html = templateEngine.process("register", context);
             helper.setText(html, true);
 
@@ -125,7 +129,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendOfferMail(String buyerMail, String sellerMail, String nftName, String nftAddress, BigDecimal nftPrice){
+    public void sendOfferMail(String buyerMail, String sellerMail, String nftName, long nftId, String nftAddress, BigDecimal nftPrice, Image image){
         final MimeMessage message = mailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
@@ -137,17 +141,32 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("sellerMail", sellerMail);
             context.setVariable("buyerMail", buyerMail);
             context.setVariable("nftName", nftName);
+            context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
-            context.setVariable("nftPrice", nftPrice);
+            context.setVariable("nftBidEthPrice", nftPrice);
+            context.setVariable("nftBidUsdPrice", 42.374305);
             context.setVariable("logoResourceName", "logo");
+            context.setVariable("nftImageResourceName", "nftImage");
+            context.setVariable("userImageResourceName", "userImage");
+            context.setVariable("nftNameImageResourceName", "nftNameImage");
+            context.setVariable("nftAddressImageResourceName", "nftAddressImage");
+            context.setVariable("priceImageResourceName", "priceImage");
 
             String html = templateEngine.process("bid", context);
             helper.setText(html, true);
 
+            InputStream is = new BufferedInputStream(new ByteArrayInputStream(image.getImage()));
+            InputStreamSource imageSource = new ByteArrayResource(image.getImage());
+
             helper.addInline("logo", new ClassPathResource("/mails/images/logo.png"), IMG_PNG_FORMAT);
+            helper.addInline("userImage", new ClassPathResource("/mails/images/user.png"), IMG_PNG_FORMAT);
+            helper.addInline("priceImage", new ClassPathResource("/mails/images/sell.png"), IMG_PNG_FORMAT);
+            helper.addInline("nftNameImage", new ClassPathResource("/mails/images/nft.png"), IMG_PNG_FORMAT);
+            helper.addInline("nftAddressImage", new ClassPathResource("/mails/images/chain.png"), IMG_PNG_FORMAT);
+            helper.addInline("nftImage", imageSource, URLConnection.guessContentTypeFromStream(is));
 
             mailSender.send(message);
-        } catch (MessagingException e) {
+        } catch (MessagingException | IOException e) {
             LOGGER.error("Unexpected error sending email", e);
         }
     }

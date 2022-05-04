@@ -6,6 +6,7 @@ import ar.edu.itba.paw.service.*;
 import ar.edu.itba.paw.webapp.exceptions.SellOrderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -117,7 +118,7 @@ public class FrontController {
         if(!currentUser.isPresent())
             return new ModelAndView("redirect:/403");
 
-        if (!nftService.userOwnsNft(productId, currentUser.get()))
+        if (!nftService.userOwnsNft(productId, currentUser.get()) && !userService.isAdmin())
             return new ModelAndView("redirect:/403");
 
         final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
@@ -144,7 +145,7 @@ public class FrontController {
         if(!currentUser.isPresent())
             return new ModelAndView("redirect:/403");
 
-        if (!nftService.userOwnsNft(productId, currentUser.get()))
+        if (!nftService.userOwnsNft(productId, currentUser.get()) && !userService.isAdmin())
             return new ModelAndView("redirect:/403");
 
         Optional<Nft> nft = nftService.getNFTById(productId);
@@ -160,7 +161,7 @@ public class FrontController {
         if(!currentUser.isPresent())
             return new ModelAndView("redirect:/403");
 
-        if (!nftService.userOwnsNft(productId, currentUser.get()))
+        if (!nftService.userOwnsNft(productId, currentUser.get()) && !userService.isAdmin())
             return new ModelAndView("redirect:/403");
 
         Optional<Nft> nft = nftService.getNFTById(productId);
@@ -255,7 +256,7 @@ public class FrontController {
             return product(form, productId, offerPage);
         buyOrderService.create(sellOrder.get().getId(), form.getPrice(), currentUser.get().getId());
 
-        mailingService.sendOfferMail(currentUser.get().getEmail(), seller.get().getEmail(), nft.get().getNftName(), nft.get().getContractAddr(), form.getPrice());
+        // mailingService.sendOfferMail(currentUser.get().getEmail(), seller.get().getEmail(), nft.get().getNftName(), nft.get().getContractAddr(), form.getPrice());
 
         ModelAndView mav = product(form,productId, offerPage);
         mav.addObject("emailSent", true);
@@ -360,10 +361,14 @@ public class FrontController {
         return new ModelAndView(redirectUrl.toString());
     }
 
+    // TODO: Remove mapping once mails are fully integrated
     @RequestMapping("/mail")
     public ModelAndView mailTest(){
         // mailingService.sendRegisterMail("spiegarejr@gmail.com", "spiegarejr");
-        mailingService.sendOfferMail("mlbanchini1970@gmail.com", "spiegarejr@gmail.com", "monkey wrench", "0x70edA274b0ac62830feDa8AdE17746fEf997230E", BigDecimal.valueOf((float)0.000015));
+        Optional<Nft> nft = nftService.getNFTById("1");
+        if(!nft.isPresent())
+            return new ModelAndView("redirect:/404");
+        mailingService.sendOfferMail("mlbanchini1970@gmail.com", "spiegarejr@gmail.com", nft.get().getNftName(), nft.get().getNftId(), nft.get().getContractAddr(), BigDecimal.valueOf((float)0.015), imageService.getImage(nft.get().getIdImage()));
         return new ModelAndView("redirect:/");
     }
 
