@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface NftService {
-    Optional<Nft> create(long nft_id, String contract_addr, String nft_name, String chain, MultipartFile image, long id_owner, String collection, String description, String[] properties);
+    Optional<Nft> create(long nftId, String contractAddr, String nftName, String chain, MultipartFile image, long idOwner, String collection, String description, String[] properties);
 
-    Optional<Nft> getNFTById(String nft_id);
+    Optional<Nft> getNFTById(String nftId);
 
     Optional<List<Publication>> getAllPublications(int page, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser);
 

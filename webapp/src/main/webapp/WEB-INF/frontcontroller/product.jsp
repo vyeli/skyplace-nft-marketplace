@@ -14,8 +14,8 @@
                 <div class="flex-col max-w-[50%]">
                     <!--Image-->
                     <figure class="mb-8">
-                        <img src="<c:url value="/images/${nft.id_image}" />"
-                             alt="<c:out value="${nft.nft_name}" />" class="rounded-2xl">
+                        <img src="<c:url value="/images/${nft.idImage}" />"
+                             alt="<c:out value="${nft.nftName}" />" class="rounded-2xl">
                     </figure>
                     <!--TAGS -->
                     <c:choose>
@@ -82,12 +82,12 @@
                                     <div class="flex justify-between">
                                         <p>Contract address </p>
                                         <p class="w-3/5 break-words max-h-20 overflow-hidden text-right">
-                                            <c:out value="${nft.contract_addr}" />
+                                            <c:out value="${nft.contractAddr}" />
                                         </p>
                                     </div>
                                     <div class="flex justify-between">
                                         <p>Token ID</p>
-                                        <p class="w-3/5 overflow-hidden text-right"><c:out value="${nft.nft_id}" /></p>
+                                        <p class="w-3/5 overflow-hidden text-right"><c:out value="${nft.nftId}" /></p>
                                     </div>
                                     <c:if test="${sellOrder != null}">
                                         <div class="flex justify-between">
@@ -150,10 +150,10 @@
                                                 </div>
                                                 <c:if test="${sellOrder != null && owner.id == currentUser.id}">
                                                     <div class="flex gap-2">
-                                                        <button onclick="handleReject(${offer.buyOrder.id_sellorder}, ${offer.buyOrder.id_buyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
+                                                        <button onclick="handleReject(${offer.buyOrder.idSellOrder}, ${offer.buyOrder.idBuyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
                                                             Reject
                                                         </button>
-                                                        <button onclick="handleAccept(${offer.buyOrder.id_sellorder}, ${offer.buyOrder.id_buyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
+                                                        <button onclick="handleAccept(${offer.buyOrder.idSellOrder}, ${offer.buyOrder.idBuyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
                                                             Accept
                                                         </button>
                                                     </div>
@@ -292,7 +292,7 @@
                                 <ul class="py-1" aria-labelledby="productButton">
                                     <c:if test="${currentUser.id == owner.id}">
                                         <c:choose>
-                                            <c:when test="${sellorder != null}">
+                                            <c:when test="${sellOrder != null}">
                                                 <li class="z-20">
                                                     <a href="<c:url value="/sell/update/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
                                                         <span>Update sell</span>
@@ -324,7 +324,7 @@
                     </div>
 
                     <!--Name and ID-->
-                    <h1 class="font-display text-jacarta-700 mb-2 text-4xl font-semibold"><c:out value="${nft.nft_name}" /><span>#<c:out value="${nft.nft_id}" /></span></h1>
+                    <h1 class="font-display text-jacarta-700 mb-2 text-4xl font-semibold"><c:out value="${nft.nftName}" /><span>#<c:out value="${nft.nftId}" /></span></h1>
                     <!-- Owner -->
                     <div class="flex pt-2 pb-4">
                         <span class="text-jacarta-400 block text-sm">Owned by </span>
@@ -403,14 +403,14 @@
         <jsp:include page="../components/DeleteModal.jsp">
             <jsp:param name="title" value="Delete Sell Order"/>
             <jsp:param name="description" value="Are you sure you want to delete this sell order? All buy orders for this NFT will be lost."/>
-            <jsp:param name="deletePath" value="/sell/delete/${nft.nft_id}"/>
+            <jsp:param name="deletePath" value="/sell/delete/${nft.nftId}"/>
         </jsp:include>
     </c:when>
     <c:otherwise>
         <jsp:include page="../components/DeleteModal.jsp">
             <jsp:param name="title" value="Delete NFT"/>
             <jsp:param name="description" value="Are you sure you want to delete this NFT? This action is irreversible."/>
-            <jsp:param name="deletePath" value="/product/delete/${nft.nft_id}"/>
+            <jsp:param name="deletePath" value="/product/delete/${nft.nftId}"/>
         </jsp:include>
     </c:otherwise>
 </c:choose>

@@ -84,22 +84,22 @@
     <!-- NFTs -->
     <div class="flex flex-wrap justify-center gap-8">
         <c:forEach items="${publications}" var="publication">
-            <c:if test="${publication.nft.sell_order != null}">
+            <c:if test="${publication.nft.sellOrder != null}">
                 <c:set value="${publication.sellOrder.price}" var="sellPrice" />
                 <c:set value="${publication.sellOrder.category}" var="sellCategory" />
             </c:if>
             <jsp:include page="../components/Card.jsp">
-                <jsp:param name="name" value="${publication.nft.nft_name}"/>
-                <jsp:param name="is_faved" value="${publication.isFaved}"/>
-                <jsp:param name="nft_id" value="${publication.nft.nft_id}" />
+                <jsp:param name="name" value="${publication.nft.nftName}"/>
+                <jsp:param name="isFaved" value="${publication.isFaved}"/>
+                <jsp:param name="nftId" value="${publication.nft.nftId}" />
                 <jsp:param name="descr" value="${publication.nft.description}"/>
-                <jsp:param name="img" value="${publication.nft.id_image}"/>
-                <jsp:param name="on_sale" value="${publication.nft.sell_order != null}"/>
+                <jsp:param name="img" value="${publication.nft.idImage}"/>
+                <jsp:param name="onSale" value="${publication.nft.sellOrder != null}"/>
                 <jsp:param name="price" value="${sellPrice}" />
                 <jsp:param name="category" value="${sellCategory}"/>
-                <jsp:param name="seller_email" value="${publication.user.email}"/>
-                <jsp:param name="id_product" value="${publication.nft.id}"/>
-                <jsp:param name="is_faved" value="false" />
+                <jsp:param name="sellerEmail" value="${publication.user.email}"/>
+                <jsp:param name="idProduct" value="${publication.nft.id}"/>
+                <jsp:param name="isFaved" value="false" />
             </jsp:include>
         </c:forEach>
         <c:if test="${publicationsSize == 0}">

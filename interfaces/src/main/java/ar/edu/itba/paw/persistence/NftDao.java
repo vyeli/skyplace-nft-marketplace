@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface NftDao {
-    Optional<Nft> create(long nft_id, String contract_addr, String nft_name, String chain, MultipartFile image, long id_owner, String collection, String description, String[] properties);
+    Optional<Nft> create(long nftId, String contractAddr, String nftName, String chain, MultipartFile image, long idOwner, String collection, String description, String[] properties);
 
-    Optional<Nft> getNFTById(String nft_id);
+    Optional<Nft> getNFTById(String nftId);
 
     Optional<List<Nft>> getAllNFTs(int page, String chain, String search);
 
     Optional<List<Nft>> getAllNFTsByUser(int page, User user);
 
-    void updateOwner(long nft_id, long id_buyer);
+    void updateOwner(long nftId, long idBuyer);
 }

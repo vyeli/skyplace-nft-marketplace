@@ -7,13 +7,13 @@ public class SellOrder {
     private long id;
     private String category;
     private BigDecimal price;
-    private long nft_id;
+    private long nftId;
 
-    public SellOrder(long id, BigDecimal price, long nft_id, String category) {
+    public SellOrder(long id, BigDecimal price, long nftId, String category) {
         this.id = id;
         this.price = price;
         this.category = category;
-        this.nft_id = nft_id;
+        this.nftId = nftId;
     }
 
     public long getId() {
@@ -30,8 +30,8 @@ public class SellOrder {
         return category;
     }
 
-    public long getNft_id() {
-        return nft_id;
+    public long getNftId() {
+        return nftId;
     }
 
 }

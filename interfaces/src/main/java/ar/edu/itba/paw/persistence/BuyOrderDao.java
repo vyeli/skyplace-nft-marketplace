@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BuyOrderDao {
-    boolean create(long id_sellorder, BigDecimal price, long user_id);
+    boolean create(long idSellOrder, BigDecimal price, long userId);
 
-    Optional<List<BuyOrder>> getOrdersBySellOrderId(String offerPage, long id_sellorder);
+    Optional<List<BuyOrder>> getOrdersBySellOrderId(String offerPage, long idSellOrder);
 
-    long getAmountPagesBySellOrderId(long id_sellorder);
+    long getAmountPagesBySellOrderId(long idSellOrder);
 
     void deleteBuyOrder(String sellOrder, String buyer);
 }

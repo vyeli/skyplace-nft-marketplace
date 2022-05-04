@@ -34,7 +34,7 @@ public class FavoriteServiceImpl implements FavoriteService{
     }
 
     @Override
-    public boolean userFavedNft(long user_id, long id_nft) {
-        return favoriteDao.userFavedNft(user_id, id_nft);
+    public boolean userFavedNft(long userId, long idNft) {
+        return favoriteDao.userFavedNft(userId, idNft);
     }
 }

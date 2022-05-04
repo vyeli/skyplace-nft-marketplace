@@ -35,16 +35,16 @@ public class FavoriteJdbcDao implements FavoriteDao{
     public void addNftFavorite(String productId, User user) {
         if(!nftDao.getNFTById(productId).isPresent())
             return;
-        long id_nft;
+        long idNft;
         try {
-            id_nft = Long.parseLong(productId);
+            idNft = Long.parseLong(productId);
         } catch(Exception e) {
             return;
         }
 
         Map<String, Object> favoriteData = new HashMap<>();
         favoriteData.put("user_id", user.getId());
-        favoriteData.put("id_nft", id_nft);
+        favoriteData.put("id_nft", idNft);
         try {
             jdbcInsertFavorited.execute(favoriteData);
         } catch (Exception ignored){}
@@ -54,20 +54,20 @@ public class FavoriteJdbcDao implements FavoriteDao{
     public void removeNftFavorite(String productId, User user) {
         if(!nftDao.getNFTById(productId).isPresent())
             return;
-        long id_nft;
+        long idNft;
         try {
-            id_nft = Long.parseLong(productId);
+            idNft = Long.parseLong(productId);
         } catch(Exception e) {
             return;
         }
         try {
-            jdbcTemplate.update("DELETE FROM favorited WHERE user_id=? AND id_nft=?", user.getId(), id_nft);
+            jdbcTemplate.update("DELETE FROM favorited WHERE user_id=? AND id_nft=?", user.getId(), idNft);
         } catch (Exception ignored){}
     }
 
     @Override
-    public boolean userFavedNft(long user_id, long id_nft) {
-        return jdbcTemplate.query("SELECT * FROM favorited WHERE user_id=? AND id_nft=?", new Object[]{user_id, id_nft}, (rs, rownum) -> rs.getString("id_nft")).size() > 0;
+    public boolean userFavedNft(long userId, long idNft) {
+        return jdbcTemplate.query("SELECT * FROM favorited WHERE user_id=? AND id_nft=?", new Object[]{userId, idNft}, (rs, rownum) -> rs.getString("id_nft")).size() > 0;
     }
 
     @Override

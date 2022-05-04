@@ -16,13 +16,13 @@
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">
             <span class="font-bold">NFT id: </span> 
-            ${nft.nft_id}
+            ${nft.nftId}
           </p>
         </div>
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">
             <span class="font-bold">NFT contract: </span> 
-            ${nft.contract_addr}
+            ${nft.contractAddr}
           </p>
         </div>
         <form:label path="category" class="flex flex-col gap-1">

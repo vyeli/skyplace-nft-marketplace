@@ -35,13 +35,13 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public Optional<Nft> create(long nft_id, String contract_addr, String nft_name, String chain, MultipartFile image, long id_owner, String collection, String description, String[] properties) {
-        return nftDao.create(nft_id, contract_addr, nft_name, chain, image, id_owner, collection, description, properties);
+    public Optional<Nft> create(long nftId, String contractAddr, String nftName, String chain, MultipartFile image, long idOwner, String collection, String description, String[] properties) {
+        return nftDao.create(nftId, contractAddr, nftName, chain, image, idOwner, collection, description, properties);
     }
 
     @Override
-    public Optional<Nft> getNFTById(String nft_id) {
-        return nftDao.getNFTById(nft_id);
+    public Optional<Nft> getNFTById(String nftId) {
+        return nftDao.getNFTById(nftId);
     }
 
     @Override
@@ -52,12 +52,12 @@ public class NftServiceImpl implements NftService{
         List<Nft> nfts = nftsOptional.get();
         List<Publication> publications = new ArrayList<>();
         nfts.forEach(nft -> {
-            Optional<User> user = userDao.getUserById(nft.getId_owner());
+            Optional<User> user = userDao.getUserById(nft.getIdOwner());
             if(!user.isPresent())
                 return;
             Optional<SellOrder> sellOrder = Optional.empty();
-            if(nft.getSell_order() != null)
-                sellOrder = sellOrderDao.getOrderById(nft.getSell_order());
+            if(nft.getSellOrder() != null)
+                sellOrder = sellOrderDao.getOrderById(nft.getSellOrder());
             boolean isFaved = false;
             if(currentUser != null)
                 isFaved = favoriteDao.userFavedNft(currentUser.getId(), nft.getId());
@@ -80,8 +80,8 @@ public class NftServiceImpl implements NftService{
                 return;
 
             Optional<SellOrder> sellOrder = Optional.empty();
-            if(nft.getSell_order() != null)
-                sellOrder = sellOrderDao.getOrderById(nft.getSell_order());
+            if(nft.getSellOrder() != null)
+                sellOrder = sellOrderDao.getOrderById(nft.getSellOrder());
 
             if(onlyOnSale && !sellOrder.isPresent())
                 return;
@@ -98,7 +98,7 @@ public class NftServiceImpl implements NftService{
 
     @Override
     public boolean userOwnsNft(String productId, User user) {
-        return getNFTById(productId).filter(value -> value.getId_owner() == user.getId()).isPresent();
+        return getNFTById(productId).filter(value -> value.getIdOwner() == user.getId()).isPresent();
     }
 
 }

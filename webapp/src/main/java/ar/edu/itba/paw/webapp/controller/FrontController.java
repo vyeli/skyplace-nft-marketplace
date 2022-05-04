@@ -94,7 +94,7 @@ public class FrontController {
         Optional<User> user = userService.getCurrentUser();
         if(!user.isPresent())
             return notFound();
-        if(user.get().getId() != nft.get().getId_owner())
+        if(user.get().getId() != nft.get().getIdOwner())
             return new ModelAndView("redirect:/403");
         mav.addObject("nft", nft.get());
         List<String> categories = categoryService.getCategories();
@@ -108,7 +108,7 @@ public class FrontController {
             return createSellOrderForm(form, productId);
 
         Optional<SellOrder> sellOrder = sellOrderService.create(form.getPrice(), productId, form.getCategory());
-        return sellOrder.map(order -> new ModelAndView("redirect:/product/" + order.getNft_id())).orElseGet(() -> createSellOrderForm(form, productId));
+        return sellOrder.map(order -> new ModelAndView("redirect:/product/" + order.getNftId())).orElseGet(() -> createSellOrderForm(form, productId));
     }
 
     @RequestMapping(value = "/sell/update/{productId}", method = RequestMethod.GET)
@@ -124,10 +124,10 @@ public class FrontController {
         List<String> categories = categoryService.getCategories();
         mav.addObject("categories", categories);
         Optional<Nft> nft = nftService.getNFTById(productId);
-        if(!nft.isPresent() || nft.get().getSell_order() == null)
+        if(!nft.isPresent() || nft.get().getSellOrder() == null)
             return notFound();
         mav.addObject(  "nft", nft.get());
-        Optional<SellOrder> order = sellOrderService.getOrderById(nft.get().getSell_order());
+        Optional<SellOrder> order = sellOrderService.getOrderById(nft.get().getSellOrder());
         if(!order.isPresent())
             return notFound();
         mav.addObject("order",order.get());
@@ -148,9 +148,9 @@ public class FrontController {
             return new ModelAndView("redirect:/403");
 
         Optional<Nft> nft = nftService.getNFTById(productId);
-        if(!nft.isPresent() || nft.get().getSell_order() == null)
+        if(!nft.isPresent() || nft.get().getSellOrder() == null)
             return notFound();
-        sellOrderService.update(nft.get().getSell_order(), form.getCategory(), form.getPrice());
+        sellOrderService.update(nft.get().getSellOrder(), form.getCategory(), form.getPrice());
         return new ModelAndView("redirect:/product/" + nft.get().getId());
     }
 
@@ -164,10 +164,10 @@ public class FrontController {
             return new ModelAndView("redirect:/403");
 
         Optional<Nft> nft = nftService.getNFTById(productId);
-        if(!nft.isPresent() || nft.get().getSell_order() == null)
+        if(!nft.isPresent() || nft.get().getSellOrder() == null)
             return notFound();
 
-        sellOrderService.delete(nft.get().getSell_order());
+        sellOrderService.delete(nft.get().getSellOrder());
         return new ModelAndView("redirect:/product/" + nft.get().getId());
     }
 
@@ -177,13 +177,13 @@ public class FrontController {
         final Optional<Nft> nft = nftService.getNFTById(productId);
         if(!nft.isPresent())
             return notFound();
-        Optional<User> owner = userService.getUserById(nft.get().getId_owner());
+        Optional<User> owner = userService.getUserById(nft.get().getIdOwner());
         Optional<User> currentUser = userService.getCurrentUser();
         Optional<SellOrder> sellOrders = Optional.empty();
         Optional<List<BuyOffer>> buyOffers = Optional.empty();
         long amountOfferPages = 0;
-        if(nft.get().getSell_order() != null) {
-            sellOrders = sellOrderService.getOrderById(nft.get().getSell_order());
+        if(nft.get().getSellOrder() != null) {
+            sellOrders = sellOrderService.getOrderById(nft.get().getSellOrder());
             if(sellOrders.isPresent()) {
                 buyOffers = buyOrderService.getOrdersBySellOrderId(offerPage, sellOrders.get().getId());
                 amountOfferPages = buyOrderService.getAmountPagesBySellOrderId(sellOrders.get().getId());
@@ -239,41 +239,27 @@ public class FrontController {
         Optional<Nft> nft = nftService.getNFTById(productId);
         if(!nft.isPresent())
             return product(form, productId, offerPage);
-        if(nft.get().getSell_order() == null)
+        if(nft.get().getSellOrder() == null)
             return product(form, productId, offerPage);
-        Optional<SellOrder> sellOrder = sellOrderService.getOrderById(nft.get().getSell_order());
+        Optional<SellOrder> sellOrder = sellOrderService.getOrderById(nft.get().getSellOrder());
         if(!sellOrder.isPresent())
             return product(form, productId, offerPage);
         Optional<User> currentUser = userService.getCurrentUser();
 
         if(!currentUser.isPresent())
             return product(form, productId, offerPage);
-        if(currentUser.get().getId() == nft.get().getId_owner())
+        if(currentUser.get().getId() == nft.get().getIdOwner())
             return product(form, productId, offerPage);
-        Optional<User> seller = userService.getUserById(nft.get().getId_owner());
+        Optional<User> seller = userService.getUserById(nft.get().getIdOwner());
         if(!seller.isPresent())
             return product(form, productId, offerPage);
         buyOrderService.create(sellOrder.get().getId(), form.getPrice(), currentUser.get().getId());
 
-        mailingService.sendOfferMail(currentUser.get().getEmail(), seller.get().getEmail(), nft.get().getNft_name(), nft.get().getContract_addr(), form.getPrice());
+        mailingService.sendOfferMail(currentUser.get().getEmail(), seller.get().getEmail(), nft.get().getNftName(), nft.get().getContractAddr(), form.getPrice());
 
         ModelAndView mav = product(form,productId, offerPage);
         mav.addObject("emailSent", true);
         return mav;
-    }
-
-    @RequestMapping(value = "/product/update/{productId}", method = RequestMethod.GET)
-    public ModelAndView getUpdateNft(@ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, @PathVariable long productId) {
-        return null;
-    }
-
-    @RequestMapping(value = "/product/update/{productId}", method = RequestMethod.POST)
-    public ModelAndView updateNft(@Valid @ModelAttribute("UpdateSellOrderForm") final UpdateSellOrderForm form, final BindingResult errors, @PathVariable String productId) {
-        if (errors.hasErrors()) {
-            return null;
-        }
-
-        return new ModelAndView("redirect:/product/" + productId);
     }
 
     @RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
@@ -333,7 +319,7 @@ public class FrontController {
         Optional<User> user = userService.getCurrentUser();
         if(!user.isPresent())
             return createNft(form);
-        final Optional<Nft> nft = nftService.create(form.getNft_id(), form.getContract_addr(), form.getName(), form.getChain(), form.getImage(), user.get().getId(), form.getCollection(), form.getDescription(), form.getProperties());
+        final Optional<Nft> nft = nftService.create(form.getNftId(), form.getContractAddr(), form.getName(), form.getChain(), form.getImage(), user.get().getId(), form.getCollection(), form.getDescription(), form.getProperties());
         if(!nft.isPresent()) {
             errors.rejectValue("publish", "publish.error", "Nft can not be created with this information");
             return createNft(form);

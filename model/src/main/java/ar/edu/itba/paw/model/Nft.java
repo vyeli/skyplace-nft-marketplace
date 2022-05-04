@@ -2,42 +2,42 @@ package ar.edu.itba.paw.model;
 
 public class Nft {
     private long id;
-    private long nft_id;
-    private String contract_addr;
+    private long nftId;
+    private String contractAddr;
     private String name;
     private String chain;
-    private long id_image;
-    private long id_owner;
+    private long idImage;
+    private long idOwner;
     private String collection;
     private String description;
     private String[] properties;
-    private Long sell_order;
+    private Long sellOrder;
 
-    public Nft(long id, long nft_id, String contract_addr, String name, String chain, long id_image, long id_owner, String collection, String description, String[] properties, Long sell_order) {
+    public Nft(long id, long nftId, String contractAddr, String name, String chain, long idImage, long idOwner, String collection, String description, String[] properties, Long sellOrder) {
         this.id = id;
-        this.nft_id = nft_id;
-        this.contract_addr = contract_addr;
+        this.nftId = nftId;
+        this.contractAddr = contractAddr;
         this.name = name;
         this.chain = chain;
-        this.id_image = id_image;
-        this.id_owner = id_owner;
+        this.idImage = idImage;
+        this.idOwner = idOwner;
         this.collection = collection;
         this.description = description;
         this.properties = properties;
-        this.sell_order = sell_order;
+        this.sellOrder = sellOrder;
     }
 
     public long getId() {
         return id;
     }
 
-    public long getNft_id() {return nft_id;}
+    public long getNftId() {return nftId;}
 
-    public String getContract_addr() {
-        return contract_addr;
+    public String getContractAddr() {
+        return contractAddr;
     }
 
-    public String getNft_name() {
+    public String getNftName() {
         return name;
     }
 
@@ -45,12 +45,12 @@ public class Nft {
         return chain;
     }
 
-    public long getId_image() {
-        return id_image;
+    public long getIdImage() {
+        return idImage;
     }
 
-    public long getId_owner() {
-        return id_owner;
+    public long getIdOwner() {
+        return idOwner;
     }
 
     public String getCollection() {
@@ -65,7 +65,7 @@ public class Nft {
         return properties;
     }
 
-    public Long getSell_order() {
-        return sell_order;
+    public Long getSellOrder() {
+        return sellOrder;
     }
 }

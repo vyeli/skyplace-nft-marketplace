@@ -29,22 +29,22 @@ public class NftJdbcDao implements NftDao{
 
     private final RowMapper<Nft> SELECT_MAPPER = (rs, i) -> {
         long id = rs.getLong("id");
-        long id_nft = rs.getLong("nft_id");
-        String contract_addr = rs.getString("contract_addr");
+        long idNft = rs.getLong("nft_id");
+        String contractAddr = rs.getString("contract_addr");
         String name = rs.getString("nft_name");
         String chain = rs.getString("chain");
-        long id_image = rs.getLong("id_image");
-        long id_owner = rs.getLong("id_owner");
+        long idImage = rs.getLong("id_image");
+        long idOwner = rs.getLong("id_owner");
         String collection = rs.getString("collection");
         String description = rs.getString("description");
         Array propertiesArray = rs.getArray("properties");
         String[] properties = null;
         if(propertiesArray != null)
             properties = (String[])propertiesArray.getArray();
-        Long id_sellorder = rs.getLong("id_sellorder");
-        if(id_sellorder == 0)
-            id_sellorder = null;
-        return new Nft(id, id_nft, contract_addr, name ,chain, id_image, id_owner, collection, description, properties, id_sellorder);
+        Long idSellOrder = rs.getLong("id_sellorder");
+        if(idSellOrder == 0)
+            idSellOrder = null;
+        return new Nft(id, idNft, contractAddr, name ,chain, idImage, idOwner, collection, description, properties, idSellOrder);
     };
 
     @Autowired
@@ -57,35 +57,35 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public Optional<Nft> create(long nft_id, String contract_addr, String nft_name, String chain, MultipartFile image, long id_owner, String collection, String description, String[] properties) {
+    public Optional<Nft> create(long nftId, String contractAddr, String nftName, String chain, MultipartFile image, long idOwner, String collection, String description, String[] properties) {
         List<String> chains = jdbcTemplate.query("SELECT chain FROM chains", (rs, i) -> rs.getString("chain"));
         if(!chains.contains(chain))
             return Optional.empty();
 
         final Map<String, Object> nftData = new HashMap<>();
-        nftData.put("nft_id", nft_id);
-        nftData.put("contract_addr",contract_addr);
-        nftData.put("nft_name", nft_name);
+        nftData.put("nft_id", nftId);
+        nftData.put("contract_addr",contractAddr);
+        nftData.put("nft_name", nftName);
         nftData.put("chain", chain);
-        nftData.put("id_owner", id_owner);
+        nftData.put("id_owner", idOwner);
         nftData.put("collection", collection);
         nftData.put("description", description);
 
-        Optional<Long> id_image = imageDao.createImage(image);
-        if(!id_image.isPresent())
+        Optional<Long> idImage = imageDao.createImage(image);
+        if(!idImage.isPresent())
             return Optional.empty();
 
-        nftData.put("id_image", id_image.get());
+        nftData.put("id_image", idImage.get());
         long id = jdbcInsertNft.executeAndReturnKey(nftData).longValue();
 
-        return Optional.of(new Nft(id, nft_id, contract_addr, nft_name, chain, id_image.get(), id_owner, collection, description, properties, null));
+        return Optional.of(new Nft(id, nftId, contractAddr, nftName, chain, idImage.get(), idOwner, collection, description, properties, null));
     }
 
     @Override
-    public Optional<Nft> getNFTById(String nft_id) {
+    public Optional<Nft> getNFTById(String nftId) {
         try {
-            long nft_id_long = Long.parseLong(nft_id);
-            List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nft_id_long}, SELECT_MAPPER);
+            long nftIdLong = Long.parseLong(nftId);
+            List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nftIdLong}, SELECT_MAPPER);
             return Optional.ofNullable(result.get(0));
         } catch(Exception e) {
             return Optional.empty();
@@ -128,7 +128,7 @@ public class NftJdbcDao implements NftDao{
         JaroWinklerSimilarity jaroWinkler = new JaroWinklerSimilarity();
 
         if(search != null){
-            result = result.stream().filter(nft -> (jaroWinkler.apply(nft.getNft_name().toLowerCase(), search.toLowerCase()) >= JARO_WINKLER_UMBRAL || calculateDistance(nft.getNft_name().toLowerCase(), search.toLowerCase()) < 4)).collect(Collectors.toList());
+            result = result.stream().filter(nft -> (jaroWinkler.apply(nft.getNftName().toLowerCase(), search.toLowerCase()) >= JARO_WINKLER_UMBRAL || calculateDistance(nft.getNftName().toLowerCase(), search.toLowerCase()) < 4)).collect(Collectors.toList());
         }
 
         return Optional.ofNullable(result);
@@ -141,8 +141,8 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public void updateOwner(long nft_id, long id_buyer) {
-        jdbcTemplate.update("UPDATE nfts SET id_owner = ? WHERE id = ?", id_buyer, nft_id);
+    public void updateOwner(long nftId, long idBuyer) {
+        jdbcTemplate.update("UPDATE nfts SET id_owner = ? WHERE id = ?", idBuyer, nftId);
     }
 
     // Code extracted from https://github.com/crwohlfeil/damerau-levenshtein/blob/master/src/main/java/com/codeweasel/DamerauLevenshtein.java

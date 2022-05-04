@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface SellOrderService {
 
-    Optional<SellOrder> create(BigDecimal price, String id_nft, String category);
+    Optional<SellOrder> create(BigDecimal price, String idNft, String category);
 
     Optional<SellOrder> getOrderById(long id);
 

@@ -3,27 +3,27 @@ package ar.edu.itba.paw.model;
 import java.math.BigDecimal;
 
 public class BuyOrder {
-    private long id_sellorder;
+    private long idSellOrder;
     private BigDecimal amount;
-    private long id_buyer;
+    private long idBuyer;
 
-    public BuyOrder(long id_sellorder, BigDecimal amount, long id_buyer) {
-        this.id_sellorder = id_sellorder;
+    public BuyOrder(long idSellOrder, BigDecimal amount, long idBuyer) {
+        this.idSellOrder = idSellOrder;
         this.amount = amount;
-        this.id_buyer = id_buyer;
+        this.idBuyer = idBuyer;
     }
 
-    public long getId_sellorder() {
-        return id_sellorder;
+    public long getIdSellOrder() {
+        return idSellOrder;
     }
 
     public BigDecimal getAmount() {
-        if(amount == null)
+        if (amount == null)
             return amount;
         return new BigDecimal(amount.stripTrailingZeros().toPlainString());
     }
 
-    public long getId_buyer() {
-        return id_buyer;
+    public long getIdBuyer() {
+        return idBuyer;
     }
 }

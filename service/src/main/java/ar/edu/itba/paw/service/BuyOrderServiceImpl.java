@@ -31,24 +31,24 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public boolean create(long id_sellorder, BigDecimal price, long user_id) {
-        return buyOrderDao.create(id_sellorder, price, user_id);
+    public boolean create(long idSellOrder, BigDecimal price, long userId) {
+        return buyOrderDao.create(idSellOrder, price, userId);
     }
 
     @Override
-    public Optional<List<BuyOffer>> getOrdersBySellOrderId(String offerPage, long id_sellorder) {
-        Optional<List<BuyOrder>> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, id_sellorder);
+    public Optional<List<BuyOffer>> getOrdersBySellOrderId(String offerPage, long idSellOrder) {
+        Optional<List<BuyOrder>> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder);
         List<BuyOffer> buyOffers = new ArrayList<>();
         buyOrders.ifPresent(orders -> orders.forEach(buyOrder -> {
-            Optional<User> user = userDao.getUserById(buyOrder.getId_buyer());
+            Optional<User> user = userDao.getUserById(buyOrder.getIdBuyer());
             user.ifPresent(value -> buyOffers.add(new BuyOffer(buyOrder, value)));
         }));
         return Optional.of(buyOffers);
     }
 
     @Override
-    public long getAmountPagesBySellOrderId(long id_sellorder) {
-        return buyOrderDao.getAmountPagesBySellOrderId(id_sellorder);
+    public long getAmountPagesBySellOrderId(long idSellOrder) {
+        return buyOrderDao.getAmountPagesBySellOrderId(idSellOrder);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         Optional<User> buyerUser = userDao.getUserById(buyer);
         if(!buyerUser.isPresent())
             return;
-        nftDao.updateOwner(sOrder.get().getNft_id(), buyerUser.get().getId());
+        nftDao.updateOwner(sOrder.get().getNftId(), buyerUser.get().getId());
 
         sellOrderDao.delete(sOrder.get().getId());
     }

@@ -34,29 +34,29 @@ public class SellOrderJdbcDao implements SellOrderDao {
     }
 
     @Override
-    public Optional<SellOrder> create(BigDecimal price, String id_nft, String category) {
+    public Optional<SellOrder> create(BigDecimal price, String idNft, String category) {
         List<String> categories = categoryDao.getCategories();
         if (!categories.contains(category))
             return Optional.empty();
 
-        Optional<Nft> nft = nftDao.getNFTById(id_nft);
+        Optional<Nft> nft = nftDao.getNFTById(idNft);
         if (!nft.isPresent())
             return Optional.empty();
-        long id_nft_long;
+        long idNftLong;
         try {
-            id_nft_long = Long.parseLong(id_nft);
+            idNftLong = Long.parseLong(idNft);
         } catch (Exception e) {
             return Optional.empty();
         }
 
         Map<String, Object> sellOrderData = new HashMap<>();
         sellOrderData.put("price", price);
-        sellOrderData.put("id_nft", id_nft_long);
+        sellOrderData.put("id_nft", idNftLong);
         sellOrderData.put("category", category);
 
         long id = jdbcInsertSellOrder.executeAndReturnKey(sellOrderData).longValue();
 
-        return Optional.of(new SellOrder(id, price, id_nft_long, category));
+        return Optional.of(new SellOrder(id, price, idNftLong, category));
     }
 
     @Override

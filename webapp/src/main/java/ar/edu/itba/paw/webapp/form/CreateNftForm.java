@@ -14,11 +14,11 @@ public class CreateNftForm {
     @Digits(message = "Id is not a valid number!", integer = 8, fraction = 0)
     @Min(value=0L, message = "ID must be a positive number")
     @NotNull
-    private long nft_id;
+    private long nftId;
 
     @NotBlank
     @Pattern(regexp = "^0x[a-fA-F0-9]{40}$", message = "Contract must begin with 0x and contain 40 characters (a-f or 0-9)")
-    private String contract_addr;
+    private String contractAddr;
 
     @NotBlank
     private String name;
@@ -36,20 +36,20 @@ public class CreateNftForm {
 
     private String[] properties;
 
-    public long getNft_id() {
-        return nft_id;
+    public long getNftId() {
+        return nftId;
     }
 
-    public void setNft_id(long nft_id) {
-        this.nft_id = nft_id;
+    public void setNftId(long nftId) {
+        this.nftId = nftId;
     }
 
-    public String getContract_addr() {
-        return contract_addr;
+    public String getContractAddr() {
+        return contractAddr;
     }
 
-    public void setContract_addr(String contract_addr) {
-        this.contract_addr = contract_addr;
+    public void setContractAddr(String contract_addr) {
+        this.contractAddr = contractAddr;
     }
 
     public String getName() {

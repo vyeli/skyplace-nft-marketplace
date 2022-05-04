@@ -25,30 +25,30 @@
             />
             <form:errors path="name" element="p" cssStyle="color: tomato" />
         </form:label>
-        <form:label path="nft_id" class="flex flex-col gap-1">
+        <form:label path="nftId" class="flex flex-col gap-1">
             <span class="text-slate-600">Id</span>
             <form:input
                     type="number"
-                    path="nft_id"
+                    path="nftId"
                     min="0"
                     required="true"
                     autoComplete="off"
                     placeholder="Nft id"
                     class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
             />
-            <form:errors path="nft_id" element="p" cssStyle="color: tomato" />
+            <form:errors path="nftId" element="p" cssStyle="color: tomato" />
         </form:label>
-        <form:label path="contract_addr" class="flex flex-col gap-1">
+        <form:label path="contractAddr" class="flex flex-col gap-1">
             <span class="text-slate-600">Contract</span>
             <form:input
                     type="text"
-                    path="contract_addr"
+                    path="contractAddr"
                     required="true"
                     autoComplete="off"
                     placeholder="0xabcdef0123456789ABCDEF0123456789abcdef01"
                     class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
             />
-            <form:errors path="contract_addr" element="p" cssStyle="color: tomato" />
+            <form:errors path="contractAddr" element="p" cssStyle="color: tomato" />
         </form:label>
         <form:label path="chain" class="flex flex-col gap-1">
             <span class="text-slate-600">Blockchain</span>

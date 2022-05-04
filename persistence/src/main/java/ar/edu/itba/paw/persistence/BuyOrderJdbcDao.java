@@ -27,24 +27,24 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
     }
 
     @Override
-    public boolean create(long id_sellorder, BigDecimal price, long user_id) {
-        List<BigDecimal> buyorder = jdbcTemplate.query("SELECT amount FROM buyorders WHERE id_sellorder = ? AND id_buyer = ?", new Object[]{id_sellorder, user_id}, (rs, rn) -> rs.getBigDecimal("amount"));
+    public boolean create(long idSellOrder, BigDecimal price, long userId) {
+        List<BigDecimal> buyOrder = jdbcTemplate.query("SELECT amount FROM buyorders WHERE id_sellorder = ? AND id_buyer = ?", new Object[]{idSellOrder, userId}, (rs, rn) -> rs.getBigDecimal("amount"));
 
-        if(buyorder.size()>0) {
-            return jdbcTemplate.update("UPDATE buyorders SET amount=? WHERE id_sellorder = ? AND id_buyer = ?", price, id_sellorder, user_id) == 1;
+        if(buyOrder.size()>0) {
+            return jdbcTemplate.update("UPDATE buyorders SET amount=? WHERE id_sellorder = ? AND id_buyer = ?", price, idSellOrder, userId) == 1;
         } else {
             Map<String, Object> buyOrderData = new HashMap<>();
 
-            buyOrderData.put("id_sellorder", id_sellorder);
+            buyOrderData.put("id_sellorder", idSellOrder);
             buyOrderData.put("amount", price);
-            buyOrderData.put("id_buyer", user_id);
+            buyOrderData.put("id_buyer", userId);
 
             return jdbcInsertBuyOrder.execute(buyOrderData) > 0;
         }
     }
 
     @Override
-    public Optional<List<BuyOrder>> getOrdersBySellOrderId(String offerPage, long id_sellorder) {
+    public Optional<List<BuyOrder>> getOrdersBySellOrderId(String offerPage, long idSellOrder) {
         long page;
         if(offerPage == null)
             page = 1;
@@ -57,10 +57,10 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
         if(page < 1)
             page = 1;
 
-        List<BuyOrder> res = jdbcTemplate.query("SELECT amount, id_buyer FROM buyorders WHERE id_sellorder = ? ORDER BY amount DESC LIMIT ? OFFSET ?", new Object[]{id_sellorder, PAGE_SIZE, (page-1)*PAGE_SIZE}, (rs, rowNum) -> {
+        List<BuyOrder> res = jdbcTemplate.query("SELECT amount, id_buyer FROM buyorders WHERE id_sellorder = ? ORDER BY amount DESC LIMIT ? OFFSET ?", new Object[]{idSellOrder, PAGE_SIZE, (page-1)*PAGE_SIZE}, (rs, rowNum) -> {
            BigDecimal amount = rs.getBigDecimal("amount");
-           long id_buyer = rs.getLong("id_buyer");
-           return new BuyOrder(id_sellorder, amount, id_buyer);
+           long idBuyer = rs.getLong("id_buyer");
+           return new BuyOrder(idSellOrder, amount, idBuyer);
         } );
 
         return Optional.of(res);
