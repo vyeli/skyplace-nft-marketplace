@@ -68,7 +68,7 @@ public class FrontController {
 
         final List<Publication> publications = nftService.getAllPublications(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), currentUser);
         if(publications.isEmpty())
-            return notFound();
+            ; // TODO: Show message no publications
 
         if(exploreFilter.getCategory().contains(","))
             exploreFilter.setCategory("Various");
@@ -191,10 +191,14 @@ public class FrontController {
         }
         long favorites = favoriteService.getNftFavorites(productId);
         boolean isFaved = false;
-        if(currentUser.isPresent())
-            isFaved = favoriteService.userFavedNft(currentUser.get().getId(), nft.get().getId());
+
 
         final ModelAndView mav = new ModelAndView("frontcontroller/product");
+
+        if(currentUser.isPresent()) {
+            isFaved = favoriteService.userFavedNft(currentUser.get().getId(), nft.get().getId());
+            mav.addObject("isAdmin", userService.isAdmin());
+        }
         mav.addObject("favorites", favorites);
         mav.addObject("nft", nft.get());
         mav.addObject("isFaved", isFaved);
@@ -264,7 +268,9 @@ public class FrontController {
 
     @RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
     public ModelAndView deleteNft(@PathVariable String productId) {
-        return new ModelAndView("redirect:/profile");
+        nftService.delete(productId);
+
+        return new ModelAndView("redirect:/explore");
     }
 
     @RequestMapping(value="/emailSent")
@@ -375,16 +381,19 @@ public class FrontController {
     public ModelAndView getUser(@PathVariable String userId, @RequestParam(required = false, name = "tab") String tab){
         ModelAndView mav = new ModelAndView("frontcontroller/profile");
         final Optional<User> user = userService.getUserById(userId);
-        User currentUser = null;
-        Optional<User> optionalCurrentUser = userService.getCurrentUser();
-        if(optionalCurrentUser.isPresent())
-            currentUser = optionalCurrentUser.get();
+
         if(user.isPresent()){
+            User currentUser = null;
+            Optional<User> optionalCurrentUser = userService.getCurrentUser();
+            if(optionalCurrentUser.isPresent()) {
+                currentUser = optionalCurrentUser.get();
+                mav.addObject("isOwner", currentUser.getId()==user.get().getId());
+            }
             mav.addObject("user", user.get());
             List<Publication> publications;
             if(tab == null)
                 publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, false);
-            else if(tab.equals("favorited"))
+            else if(tab.equals("favorited") && currentUser != null && currentUser.getId()==user.get().getId())
                 publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, true, false);
             else
                 publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, true);

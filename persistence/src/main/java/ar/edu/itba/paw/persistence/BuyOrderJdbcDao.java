@@ -65,8 +65,8 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
 
     @Override
     public long getAmountPagesBySellOrderId(long id_sellorder) {
-        List<Long> res = jdbcTemplate.query("SELECT count(*) FROM buyorders WHERE id_sellorder = ?", new Object[]{id_sellorder}, (rs , rowNum) -> rs.getLong("count"));
-        return res.size() > 0 ? res.get(0)/PAGE_SIZE+1:0;
+        Optional<Long> res = jdbcTemplate.query("SELECT (count(*)-1)/"+PAGE_SIZE+"+1 AS count FROM buyorders WHERE id_sellorder = ?", new Object[]{id_sellorder}, (rs , rowNum) -> rs.getLong("count")).stream().findFirst();
+        return res.isPresent() ? res.get():0;
     }
 
     @Override

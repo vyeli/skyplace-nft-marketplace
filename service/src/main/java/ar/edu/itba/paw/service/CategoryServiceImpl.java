@@ -23,8 +23,4 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryDao.getCategories();
     }
 
-    @Override
-    public List<String> getStaticCategories() {
-        return new ArrayList<>(Arrays.asList("all", "collections", "art", "utility", "photography", "other", "search"));
-    }
 }

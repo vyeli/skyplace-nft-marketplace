@@ -71,6 +71,7 @@
                     Selling
                 </a>
             </li>
+            <c:if test="${isOwner}">
             <li>
                 <a href="<c:url value='/profile/${user.id}?tab=favorited'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="favoritedTab">
                     <svg class="mr-2 h-6 w-6" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,6 +80,7 @@
                     Favorited
                 </a>
             </li>
+            </c:if>
         </ul>
     </div>
     <!-- NFTs -->

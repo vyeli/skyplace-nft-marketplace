@@ -48,7 +48,7 @@ public class CreateNftForm {
         return contractAddr;
     }
 
-    public void setContractAddr(String contract_addr) {
+    public void setContractAddr(String contractAddr) {
         this.contractAddr = contractAddr;
     }
 

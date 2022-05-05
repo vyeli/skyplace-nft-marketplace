@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.Nft;
+import ar.edu.itba.paw.model.Publication;
+import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,30 +28,43 @@ public class NftJdbcDao implements NftDao{
     private final SimpleJdbcInsert jdbcInsertNft;
     private final ImageDao imageDao;
     private final static Double JARO_WINKLER_UMBRAL = 0.8;
+    private final String NFT_SQL_VARIABLES = " nfts.id AS id , nft_id AS nftId, contract_addr AS contractAddr, nft_name AS nftName, chain, id_image AS idImage, id_owner AS idOwner, collection, description, properties, sellorders.id AS sellOrderId ";
     private final String SELECT_NFT_QUERY =
-            "SELECT nfts.id AS id ,nft_id, contract_addr, nft_name, chain, id_image, id_owner, collection, description, properties, sellorders.id AS id_sellorder " +
-            "FROM nfts LEFT OUTER JOIN sellorders ON sellorders.id_nft=nfts.id ";
+            "SELECT " +
+                    NFT_SQL_VARIABLES +
+            " FROM nfts LEFT OUTER JOIN sellorders ON sellorders.id_nft=nfts.id ";
 
-    private final RowMapper<Nft> SELECT_MAPPER = (rs, i) -> {
-        long id = rs.getLong("id");
-        long idNft = rs.getLong("nft_id");
-        String contractAddr = rs.getString("contract_addr");
-        String name = rs.getString("nft_name");
-        String chain = rs.getString("chain");
-        long idImage = rs.getLong("id_image");
-        long idOwner = rs.getLong("id_owner");
-        String collection = rs.getString("collection");
-        String description = rs.getString("description");
-        Array propertiesArray = rs.getArray("properties");
-        String[] properties = null;
-        if(propertiesArray != null)
-            properties = (String[])propertiesArray.getArray();
-        Long idSellOrder = rs.getLong("id_sellorder");
-        if(idSellOrder == 0)
-            idSellOrder = null;
-        return new Nft(id, idNft, contractAddr, name ,chain, idImage, idOwner, collection, description, properties, idSellOrder);
+    private final String SELECT_PUBLICATION_QUERY =
+                    "SELECT " +
+                    NFT_SQL_VARIABLES +
+                    "            ,price," +
+                    "            category," +
+                    "            username," +
+                    "            email," +
+                    "            CASE WHEN favorited.user_id IS NULL THEN false ELSE true END AS isFaved" +
+                    "        FROM" +
+                    "            nfts" +
+                    "            LEFT OUTER JOIN sellorders" +
+                    "                ON nfts.id=sellorders.id_nft" +
+                    "            JOIN users" +
+                    "                ON id_owner=users.id" +
+                    "            LEFT OUTER JOIN favorited" +
+                    "                ON (favorited.user_id=? AND favorited.id_nft=nfts.id) ";
+
+
+    private final RowMapper<Publication> SELECT_PUBLICATION_MAPPER = (rs, i) -> {
+        Nft nft = createNftFromResultSet(rs);
+        SellOrder sellOrder = null;
+        if(nft.getSellOrder() != null) {
+            BigDecimal price = rs.getBigDecimal("price");
+            String category = rs.getString("category");
+            sellOrder = new SellOrder(nft.getSellOrder(), price, nft.getNftId(), category);
+        }
+        User user = new User(nft.getIdOwner(), rs.getString("email"));
+        boolean isFaved = rs.getBoolean("isFaved");
+        return new Publication(nft, sellOrder, user, isFaved);
     };
-
+    private final RowMapper<Nft> SELECT_NFT_MAPPER = (rs, i) -> createNftFromResultSet(rs);
     @Autowired
     public NftJdbcDao(final DataSource ds, final ImageDao imageDao) {
         jdbcTemplate = new JdbcTemplate(ds);
@@ -54,6 +72,26 @@ public class NftJdbcDao implements NftDao{
                 .withTableName("nfts")
                 .usingGeneratedKeyColumns("id");
         this.imageDao = imageDao;
+    }
+
+    private Nft createNftFromResultSet(ResultSet rs) throws SQLException {
+        long id = rs.getLong("id");
+        long idNft = rs.getLong("nftId");
+        String contractAddr = rs.getString("contractAddr");
+        String name = rs.getString("nftName");
+        String chain = rs.getString("chain");
+        long idImage = rs.getLong("idImage");
+        long idOwner = rs.getLong("idOwner");
+        String collection = rs.getString("collection");
+        String description = rs.getString("description");
+        Array propertiesArray = rs.getArray("properties");
+        String[] properties = null;
+        if(propertiesArray != null)
+            properties = (String[])propertiesArray.getArray();
+        Long idSellOrder = rs.getLong("sellOrderId");
+        if(idSellOrder == 0)
+            idSellOrder = null;
+        return new Nft(id, idNft, contractAddr, name ,chain, idImage, idOwner, collection, description, properties, idSellOrder);
     }
 
     @Override
@@ -85,7 +123,7 @@ public class NftJdbcDao implements NftDao{
     public Optional<Nft> getNFTById(String nftId) {
         try {
             long nftIdLong = Long.parseLong(nftId);
-            List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nftIdLong}, SELECT_MAPPER);
+            List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nftIdLong}, SELECT_NFT_MAPPER);
             return Optional.ofNullable(result.get(0));
         } catch(Exception e) {
             return Optional.empty();
@@ -93,11 +131,36 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public List<Nft> getAllNFTs(int page, String chain, String search) {
-        StringBuilder sb = new StringBuilder();
+    public List<Publication> getAllPublications(int page, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
+        StringBuilder sb = new StringBuilder(SELECT_PUBLICATION_QUERY);
         List<Object> args = new ArrayList<>();
-
-        sb.append(SELECT_NFT_QUERY).append(" WHERE true ");
+        if (currentUser != null)
+            args.add(currentUser.getId());
+        else
+            args.add(0);
+        sb.append(" WHERE true ");
+        String[] categories = category.split(",");
+        StringBuilder categoryFilter = new StringBuilder();
+        List<Object> categoryArgs = new ArrayList<>();
+        boolean allNfts = false;
+        categoryFilter.append(" AND ( ");
+        for(int i = 0; i < categories.length; i++) {
+            if(categories[i].equals("all")) {
+                allNfts = true;
+                break;
+            }
+            String categoryAux = categories[i].substring(0,1).toUpperCase()+categories[i].substring(1);
+            if(i == 0)
+                categoryFilter.append(" category LIKE ? ");
+            else
+                categoryFilter.append(" OR category LIKE ? ");
+            categoryArgs.add(categoryAux);
+        }
+        categoryFilter.append(") ");
+        if(!allNfts) {
+            sb.append(categoryFilter);
+            args.addAll(categoryArgs);
+        }
 
         String[] chains = chain.split(",");
         StringBuilder chainFilter = new StringBuilder();
@@ -124,25 +187,66 @@ public class NftJdbcDao implements NftDao{
             args.addAll(chainArgs);
         }
 
-        List<Nft> result = jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_MAPPER);
+        if(minPrice.compareTo(new BigDecimal(0)) > 0) {
+            sb.append(" AND price >= ? ");
+            args.add(minPrice);
+        }
+        if(maxPrice.compareTo(new BigDecimal(0)) > 0) {
+            sb.append(" AND price <=  ? ");
+            args.add(maxPrice);
+        }
+        switch (sort) {
+            case "name":
+                sb.append(" ORDER BY nftName ");
+                break;
+            case "priceAsc":
+                sb.append(" ORDER BY price");
+                break;
+            case "priceDsc":
+                sb.append(" ORDER BY price DESC");
+                break;
+        }
+
+        List<Publication> result = jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
         JaroWinklerSimilarity jaroWinkler = new JaroWinklerSimilarity();
 
         if(search != null){
-            result = result.stream().filter(nft -> (jaroWinkler.apply(nft.getNftName().toLowerCase(), search.toLowerCase()) >= JARO_WINKLER_UMBRAL || calculateDistance(nft.getNftName().toLowerCase(), search.toLowerCase()) < 4)).collect(Collectors.toList());
+            result = result.stream().filter(publication -> (jaroWinkler.apply(publication.getNft().getNftName().toLowerCase(), search.toLowerCase()) >= JARO_WINKLER_UMBRAL || calculateDistance(publication.getNft().getNftName().toLowerCase(), search.toLowerCase()) < 4)).collect(Collectors.toList());
         }
 
         return result;
     }
 
     @Override
-    public List<Nft> getAllNFTsByUser(int page, User user) {
-        return jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE id_owner=?", new Object[]{user.getId()}, SELECT_MAPPER);
+    public List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
+        StringBuilder sb = new StringBuilder(SELECT_PUBLICATION_QUERY);
+        List<Object> args = new ArrayList<>();
+        args.add(currentUser != null ? currentUser.getId():0);
+        sb.append(" WHERE TRUE ");
+        if(!onlyFaved) {
+            sb.append(" AND id_owner=? ");
+            args.add(user.getId());
+        } else
+            sb.append(" AND favorited.user_id IS NOT NULL ");
+        if(onlyOnSale)
+            sb.append(" AND sellorders.id IS NOT NULL ");
+
+        System.out.println(sb);
+        return jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
     }
 
     @Override
     public void updateOwner(long nftId, long idBuyer) {
         jdbcTemplate.update("UPDATE nfts SET id_owner = ? WHERE id = ?", idBuyer, nftId);
     }
+
+    @Override
+    public void delete(String productId) {
+        try {
+            long productIdLong = Long.parseLong(productId);
+            jdbcTemplate.update("DELETE FROM nfts WHERE id=?", productIdLong);
+        } catch(Exception ignored){}
+        }
 
     // Code extracted from https://github.com/crwohlfeil/damerau-levenshtein/blob/master/src/main/java/com/codeweasel/DamerauLevenshtein.java
     private int calculateDistance(CharSequence source, CharSequence target) {

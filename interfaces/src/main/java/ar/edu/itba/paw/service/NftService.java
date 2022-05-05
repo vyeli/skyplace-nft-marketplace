@@ -19,4 +19,6 @@ public interface NftService {
     List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale);
 
     boolean userOwnsNft(String productId, User user);
+
+    void delete(String productId);
 }

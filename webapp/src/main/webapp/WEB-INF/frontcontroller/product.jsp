@@ -13,7 +13,7 @@
                 <!-- Image and tabs (first div)-->
                 <div class="flex-col max-w-[50%]">
                     <!--Image-->
-                    <figure class="mb-8">
+                    <figure class="mb-8 flex justify-center">
                         <img src="<c:url value="/images/${nft.idImage}" />"
                              alt="<c:out value="${nft.nftName}" />" class="rounded-2xl">
                     </figure>
@@ -108,18 +108,6 @@
                             <div class="tab-pane fade ${showOffer} ${offerActive}" id="tabs-messages" role="tabpanel"
                                  aria-labelledby="tabs-profile-tab">
                                 <div class="flex flex-col divide-y">
-<%--                                    <c:if test="${(edit == null || edit != true) && sellOrder != null && owner.id == currentUser.id}">--%>
-<%--                                    <div class="flex justify-end">--%>
-<%--                                        <form action="<c:url value="/product/${productId}#tabs-tab" />" class="mb-0">--%>
-<%--                                            <input type="hidden" value="true" name="edit" />--%>
-<%--                                            <input type="hidden" value="${offerPage}" name="offerPage" />--%>
-<%--                                            <button type="submit" class="flex items-center">--%>
-<%--                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>--%>
-<%--                                                <span>Edit</span>--%>
-<%--                                            </button>--%>
-<%--                                        </form>--%>
-<%--                                    </div>--%>
-<%--                                    </c:if>--%>
                                     <c:set var="offerCount" value="1" scope="page" />
                                     <c:forEach items="${buyOffer}" var="offer">
                                         <div class="flex items-center justify-between py-3">
@@ -175,14 +163,12 @@
                                         <c:if test="${offerPage > 1}">
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" class="pr-2">
                                                 <input type="hidden" name="offerPage" value="${offerPage-1}" />
-                                                <input type="hidden" name="edit" value="${edit}" />
                                                 <button type="submit" class="text-cyan-700 text-lg">
                                                     Previous
                                                 </button>
                                             </form>
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get">
                                                 <input type="hidden" name="offerPage" value="1" />
-                                                <input type="hidden" name="edit" value="${edit}" />
                                                 <button type="submit" class="text-cyan-700 text-lg px-2">
                                                     1
                                                 </button>
@@ -194,7 +180,6 @@
                                         <c:if test="${offerPage-1 > 1}">
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" >
                                                 <input type="hidden" name="offerPage" value="${offerPage-1}" />
-                                                <input type="hidden" name="edit" value="${edit}" />
                                                 <button type="submit" class="text-cyan-700 text-lg px-2">
                                                     ...${offerPage-1}
                                                 </button>
@@ -204,7 +189,6 @@
                                         <c:if test="${offerPage+1 < amountOfferPages}">
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get">
                                                 <input type="hidden" name="offerPage" value="${offerPage+1}" />
-                                                <input type="hidden" name="edit" value="${edit}" />
                                                 <button type="submit" class="text-cyan-700 text-lg px-2">
                                                     ${offerPage+1}...
                                                 </button>
@@ -213,14 +197,12 @@
                                         <c:if test="${offerPage < amountOfferPages}">
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get">
                                                 <input type="hidden" name="offerPage" value="${amountOfferPages}" />
-                                                <input type="hidden" name="edit" value="${edit}" />
                                                 <button type="submit" class="text-cyan-700 text-lg px-2">
                                                         ${amountOfferPages}
                                                 </button>
                                             </form>
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" class="px-2">
                                                 <input type="hidden" name="offerPage" value="${offerPage+1}" />
-                                                <input type="hidden" name="edit" value="${edit}" />
                                                 <button type="submit" class="text-cyan-700 text-lg">
                                                     Next
                                                 </button>
@@ -290,14 +272,16 @@
                             </c:if>
                             <div id="productMenu" class="hidden z-10 w-44 bg-white flex flex-col flex-grow rounded text-gray-700 border border-gray-300 text-sm divide-y divide-gray-300 shadow">
                                 <ul class="py-1" aria-labelledby="productButton">
-                                    <c:if test="${currentUser.id == owner.id || (not empty pageContext.request.userPrincipal ? pageContext.request.isUserInRole('ADMIN') : false )}">
+                                    <c:if test="${currentUser.id == owner.id || isAdmin}">
                                         <c:choose>
                                             <c:when test="${sellOrder != null}">
+                                                <c:if test="${currentUser.id == owner.id}">
                                                 <li class="z-20">
                                                     <a href="<c:url value="/sell/update/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
                                                         <span>Update sell</span>
                                                     </a>
                                                 </li>
+                                                </c:if>
                                                 <li class="z-20">
                                                     <span id="open-delete-modal" class="block cursor-pointer flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
                                                         Delete sell
@@ -305,11 +289,13 @@
                                                 </li>
                                             </c:when>
                                             <c:otherwise>
-                                                <li class="z-20">
-                                                    <a href="<c:url value="/sell/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                        <span>Sell nft</span>
-                                                    </a>
-                                                </li>
+                                                <c:if test="${currentUser.id == owner.id}">
+                                                    <li class="z-20">
+                                                        <a href="<c:url value="/sell/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                                                            <span>Sell nft</span>
+                                                        </a>
+                                                    </li>
+                                                </c:if>
                                                 <li class="z-20">
                                                     <span id="open-delete-modal" class="block cursor-pointer flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
                                                         Delete nft
@@ -403,14 +389,14 @@
         <jsp:include page="../components/DeleteModal.jsp">
             <jsp:param name="title" value="Delete Sell Order"/>
             <jsp:param name="description" value="Are you sure you want to delete this sell order? All buy orders for this NFT will be lost."/>
-            <jsp:param name="deletePath" value="/sell/delete/${nft.nftId}"/>
+            <jsp:param name="deletePath" value="/sell/delete/${nft.id}"/>
         </jsp:include>
     </c:when>
     <c:otherwise>
         <jsp:include page="../components/DeleteModal.jsp">
             <jsp:param name="title" value="Delete NFT"/>
             <jsp:param name="description" value="Are you sure you want to delete this NFT? This action is irreversible."/>
-            <jsp:param name="deletePath" value="/product/delete/${nft.nftId}"/>
+            <jsp:param name="deletePath" value="/product/delete/${nft.id}"/>
         </jsp:include>
     </c:otherwise>
 </c:choose>

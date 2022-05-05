@@ -47,53 +47,22 @@ public class NftServiceImpl implements NftService{
 
     @Override
     public List<Publication> getAllPublications(int page, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
-        List<Nft> nfts = nftDao.getAllNFTs(page, chain, search);
-        List<Publication> publications = new ArrayList<>();
-        nfts.forEach(nft -> {
-            Optional<User> user = userDao.getUserById(nft.getIdOwner());
-            if(!user.isPresent())
-                return;
-            Optional<SellOrder> sellOrder = Optional.empty();
-            if(nft.getSellOrder() != null)
-                sellOrder = sellOrderDao.getOrderById(nft.getSellOrder());
-            boolean isFaved = false;
-            if(currentUser != null)
-                isFaved = favoriteDao.userFavedNft(currentUser.getId(), nft.getId());
-
-            publications.add(new Publication(nft, sellOrder.orElse(null), user.get(), isFaved));
-        });
-
-        return publications;
+        return nftDao.getAllPublications(page, category, chain, minPrice, maxPrice, sort, search, currentUser);
     }
 
     @Override
     public List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
-        List<Nft> nfts = nftDao.getAllNFTsByUser(page, user);
-        List<Publication> publications = new ArrayList<>();
-        nfts.forEach(nft -> {
-            if(onlyFaved && !favoriteDao.userFavedNft(user.getId(), nft.getId()))
-                return;
-
-            Optional<SellOrder> sellOrder = Optional.empty();
-            if(nft.getSellOrder() != null)
-                sellOrder = sellOrderDao.getOrderById(nft.getSellOrder());
-
-            if(onlyOnSale && !sellOrder.isPresent())
-                return;
-
-            boolean isFaved = false;
-            if(currentUser != null)
-                isFaved = favoriteDao.userFavedNft(currentUser.getId(), nft.getId());
-
-            publications.add(new Publication(nft, sellOrder.orElse(null), user, isFaved));
-        });
-
-        return publications;
+        return nftDao.getAllPublicationsByUser(page, user, currentUser, onlyFaved, onlyOnSale);
     }
 
     @Override
     public boolean userOwnsNft(String productId, User user) {
         return getNFTById(productId).filter(value -> value.getIdOwner() == user.getId()).isPresent();
+    }
+
+    @Override
+    public void delete(String productId) {
+        nftDao.delete(productId);
     }
 
 }
