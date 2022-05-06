@@ -68,22 +68,43 @@ public class FrontController {
         if(currentUserOptional.isPresent())
             currentUser = currentUserOptional.get();
 
-        final List<Publication> publications = nftService.getAllPublications(1, exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), currentUser);
+        final List<Publication> publications = nftService.getAllPublications(exploreFilter.getPage(), exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), currentUser);
+        final long publicationsAmount = nftService.getAmountPublications(exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSearch());
         if(publications.isEmpty())
-            ; // TODO: Show message no publications
+            mav.addObject("noPublication", true);
 
-        if(exploreFilter.getCategory().contains(","))
-            exploreFilter.setCategory("Various");
-        else
-            exploreFilter.setCategory(exploreFilter.getCategory().substring(0,1).toUpperCase()+exploreFilter.getCategory().substring(1));
+        if(exploreFilter.getCategory() != null && !exploreFilter.getCategory().equals(""))
+            if(exploreFilter.getCategory().contains(","))
+                exploreFilter.setCategory("Various");
+            else
+                exploreFilter.setCategory(exploreFilter.getCategory().substring(0,1).toUpperCase()+exploreFilter.getCategory().substring(1));
 
-        mav.addObject("category", exploreFilter.getCategory());
+        mav.addObject("category", exploreFilter.getCategory() != null && !exploreFilter.getCategory().equals("") ? exploreFilter.getCategory() : "All");
         mav.addObject("publications", publications);
-        mav.addObject("pages", publications.size()/12+1);
-        mav.addObject("publicationsAmount", publications.size());
+        mav.addObject("pages", publicationsAmount/12+1);
+        mav.addObject("publicationsAmount", publicationsAmount);
         mav.addObject("categories", categories);
         mav.addObject("chains", chains);
+        String sortFormat = "Name";
+        switch(exploreFilter.getSort()) {
+            case "priceAsc":
+                sortFormat = "Price Ascending";
+                break;
+            case "priceDsc":
+                sortFormat = "Price Descending";
+                break;
+        }
+        mav.addObject("sortName", sortFormat);
+        mav.addObject("currentPage", exploreFilter.getPage());
 
+        // For connecting all different forms
+        mav.addObject("searchValue", exploreFilter.getSearch());
+        mav.addObject("sortValue", exploreFilter.getSort());
+        mav.addObject("statusValue", exploreFilter.getStatus());
+        mav.addObject("categoryValue", exploreFilter.getCategory());
+        mav.addObject("chainValue", exploreFilter.getChain());
+        mav.addObject("minPriceValue", exploreFilter.getMinPrice());
+        mav.addObject("maxPriceValue", exploreFilter.getMaxPrice());
         return mav;
     }
 

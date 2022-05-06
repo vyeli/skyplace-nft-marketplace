@@ -13,26 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 public class NftServiceImpl implements NftService{
     private final NftDao nftDao;
-    private final SellOrderDao sellOrderDao;
-    private final UserDao userDao;
-    private final FavoriteDao favoriteDao;
 
     @Autowired
-    public NftServiceImpl(NftDao nftDao, SellOrderDao sellOrderDao, UserDao userDao, FavoriteDao favoriteDao) {
+    public NftServiceImpl(NftDao nftDao) {
         this.nftDao = nftDao;
-        this.sellOrderDao = sellOrderDao;
-        this.userDao = userDao;
-        this.favoriteDao = favoriteDao;
     }
 
     @Override
@@ -46,13 +36,18 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public List<Publication> getAllPublications(int page, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
-        return nftDao.getAllPublications(page, category, chain, minPrice, maxPrice, sort, search, currentUser);
+    public List<Publication> getAllPublications(String page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
+        return nftDao.getAllPublications(page, status, category, chain, minPrice, maxPrice, sort, search, currentUser);
     }
 
     @Override
     public List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
         return nftDao.getAllPublicationsByUser(page, user, currentUser, onlyFaved, onlyOnSale);
+    }
+
+    @Override
+    public long getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
+        return nftDao.getAmountPublications(status, category, chain, minPrice, maxPrice, search);
     }
 
     @Override

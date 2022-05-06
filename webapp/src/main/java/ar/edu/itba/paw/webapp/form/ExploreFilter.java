@@ -5,13 +5,17 @@ import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
 
 public class ExploreFilter {
+    private String page = "1";
+
     private String search;
 
-    private String category = "all";
+    private String category;
 
-    private String chain = "all";
+    private String chain;
 
-    private String sort = "";
+    private String sort = "Name";
+
+    private String status = "";
 
     @DecimalMin(value="0")
     @Digits(integer=8, fraction=8)
@@ -20,6 +24,14 @@ public class ExploreFilter {
     @DecimalMin(value="0")
     @Digits(integer=8, fraction=8)
     private BigDecimal maxPrice = new BigDecimal(0);
+
+    public String getPage() {
+        return page;
+    }
+
+    public void setPage(String page) {
+        this.page = page;
+    }
 
     public String getSearch() {
         return search;
@@ -30,8 +42,6 @@ public class ExploreFilter {
     }
 
     public String getCategory() {
-        if(category.equals(""))
-            setCategory("all");
         return category;
     }
 
@@ -40,8 +50,6 @@ public class ExploreFilter {
     }
 
     public String getChain() {
-        if(chain.equals(""))
-            setChain("all");
         return chain;
     }
 
@@ -72,4 +80,13 @@ public class ExploreFilter {
     public void setMaxPrice(BigDecimal maxPrice) {
         this.maxPrice = maxPrice;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

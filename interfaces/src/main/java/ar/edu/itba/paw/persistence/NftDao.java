@@ -14,9 +14,11 @@ public interface NftDao {
 
     Optional<Nft> getNFTById(String nftId);
 
-    List<Publication> getAllPublications(int page, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser);
+    List<Publication> getAllPublications(String page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser);
 
     List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale);
+
+    long getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search);
 
     void updateOwner(long nftId, long idBuyer);
 

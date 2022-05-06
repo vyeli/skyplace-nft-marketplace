@@ -21,99 +21,201 @@
 <div class="min-h-screen flex flex-col">
     <%@ include file="../components/navbar.jsp" %>
     <div class="grow flex pt-16 max-h-[calc(100vh-5rem)] divide-x divide-slate-300">
-        <div class="flex flex-col w-72 min-w-[250px] items-center">
+        <div id="smallFilterBar" class="flex hidden mx-2">
+            <svg class="w-10 h-8 cursor-pointer rounded-full px-2 hover:bg-slate-200" id="openFilter" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+        </div>
+        <div class="flex flex-col w-72 min-w-[250px] items-center" id="filterBar">
             <span class="text-4xl"><c:out value="${category}"/></span>
-            <span><c:out value="${publicationsAmount}" /> <spring:message code="explore.results"/></span>
+            <span><c:out value="${publicationsAmount}" /> results</span>
 
-            <div class="grow w-full">
-                <div class="py-4 flex flex-col w-full px-4">
-                    <div class="flex space-evenly">
-                        <span class="text-2xl"><spring:message code="explore.filter"/></span>
+            <div class="grow w-full overflow-y-scroll mt-2">
+                <div class="py-4 flex flex-col w-full">
+                    <div class="flex items-center justify-between pb-4 px-4">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                            <span class="text-2xl">Filter</span>
+                        </div>
+                        <svg class="w-10 h-8 cursor-pointer rounded-full px-2 hover:bg-slate-200" id="closeFilter" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"></path></svg>
                     </div>
 
-                    <div class="py-4 px-2 flex flex-col gap-4">
-                        <c:url value="/explore" var="explorePath"/>
-                        <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
-
-                            <form:label class="flex justify-between text-lg mb-6" path="category">
-                                <span><spring:message code="explore.category"/></span>
-                                <form:select id="categoryFilter" multiple="true"
-                                        class="border-2 rounded-xl text-sm pl-2 py-1 pr-8 cursor-pointer w-1/2 text-ellipsis" path="category">
-                                    <form:option value="all" selected="true">All</form:option>
-                                    <c:forEach var="categories_i" items="${categories}">
-                                        <form:option value="${fn:toLowerCase(categories_i)}"><c:out value="${categories_i}"/></form:option>
-                                    </c:forEach>
-                                </form:select>
-                            </form:label>
-                            <div class="flex justify-between mb-6">
-                                <span><spring:message code="explore.price"/></span>
-                                <div class="flex justify-end">
-                                <form:label class="text-lg w-2/5" path="minPrice">
-                                    <form:input type="number" step="0.00000001" placeholder="Min" min="0" id="minPriceFilter"
-                                           class="border-2 rounded-xl py-1 px-2 text-sm w-full" path="minPrice"/>
-                                </form:label>
-                                <span class="mx-0.5">-</span>
-                                <form:label class="text-lg w-2/5" path="maxPrice">
-                                    <form:input type="number" step="0.00000001" placeholder="Max" value="" min="0" id="maxPriceFilter"
-                                           class="border-2 rounded-xl py-1 px-2 text-sm w-full" path="maxPrice"/>
-                                </form:label>
+                    <c:url value="/explore" var="explorePath"/>
+                    <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
+                    <form:hidden path="page" value="${currentPage}" />
+                    <form:hidden path="sort" value="${sortValue}" />
+                    <form:hidden path="search" value="${searchValue}"/>
+                    <div id="accordionStatus" data-accordion="open" data-active-classes="text-black bg-white">
+                        <h2 id="accordionStatusHeader">
+                            <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionStatusBody" aria-expanded="true" aria-controls="accordionStatusBody" >
+                                <span>Status</span>
+                                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </h2>
+                        <div id="accordionStatusBody" class="hidden" aria-labelledby="accordionStatusHeader">
+                            <div class="px-5 py-2 space-y-2 flex flex-col">
+                                <div>
+                                    <form:checkbox class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="status" value="onSale"/>
+                                    <form:label path="status">
+                                        On Sale
+                                    </form:label>
+                                </div>
+                                <div>
+                                    <form:checkbox class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="status" value="notSale"/>
+                                    <form:label path="status">
+                                        Not on Sale
+                                    </form:label>
                                 </div>
                             </div>
-
-                            <form:label class="flex justify-between text-lg mb-6" path="chain">Chain
-                                <form:select id="chainFilter" multiple="true"
-                                        class="border-2 rounded-xl text-sm pl-2 pr-8 cursor-pointer py-1 text-ellipsis w-1/2" path="chain">
-                                    <form:option value="all" selected="true"><spring:message code="explore.all"/></form:option>
-                                    <c:forEach var="chain_i" items="${chains}">
-                                        <form:option value="${fn:toLowerCase(chain_i)}"><c:out value="${chain_i}"/></form:option>
-                                    </c:forEach>
-                                </form:select>
-                            </form:label>
-
-                            <form:label class="flex justify-between text-lg mb-6" path="sort"><spring:message code="explore.sortby"/>
-                                <form:select id="sortSelect"
-                                        class="border-2 rounded-xl text-sm pl-2 pr-8 cursor-pointer py-1 text-ellipsis w-1/2" path="sort">
-                                    <form:option value="default"><spring:message code="explore.default"/></form:option>
-                                    <form:option value="name"><spring:message code="explore.name"/></form:option>
-                                    <form:option value="priceAsc"><spring:message code="explore.PriceAs"/></form:option>
-                                    <form:option value="priceDsc"><spring:message code="explore.PriceDe"/></form:option>
-                                </form:select>
-                            </form:label>
-
-                            <input type="submit" value="Apply" class="rounded-lg border-2 border-slate-400 px-4 py-1 cursor-pointer" />
-                        </form:form>
+                        </div>
                     </div>
+
+                    <div id="accordionCategory" data-accordion="open" data-active-classes="text-black bg-white">
+                        <h2 id="accordionCategoryHeader">
+                            <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionCategoryBody" aria-expanded="true" aria-controls="accordionCategoryBody" >
+                                <span>Category</span>
+                                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </h2>
+                        <div id="accordionCategoryBody" class="hidden" aria-labelledby="accordionCategoryHeader">
+                            <div class="px-5 py-2 space-y-2 flex flex-col">
+                                <form:checkboxes class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="category" items="${categories}" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="accordionChain" data-accordion="open" data-active-classes="text-black bg-white">
+                        <h2 id="accordionChainHeader">
+                            <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionChainBody" aria-expanded="true" aria-controls="accordionChainBody" >
+                                <span>Chain</span>
+                                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </h2>
+                        <div id="accordionChainBody" class="hidden" aria-labelledby="accordionChainHeader">
+                            <div class="px-5 py-2 space-y-2 flex flex-col">
+                                <form:checkboxes class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="chain" items="${chains}" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="accordionPrice" data-accordion="open" data-active-classes="text-black bg-white">
+                        <h2 id="accordionPriceHeader">
+                            <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionPriceBody" aria-expanded="true" aria-controls="accordionPriceBody" >
+                                <span>Price</span>
+                                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                            </button>
+                        </h2>
+                        <div id="accordionPriceBody" class="hidden flex items-end" aria-labelledby="accordionChainHeader">
+                            <div class="relative z-0  px-2 w-full group">
+                                <form:label path="minPrice" class="font-mono font-bold w-1/3 text-[11px] text-gray-300 bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
+                                    Min
+                                </form:label>
+                                <form:input type="number" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="minPrice"/>
+                            </div>
+                            <span class="pb-1">to</span>
+                            <div class="relative z-0  px-2 w-full group">
+                                <form:label path="maxPrice" class="font-mono font-bold w-1/3 text-[11px]  text-gray-300  bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
+                                    Max
+                                </form:label>
+                                <form:input type="number" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="maxPrice"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <input type="submit" value="Apply" class="rounded-lg flex px-4 py-1 mx-auto mt-4 cursor-pointer text-white bg-cyan-600 hover:bg-cyan-700" />
+
+
+                    </form:form>
                 </div>
             </div>
         </div>
 
         <div class="w-[80%] min-w-[500px] grow flex flex-col">
             <!-- header -->
-            <%--      <div class="flex justify-between h-16">--%>
-            <%--        <!-- pages -->--%>
-            <%--        <div class="flex text-2xl pt-4">--%>
-            <%--          <!-- icon previous -->--%>
-            <%--&lt;%&ndash;          <span class=" text-gray-400 cursor-pointer mr-4">Previous</span>&ndash;%&gt;--%>
-            <%--&lt;%&ndash;          <label>&ndash;%&gt;--%>
-            <%--&lt;%&ndash;            <input type="number" min="1" value="1"&ndash;%&gt;--%>
-            <%--&lt;%&ndash;                   class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 h-10" />&ndash;%&gt;--%>
-            <%--&lt;%&ndash;          </label>&ndash;%&gt;--%>
-            <%--&lt;%&ndash;          <span class="ml-4"> of ${pages}</span>&ndash;%&gt;--%>
-            <%--&lt;%&ndash;          <span class="text-cyan-400 cursor-pointer ml-4">Next</span>&ndash;%&gt;--%>
-            <%--        </div>--%>
-            <%--        <div class="pt-4 text-2xl mr-8">--%>
-            <%--          <!----%>
-            <%--          <label for="npages" class="">Show</label>--%>
-            <%--          <select name="npages" id="npages" class="border-2 rounded-xl w-16 cursor-pointer">--%>
-            <%--            <option value="12p">12</option>--%>
-            <%--            <option value="24p">24</option>--%>
-            <%--            <option value="48p">48</option>--%>
-            <%--          </select>--%>
-            <%--          -->--%>
-            <%--        </div>--%>
-            <%--      </div>--%>
 
-            <div class="px-8 pb-8 flex flex-wrap gap-8 overflow-y-scroll">
+            <div class="flex justify-between h-16 mb-2 px-8">
+            <!-- pages -->
+                <div class="flex text-xl items-start pt-4">
+                    <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
+                        <form:hidden path="search" value="${searchValue}"/>
+                        <form:hidden path="sort" value="${sortValue}"/>
+                        <form:hidden path="minPrice" value="${minPriceValue}"/>
+                        <form:hidden path="maxPrice" value="${maxPriceValue}"/>
+                        <form:hidden path="category" value="${categoryValue}"/>
+                        <form:hidden path="chain" value="${chainValue}"/>
+                        <form:hidden path="status" value="${statusValue}"/>
+                        <c:choose>
+                            <c:when test="${currentPage > 1}">
+                                <form:button type="submit" path="page" name="page" value="${currentPage-1}" class="text-cyan-400 cursor-pointer mr-2" >Previous</form:button>
+                            </c:when>
+                            <c:otherwise>
+                                <span class=" text-gray-400 cursor-pointer mr-2">Previous</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </form:form>
+                    <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
+                        <form:hidden path="search" value="${searchValue}"/>
+                        <form:hidden path="sort" value="${sortValue}"/>
+                        <form:hidden path="minPrice" value="${minPriceValue}"/>
+                        <form:hidden path="maxPrice" value="${maxPriceValue}"/>
+                        <form:hidden path="category" value="${categoryValue}"/>
+                        <form:hidden path="chain" value="${chainValue}"/>
+                        <form:hidden path="status" value="${statusValue}"/>
+                        <form:label path="page">
+                            <form:input path="page" type="number" min="1" value="${currentPage}"
+                                class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 py-0.5" />
+                        </form:label>
+                        <span> of ${pages}</span>
+                    </form:form>
+                    <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
+                        <form:hidden path="search" value="${searchValue}"/>
+                        <form:hidden path="sort" value="${sortValue}"/>
+                        <form:hidden path="minPrice" value="${minPriceValue}"/>
+                        <form:hidden path="maxPrice" value="${maxPriceValue}"/>
+                        <form:hidden path="category" value="${categoryValue}"/>
+                        <form:hidden path="chain" value="${chainValue}"/>
+                        <form:hidden path="status" value="${statusValue}"/>
+                        <c:choose>
+                            <c:when test="${currentPage < pages}">
+                                <form:button type="submit" path="page" name="page" value="${currentPage+1}" class="text-cyan-400 cursor-pointer ml-2" >Next</form:button>
+                            </c:when>
+                            <c:otherwise>
+                                <span class=" text-gray-400 cursor-pointer ml-2">Next</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </form:form>
+                </div>
+                <div class="flex text-2xl pt-4">
+                    <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button"><c:out value="${sortName}" /><svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+                    <!-- Dropdown menu -->
+                    <div id="sortDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44">
+                        <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
+                            <form:hidden path="page" value="${currentPage}" />
+                            <form:hidden path="search" value="${searchValue}"/>
+                            <form:hidden path="minPrice" value="${minPriceValue}"/>
+                            <form:hidden path="maxPrice" value="${maxPriceValue}"/>
+                            <form:hidden path="category" value="${categoryValue}"/>
+                            <form:hidden path="chain" value="${chainValue}"/>
+                            <form:hidden path="status" value="${statusValue}"/>
+                            <ul class="py-1 text-sm text-gray-700" aria-labelledby="sortDropdownDefault">
+                                <li>
+                                    <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Name</form:button>
+                                </li>
+                                <li>
+                                    <form:button type="submit" path="sort" name="sort" value="priceAsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Price Ascending</form:button>
+                                </li>
+                                <li>
+                                    <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Price Descending</form:button>
+                                </li>
+                            </ul>
+                        </form:form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-8 pb-8 flex flex-wrap gap-8 overflow-y-scroll justify-center">
+                <c:if test="${publicationsAmount == 0}">
+                    <span class="text-4xl">No NFTs found</span>
+                </c:if>
                 <c:forEach items="${publications}" var="publication">
                     <c:if test="${publication.nft.sellOrder != null}">
                         <c:set value="${publication.sellOrder.price}" var="sellPrice" />
@@ -137,5 +239,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("closeFilter").addEventListener('click', () => {
+        document.getElementById("smallFilterBar").classList.remove("hidden");
+        document.getElementById("filterBar").classList.add("hidden");
+    })
+
+    document.getElementById("openFilter").addEventListener('click', () => {
+        document.getElementById("smallFilterBar").classList.add("hidden");
+        document.getElementById("filterBar").classList.remove("hidden");
+    })
+</script>
 </body>
 </html>

@@ -27,6 +27,7 @@ public class NftJdbcDao implements NftDao{
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertNft;
     private final ImageDao imageDao;
+    private final int PAGE_SIZE = 12;
     private final static Double JARO_WINKLER_UMBRAL = 0.8;
     private final String NFT_SQL_VARIABLES = " nfts.id AS id , nft_id AS nftId, contract_addr AS contractAddr, nft_name AS nftName, chain, id_image AS idImage, id_owner AS idOwner, collection, description, properties, sellorders.id AS sellOrderId ";
     private final String SELECT_NFT_QUERY =
@@ -130,61 +131,54 @@ public class NftJdbcDao implements NftDao{
         }
     }
 
-    @Override
-    public List<Publication> getAllPublications(int page, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
-        StringBuilder sb = new StringBuilder(SELECT_PUBLICATION_QUERY);
+    private Pair<StringBuilder, List<Object>> applyFilter(String columnName, String filter) {
+        if(filter == null || filter.equals(""))
+            return null;
+        StringBuilder sb = new StringBuilder();
         List<Object> args = new ArrayList<>();
-        if (currentUser != null)
-            args.add(currentUser.getId());
-        else
-            args.add(0);
+        String[] filterArray = filter.split(",");
+        sb.append(" AND ( ");
+        for (int i = 0; i < filterArray.length; i++) {
+            String aux = filterArray[i].substring(0, 1).toUpperCase() + filterArray[i].substring(1);
+            if (i == 0)
+                sb.append(String.format(" %s LIKE ? ", columnName));
+            else
+                sb.append(String.format(" OR %s LIKE ? ", columnName));
+            args.add(aux);
+        }
+        sb.append(") ");
+        return new Pair<>(sb, args);
+    }
+
+    private Pair<StringBuilder, List<Object>> buildFilterQuery(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort) {
+        StringBuilder sb = new StringBuilder();
+        List<Object> args = new ArrayList<>();
         sb.append(" WHERE true ");
-        String[] categories = category.split(",");
-        StringBuilder categoryFilter = new StringBuilder();
-        List<Object> categoryArgs = new ArrayList<>();
-        boolean allNfts = false;
-        categoryFilter.append(" AND ( ");
-        for(int i = 0; i < categories.length; i++) {
-            if(categories[i].equals("all")) {
-                allNfts = true;
-                break;
-            }
-            String categoryAux = categories[i].substring(0,1).toUpperCase()+categories[i].substring(1);
-            if(i == 0)
-                categoryFilter.append(" category LIKE ? ");
-            else
-                categoryFilter.append(" OR category LIKE ? ");
-            categoryArgs.add(categoryAux);
-        }
-        categoryFilter.append(") ");
-        if(!allNfts) {
-            sb.append(categoryFilter);
-            args.addAll(categoryArgs);
+
+        if(status != null && !status.equals("")) {
+            String[] statusArray = status.split(",");
+            StringBuilder statusAux = new StringBuilder();
+            final int[] bothStatus = {0};
+            Arrays.stream(statusArray).forEach(s -> {
+                if(s.equals("onSale") || s.equals("notSale")) {
+                    statusAux.append(String.format(" AND sellorders.id IS %s NULL ", s.equals("onSale") ? "NOT":""));
+                    bothStatus[0]++;
+                }
+            });
+            if(bothStatus[0] < 2)
+                sb.append(statusAux);
         }
 
-        String[] chains = chain.split(",");
-        StringBuilder chainFilter = new StringBuilder();
-        List<Object> chainArgs = new ArrayList<>();
-        boolean allChains = false;
-
-        chainFilter.append(" AND ( ");
-        for(int i = 0; i < chains.length; i++) {
-            if(chains[i].equals("all")) {
-                allChains = true;
-                break;
-            }
-            String chainAux = chains[i].substring(0,1).toUpperCase()+chains[i].substring(1);
-            if(i == 0)
-                chainFilter.append(" chain LIKE ? ");
-            else
-                chainFilter.append(" OR chain LIKE ? ");
-            chainArgs.add(chainAux);
+        Pair<StringBuilder, List<Object>> applyCategoryFilter = applyFilter("category", category);
+        if(applyCategoryFilter != null) {
+            sb.append(applyCategoryFilter.getLeft());
+            args.addAll(applyCategoryFilter.getRight());
         }
-        chainFilter.append(") ");
 
-        if(!allChains) {
-            sb.append(chainFilter);
-            args.addAll(chainArgs);
+        Pair<StringBuilder, List<Object>> applyChainFilter = applyFilter("chain", chain);
+        if(applyChainFilter != null) {
+            sb.append(applyChainFilter.getLeft());
+            args.addAll(applyChainFilter.getRight());
         }
 
         if(minPrice.compareTo(new BigDecimal(0)) > 0) {
@@ -196,25 +190,61 @@ public class NftJdbcDao implements NftDao{
             args.add(maxPrice);
         }
         switch (sort) {
-            case "name":
-                sb.append(" ORDER BY nftName ");
-                break;
             case "priceAsc":
                 sb.append(" ORDER BY price");
                 break;
             case "priceDsc":
                 sb.append(" ORDER BY price DESC");
                 break;
+            case "noSort":
+                break;
+            default:
+                sb.append(" ORDER BY nftName ");
+                break;
         }
+
+        return new Pair<>(sb, args);
+    }
+
+    private Pair<StringBuilder, List<Object>> buildQueryPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, User currentUser) {
+        StringBuilder sb = new StringBuilder(SELECT_PUBLICATION_QUERY);
+        List<Object> args = new ArrayList<>();
+        if (currentUser != null)
+            args.add(currentUser.getId());
+        else
+            args.add(0);
+
+        Pair<StringBuilder, List<Object>> filterResults = buildFilterQuery(status, category, chain, minPrice, maxPrice, sort);
+        sb.append(filterResults.getLeft());
+        args.addAll(filterResults.getRight());
+        return new Pair<>(sb, args);
+    }
+
+    @Override
+    public List<Publication> getAllPublications(String page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
+        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, sort, currentUser);
+        StringBuilder sb = queryBuilder.getLeft();
+        List<Object> args = queryBuilder.getRight();
+
+        sb.append(" LIMIT ? OFFSET ? ");
+        int pageInt = Integer.parseInt(page)-1;
+        if(pageInt < 0)
+            pageInt = 0;
+        args.add(PAGE_SIZE);
+        args.add(pageInt*PAGE_SIZE);
 
         List<Publication> result = jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
-        JaroWinklerSimilarity jaroWinkler = new JaroWinklerSimilarity();
-
-        if(search != null){
-            result = result.stream().filter(publication -> (jaroWinkler.apply(publication.getNft().getNftName().toLowerCase(), search.toLowerCase()) >= JARO_WINKLER_UMBRAL || calculateDistance(publication.getNft().getNftName().toLowerCase(), search.toLowerCase()) < 4)).collect(Collectors.toList());
-        }
+        result = applySearchAlgorithms(result, search);
 
         return result;
+    }
+
+    private List<Publication> applySearchAlgorithms(List<Publication> publications, String search) {
+        JaroWinklerSimilarity jaroWinkler = new JaroWinklerSimilarity();
+
+        if(search != null && !search.equals(""))
+            publications = publications.stream().filter(publication -> (jaroWinkler.apply(publication.getNft().getNftName().toLowerCase(), search.toLowerCase()) >= JARO_WINKLER_UMBRAL || calculateDistance(publication.getNft().getNftName().toLowerCase(), search.toLowerCase()) < 4)).collect(Collectors.toList());
+        return publications;
     }
 
     @Override
@@ -231,8 +261,18 @@ public class NftJdbcDao implements NftDao{
         if(onlyOnSale)
             sb.append(" AND sellorders.id IS NOT NULL ");
 
-        System.out.println(sb);
         return jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
+    }
+
+    @Override
+    public long getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
+        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, "noSort", null);
+        StringBuilder sb = queryBuilder.getLeft();
+        List<Object> args = queryBuilder.getRight();
+
+        List<Publication> result = jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
+        result = applySearchAlgorithms(result, search);
+        return result.size();
     }
 
     @Override
@@ -277,5 +317,23 @@ public class NftJdbcDao implements NftDao{
             }
         }
         return dist[sourceLength][targetLength];
+    }
+
+    private static class Pair<T, U> {
+        private final T left;
+        private final U right;
+
+        Pair(T left, U right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        public T getLeft() {
+            return left;
+        }
+
+        public U getRight() {
+            return right;
+        }
     }
 }
