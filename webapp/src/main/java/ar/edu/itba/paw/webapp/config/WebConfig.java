@@ -71,7 +71,8 @@ public class WebConfig extends WebMvcConfigurationSupport {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
-                .addResourceLocations("/image/");
+                .addResourceLocations("/image/")
+                .addResourceLocations("/js/");
     }
 
     @Override

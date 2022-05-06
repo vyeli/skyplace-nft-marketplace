@@ -13,7 +13,7 @@ public interface BuyOrderService {
 
     long getAmountPagesBySellOrderId(long idSellOrder);
 
-    void confirmBuyOrder(String sellOrder, String buyer);
+    void confirmBuyOrder(String sellOrder, int buyer);
 
     void deleteBuyOrder(String sellOrder, String buyer);
 }

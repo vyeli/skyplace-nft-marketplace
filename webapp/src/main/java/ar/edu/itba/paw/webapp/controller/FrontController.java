@@ -3,12 +3,12 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.webapp.form.*;
 import ar.edu.itba.paw.service.*;
-import ar.edu.itba.paw.webapp.exceptions.SellOrderNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -23,6 +23,8 @@ import javax.validation.Valid;
 @Controller
 public class FrontController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FrontController.class);
+
     private final SellOrderService sellOrderService;
     private final CategoryService categoryService;
     private final ChainService chainService;
@@ -32,9 +34,10 @@ public class FrontController {
     private final NftService nftService;
     private final BuyOrderService buyOrderService;
     private final FavoriteService favoriteService;
+    private final PurchaseService purchaseService;
 
     @Autowired
-    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, MailingService mailingService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService) {
+    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, MailingService mailingService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService) {
         this.sellOrderService = sellOrderService;
         this.categoryService = categoryService;
         this.chainService = chainService;
@@ -44,6 +47,7 @@ public class FrontController {
         this.nftService = nftService;
         this.buyOrderService = buyOrderService;
         this.favoriteService = favoriteService;
+        this.purchaseService = purchaseService;
     }
 
     @RequestMapping(value="/")
@@ -173,7 +177,7 @@ public class FrontController {
 
     /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("buyNftForm") final BuyNftForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
+    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
         final Optional<Nft> nft = nftService.getNFTById(productId);
         if(!nft.isPresent())
             return notFound();
@@ -221,21 +225,23 @@ public class FrontController {
     }
 
     @RequestMapping(value="/buyorder/confirm", method = RequestMethod.POST)
-    public ModelAndView confirmBuyOrder(@RequestParam(value = "sellOrder") String sellorder, @RequestParam(value = "buyer") String buyer, @RequestParam(value = "product") String productId) {
+    public ModelAndView confirmBuyOrder(@RequestParam(value = "sellOrder") String sellorder, @RequestParam(value = "idBuyer") int buyer, @RequestParam(value = "idNft") int productId, @RequestParam(value = "idSeller") int seller, @RequestParam(value = "price") BigDecimal price) {
+        // TODO: check success
         buyOrderService.confirmBuyOrder(sellorder, buyer);
+        purchaseService.createPurchase(buyer, seller, productId, price);
 
         return new ModelAndView("redirect:/product/" + productId);
     }
 
     @RequestMapping(value="/buyorder/delete", method = RequestMethod.POST)
-    public ModelAndView deleteBuyOrder(@RequestParam(value = "sellOrder") String sellorder, @RequestParam(value = "buyer") String buyer, @RequestParam(value = "product") String productId) {
+    public ModelAndView deleteBuyOrder(@RequestParam(value = "sellOrder") String sellorder, @RequestParam(value = "idBuyer") String buyer, @RequestParam(value = "idNft") String productId) {
         buyOrderService.deleteBuyOrder(sellorder, buyer);
 
         return new ModelAndView("redirect:/product/" + productId);
     }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final BuyNftForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
+    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
         if (errors.hasErrors()) {
             return product(form, productId, offerPage);
         }
@@ -340,19 +346,6 @@ public class FrontController {
         return mav;
     }
 
-    @RequestMapping(value = "/images/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
-    @ResponseBody
-    public byte[] getImage(@PathVariable long id) {
-        Image image = imageService.getImage(id);
-        return image.getImage();
-    }
-
-    /* 404 */
-    @RequestMapping("/**")
-    public ModelAndView notFound() {
-        return new ModelAndView("error/404");
-    }
-
     @RequestMapping("/current-user")
     public ModelAndView profile(@RequestParam(required = false, name = "tab") String tab){
         Optional<User> user = userService.getCurrentUser();
@@ -390,13 +383,40 @@ public class FrontController {
                 mav.addObject("isOwner", currentUser.getId()==user.get().getId());
             }
             mav.addObject("user", user.get());
-            List<Publication> publications;
-            if(tab == null)
+
+            List<Publication> publications = new ArrayList<>();
+
+            if (tab == null) // inventory
                 publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, false);
-            else if(tab.equals("favorited") && currentUser != null && currentUser.getId()==user.get().getId())
-                publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, true, false);
-            else
-                publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, true);
+            else {
+                switch (tab) {
+                    case "favorited":
+                        if (currentUser != null && currentUser.getId() == user.get().getId())
+                            publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, true, false);
+                        break;
+                    case "selling":
+                        publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, true);
+                        break;
+                    case "history":
+                        // TODO
+                        int _userId;
+                        try {
+                            _userId = Integer.parseInt(userId);
+                        }
+                        catch (NumberFormatException e) {
+                            LOGGER.error("Invalid user id", e);
+                            return new ModelAndView("redirect:/404");
+                        }
+                        List<Purchase> transactions = purchaseService.getAllTransactions(_userId);
+                        mav.addObject("historyItems", transactions);
+                        mav.addObject("historyItemsSize", transactions.size());
+                        mav.addObject("showHistory", true);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             mav.addObject("publications", publications);
             mav.addObject("publicationsSize", publications.size());
             return mav;
@@ -422,6 +442,19 @@ public class FrontController {
     public ModelAndView newProduct() {
         final ModelAndView mav = new ModelAndView("product");
         return mav;
+    }
+
+    @RequestMapping(value = "/images/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @ResponseBody
+    public byte[] getImage(@PathVariable long id) {
+        Image image = imageService.getImage(id);
+        return image.getImage();
+    }
+
+    /* 404 */
+    @RequestMapping("/**")
+    public ModelAndView notFound() {
+        return new ModelAndView("error/404");
     }
 
 }

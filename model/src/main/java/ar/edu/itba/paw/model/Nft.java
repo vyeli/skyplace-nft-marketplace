@@ -27,6 +27,10 @@ public class Nft {
         this.sellOrder = sellOrder;
     }
 
+    public Nft() {
+        this.name = "Deleted NFT";
+    }
+
     public long getId() {
         return id;
     }

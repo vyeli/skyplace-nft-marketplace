@@ -25,6 +25,11 @@ public class User {
         this.email = email;
     }
 
+    public User() {
+        this.email = "Deleted User";
+        this.username = "Deleted User";
+    }
+
     public long getId() {
         return id;
     }

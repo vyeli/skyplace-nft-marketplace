@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
+<%-- TODO: mandar los inputs necesarios y usar PurchaseForm --%>
+
 <!-- Confirm Sell Modal -->
 <dialog class="relative p-4 rounded-lg text-center max-w-md" id="confirm-offer-modal">
     <button class="absolute top-4 right-6 font-bold text-slate-600" id="close-confirm-offer-modal">X</button>
@@ -10,8 +12,10 @@
     <c:url value="/buyorder/confirm" var="confirmBuyOrder" />
     <form action="${confirmBuyOrder}" method="post" class="mb-0">
         <input type="hidden" name="sellOrder" value="" />
-        <input type="hidden" name="buyer" value="" />
-        <input type="hidden" name="product" value="" />
+        <input type="hidden" name="idBuyer" value="" />
+        <input type="hidden" name="idNft" value="" />
+        <input type="hidden" name="idSeller" value="" />
+        <input type="hidden" name="price" value="" />
         <button class="px-4 py-2 rounded-md text-white bg-cyan-700" type="submit">Accept</button>
     </form>
 </dialog>
@@ -25,8 +29,8 @@
   <c:url value="/buyorder/delete" var="deleteBuyOrder" />
   <form action="${deleteBuyOrder}" method="post" class="mb-0">
       <input type="hidden" name="sellOrder" value="" />
-      <input type="hidden" name="buyer" value="" />
-      <input type="hidden" name="product" value="" />
+      <input type="hidden" name="idBuyer" value="" />
+      <input type="hidden" name="idNft" value="" />
       <button class="px-4 py-2 rounded-md text-white bg-red-500" type="submit">Reject</button>
   </form>
 </dialog>
@@ -40,8 +44,10 @@
     closeRejectOfferModal.addEventListener("click", () => rejectOfferModal.close())
     closeConfirmOfferModal.addEventListener("click", () => confirmOfferModal.close())
 
-    function handleAccept(sellOrderId, buyerId, productId) {
+    function handleAccept(sellOrderId, buyerId, sellerId, price, productId) {
       setInputData(confirmOfferModal, sellOrderId, buyerId, productId)
+      confirmOfferModal.querySelector("input[name='idSeller']").value = sellerId
+      confirmOfferModal.querySelector("input[name='price']").value = price
       confirmOfferModal.showModal()
     }
 
@@ -52,7 +58,7 @@
 
     function setInputData(modal, sellOrderId, buyerId, productId) {
       modal.querySelector("input[name='sellOrder']").value = sellOrderId
-      modal.querySelector("input[name='buyer']").value = buyerId
-      modal.querySelector("input[name='product']").value = productId
+      modal.querySelector("input[name='idBuyer']").value = buyerId
+      modal.querySelector("input[name='idNft']").value = productId
     }
 </script>

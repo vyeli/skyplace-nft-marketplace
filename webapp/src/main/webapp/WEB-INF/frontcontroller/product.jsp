@@ -141,7 +141,7 @@
                                                         <button onclick="handleReject(${offer.buyOrder.idSellOrder}, ${offer.buyOrder.idBuyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
                                                             Reject
                                                         </button>
-                                                        <button onclick="handleAccept(${offer.buyOrder.idSellOrder}, ${offer.buyOrder.idBuyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
+                                                        <button onclick="handleAccept(${offer.buyOrder.idSellOrder}, ${offer.buyOrder.idBuyer}, ${currentUser.id}, ${sellOrder.price}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
                                                             Accept
                                                         </button>
                                                     </div>
@@ -370,7 +370,7 @@
                                         <path fill="#8A92B2" d="M420.1 1078.7l539.7 760.6v-441.7z"></path>
                                         <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
                                     </svg>
-                                    <form:input type="number" value="${sellOrder.price}" class="rounded-lg border-slate-300" min="0" step="0.000000000000000001" path="price" />
+                                    <form:input type="number" value="0" class="rounded-lg border-slate-300" min="0" step="0.000000000000000001" path="price" />
                                 </label>
                                 <input type="submit" class="bg-cyan-600 shadow-accent-volume hover:bg-cyan-700 inline-block w-1/2 rounded-lg py-3 px-8 text-center font-semibold text-white transition-all cursor-pointer" value="Make offer">
                                 <form:errors path="price" element="p" cssStyle="color: tomato" />
@@ -384,21 +384,24 @@
     </section>
 </main>
 <%@ include file="../components/OfferModal.jsp" %>
-<c:choose>
-    <c:when test="${sellorder != null}">
-        <jsp:include page="../components/DeleteModal.jsp">
-            <jsp:param name="title" value="Delete Sell Order"/>
-            <jsp:param name="description" value="Are you sure you want to delete this sell order? All buy orders for this NFT will be lost."/>
-            <jsp:param name="deletePath" value="/sell/delete/${nft.id}"/>
-        </jsp:include>
-    </c:when>
-    <c:otherwise>
-        <jsp:include page="../components/DeleteModal.jsp">
-            <jsp:param name="title" value="Delete NFT"/>
-            <jsp:param name="description" value="Are you sure you want to delete this NFT? This action is irreversible."/>
-            <jsp:param name="deletePath" value="/product/delete/${nft.id}"/>
-        </jsp:include>
-    </c:otherwise>
-</c:choose>
+
+<c:if test="${currentUser.id == owner.id}">
+    <c:choose>
+        <c:when test="${sellorder != null}">
+            <jsp:include page="../components/DeleteModal.jsp">
+                <jsp:param name="title" value="Delete Sell Order"/>
+                <jsp:param name="description" value="Are you sure you want to delete this sell order? All buy orders for this NFT will be lost."/>
+                <jsp:param name="deletePath" value="/sell/delete/${nft.id}"/>
+            </jsp:include>
+        </c:when>
+        <c:otherwise>
+            <jsp:include page="../components/DeleteModal.jsp">
+                <jsp:param name="title" value="Delete NFT"/>
+                <jsp:param name="description" value="Are you sure you want to delete this NFT? This action is irreversible."/>
+                <jsp:param name="deletePath" value="/product/delete/${nft.id}"/>
+            </jsp:include>
+        </c:otherwise>
+    </c:choose>
+</c:if>
 </body>
 </html>

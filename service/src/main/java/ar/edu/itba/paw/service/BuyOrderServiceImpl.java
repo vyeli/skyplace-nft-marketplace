@@ -52,7 +52,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public void confirmBuyOrder(String sellOrder, String buyer) {
+    public void confirmBuyOrder(String sellOrder, int buyer) {
         long sellOrderId;
         try {
             sellOrderId = Long.parseLong(sellOrder);
