@@ -11,7 +11,7 @@
             <h2 style="font-size: 1.875rem; line-height: 2.25rem; margin-top: 0.125rem;">Skyplace</h2>
         </div>
         <p>Hello <span th:text="${sellerMail}">someuser</span>,</p>
-        <p>We wanted to inform you that user <span th:text="${buyerMail}">someuser</span> has just placed a bid of <span th:text="${nftBidEthPrice}"></span> ETH for your NFT <span th:text="${nftName}">someNFT</span>#<span th:text="${nftId}"></span>.</p>
+        <p>We wanted to inform you that user <span th:text="${bidderMail}">someuser</span> has just placed a bid of <span th:text="${nftBidEthPrice}"></span> ETH for your NFT <span th:text="${nftName}">someNFT</span>#<span th:text="${nftId}"></span>.</p>
         <hr style="color: #E5E7EB;">
         <div style="display: flex; margin: 0 auto;">
             <img style="height: 14rem; margin: auto 0; display: block; border: 1px solid black; border-radius: 0.375rem;" src="cid:nftImage" th:src="|cid:${nftImageResourceName}|" alt="skyplace_logo"/>
@@ -20,7 +20,7 @@
                     <span style="margin: 0 0 0.25rem 0; font-size: 1rem;"><b>Bidder</b></span>
                     <div style="display: flex">
                         <img style="max-height: 1.75rem; margin: auto 0;" src="cid:userImage" th:src="|cid:${userImageResourceName}|" alt="skyplace_logo"/>
-                        <span style="margin: auto 0 auto 0.5rem;" th:text="${buyerMail}"></span>
+                        <span style="margin: auto 0 auto 0.5rem;" th:text="${bidderMail}"></span>
                     </div>
                 </div>
                 <div style="margin: 0.5rem 0;">

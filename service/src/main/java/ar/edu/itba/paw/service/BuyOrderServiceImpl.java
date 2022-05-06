@@ -1,13 +1,7 @@
 package ar.edu.itba.paw.service;
 
-import ar.edu.itba.paw.model.BuyOffer;
-import ar.edu.itba.paw.model.BuyOrder;
-import ar.edu.itba.paw.model.SellOrder;
-import ar.edu.itba.paw.model.User;
-import ar.edu.itba.paw.persistence.BuyOrderDao;
-import ar.edu.itba.paw.persistence.NftDao;
-import ar.edu.itba.paw.persistence.SellOrderDao;
-import ar.edu.itba.paw.persistence.UserDao;
+import ar.edu.itba.paw.model.*;
+import ar.edu.itba.paw.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,17 +16,32 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     private final UserDao userDao;
     private final SellOrderDao sellOrderDao;
     private final NftDao nftDao;
+    private final ImageDao imageDao;
+    private final MailingService mailingService;
+
     @Autowired
-    public BuyOrderServiceImpl(BuyOrderDao  buyOrderDao, UserDao userDao, SellOrderDao sellOrderDao, NftDao nftDao) {
+    public BuyOrderServiceImpl(BuyOrderDao  buyOrderDao, UserDao userDao, SellOrderDao sellOrderDao, NftDao nftDao, ImageDao imageDao, MailingService mailingService) {
         this.buyOrderDao = buyOrderDao;
         this.userDao = userDao;
         this.sellOrderDao = sellOrderDao;
         this.nftDao = nftDao;
+        this.imageDao = imageDao;
+        this.mailingService = mailingService;
     }
 
     @Override
     public boolean create(long idSellOrder, BigDecimal price, long userId) {
-        return buyOrderDao.create(idSellOrder, price, userId);
+        if(buyOrderDao.create(idSellOrder, price, userId)){
+            BuyOrder buyOrder = new BuyOrder(idSellOrder, price, userId);
+            SellOrder sellOrder = sellOrderDao.getOrderById(idSellOrder).get();
+            Nft nft = nftDao.getNFTById(String.valueOf(sellOrder.getNftId())).get();
+            User seller = userDao.getUserById(nft.getIdOwner()).get();
+            User bidder = userDao.getUserById(userId).get();
+            Image image = imageDao.getImage(nft.getIdImage());
+            mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), buyOrder.getAmount(), image.getImage());
+            return true;
+        }
+        return false;
     }
 
     @Override

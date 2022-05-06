@@ -28,7 +28,6 @@ public class FrontController {
     private final SellOrderService sellOrderService;
     private final CategoryService categoryService;
     private final ChainService chainService;
-    private final MailingService mailingService;
     private final UserService userService;
     private final ImageService imageService;
     private final NftService nftService;
@@ -37,11 +36,10 @@ public class FrontController {
     private final PurchaseService purchaseService;
 
     @Autowired
-    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, MailingService mailingService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService) {
+    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService) {
         this.sellOrderService = sellOrderService;
         this.categoryService = categoryService;
         this.chainService = chainService;
-        this.mailingService = mailingService;
         this.userService = userService;
         this.imageService = imageService;
         this.nftService = nftService;
@@ -265,8 +263,6 @@ public class FrontController {
             return product(form, productId, offerPage);
         buyOrderService.create(sellOrder.get().getId(), form.getPrice(), currentUser.get().getId());
 
-        // mailingService.sendOfferMail(currentUser.get().getEmail(), seller.get().getEmail(), nft.get().getNftName(), nft.get().getContractAddr(), form.getPrice());
-
         ModelAndView mav = product(form,productId, offerPage);
         mav.addObject("emailSent", true);
         return mav;
@@ -310,7 +306,6 @@ public class FrontController {
             return mav;
         }
 
-        mailingService.sendRegisterMail(user.get().getEmail(), user.get().getUsername());
         return new ModelAndView("redirect:/login" );
     }
 
@@ -357,17 +352,6 @@ public class FrontController {
             redirectUrl.append("?tab=").append(tab);
         }
         return new ModelAndView(redirectUrl.toString());
-    }
-
-    // TODO: Remove mapping once mails are fully integrated
-    @RequestMapping("/mail")
-    public ModelAndView mailTest(){
-        // mailingService.sendRegisterMail("spiegarejr@gmail.com", "spiegarejr");
-        Optional<Nft> nft = nftService.getNFTById("1");
-        if(!nft.isPresent())
-            return new ModelAndView("redirect:/404");
-        mailingService.sendOfferMail("mlbanchini1970@gmail.com", "spiegarejr@gmail.com", nft.get().getNftName(), nft.get().getNftId(), nft.get().getContractAddr(), BigDecimal.valueOf((float)0.015), imageService.getImage(nft.get().getIdImage()));
-        return new ModelAndView("redirect:/");
     }
 
     @RequestMapping("/profile/{userId}")

@@ -15,11 +15,13 @@ public class UserServiceImpl implements UserService{
 
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
+    private final MailingService mailingService;
 
     @Autowired
-    public UserServiceImpl(final UserDao userDao, final PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(final UserDao userDao, final MailingService mailingService, final PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
+        this.mailingService = mailingService;
     }
 
     @Override
@@ -27,8 +29,11 @@ public class UserServiceImpl implements UserService{
         if(userDao.getUserByEmail(email).isPresent()) {
             return Optional.empty();
         }
-
-        return userDao.create(email, username, wallet, walletChain, passwordEncoder.encode(password));
+        Optional<User> user = userDao.create(email, username, wallet, walletChain, passwordEncoder.encode(password));
+        if(user.isPresent()) {
+            mailingService.sendRegisterMail(email, username);
+        }
+        return user;
     }
 
     @Override

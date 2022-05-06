@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public interface MailingService {
 
     @Async
-    void sendOfferMail(String buyerEmail, String sellerMail, String nftName, long nftId, String nftAddress, BigDecimal nftPrice, Image image);
+    void sendOfferMail(String bidderEmail, String sellerMail, String nftName, long nftId, String nftAddress, BigDecimal nftPrice, byte[] image);
 
     @Async
     void sendRegisterMail(String userEmail, String username);

@@ -1,13 +1,11 @@
 package ar.edu.itba.paw.service;
 
-import ar.edu.itba.paw.model.Image;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -20,7 +18,6 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.mail.*;
 import javax.mail.internet.MimeMessage;
 import java.io.BufferedInputStream;
@@ -29,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URLConnection;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -129,7 +125,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendOfferMail(String buyerMail, String sellerMail, String nftName, long nftId, String nftAddress, BigDecimal nftPrice, Image image){
+    public void sendOfferMail(String bidderMail, String sellerMail, String nftName, long nftId, String nftAddress, BigDecimal nftPrice, byte[] imageBytes){
         final MimeMessage message = mailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
@@ -139,11 +135,12 @@ public class MailingServiceImpl implements MailingService{
 
             Context context = new Context();
             context.setVariable("sellerMail", sellerMail);
-            context.setVariable("buyerMail", buyerMail);
+            context.setVariable("bidderMail", bidderMail);
             context.setVariable("nftName", nftName);
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
             context.setVariable("nftBidEthPrice", nftPrice);
+            // TODO: Put here real USD price
             context.setVariable("nftBidUsdPrice", 42.374305);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
@@ -155,8 +152,8 @@ public class MailingServiceImpl implements MailingService{
             String html = templateEngine.process("bid", context);
             helper.setText(html, true);
 
-            InputStream is = new BufferedInputStream(new ByteArrayInputStream(image.getImage()));
-            InputStreamSource imageSource = new ByteArrayResource(image.getImage());
+            InputStream is = new BufferedInputStream(new ByteArrayInputStream(imageBytes));
+            InputStreamSource imageSource = new ByteArrayResource(imageBytes);
 
             helper.addInline("logo", new ClassPathResource("/mails/images/logo.png"), IMG_PNG_FORMAT);
             helper.addInline("userImage", new ClassPathResource("/mails/images/user.png"), IMG_PNG_FORMAT);
@@ -170,34 +167,5 @@ public class MailingServiceImpl implements MailingService{
             LOGGER.error("Unexpected error sending email", e);
         }
     }
-
-    /*
-    @Override
-    public void sendOfferMail(String buyerMail, String sellerMail, String nftName, String nftAddress, float nftPrice) {
-        Session session = Session.getInstance(getProperties(),
-                new javax.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(env.get(MAIL_USERNAME_PARAMETER), env.get(MAIL_PASSWORD_PARAMETER));
-                    }
-                });
-
-        try {
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(Objects.requireNonNull(env.get(MAIL_USERNAME_PARAMETER))));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(sellerMail));
-            message.setSubject("Bid placed for your nft");
-            message.setText("Hello, " + buyerMail + " has just placed a bid for your nft " + nftName + ". Full details are:" +
-                    "\n- Buyer: " + buyerMail +
-                    "\n- Nft name: " + nftName +
-                    "\n- Nft address: " + nftAddress +
-                    "\n- Price: " + nftPrice);
-
-            Transport.send(message);
-        } catch (MessagingException e) {
-            LOGGER.error("Unexpected error sending email", e);
-        }
-
-    }
-    */
 
 }
