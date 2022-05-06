@@ -14,7 +14,7 @@ public class UserForm {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^0x[a-fA-F0-9]{40}$", message = "Wallet must begin with 0x and contain 40 characters (a-f or 0-9)")
+    @Pattern(regexp = "^0x[a-fA-F0-9]{40}$")
     private String walletAddress;
 
     @NotBlank
@@ -22,7 +22,7 @@ public class UserForm {
 
     @NotBlank
     @Size(min = 6, max = 100)
-    @Pattern(regexp = "[a-zA-Z0-9]+")
+    @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*")
     private String username;
 
     @NotBlank

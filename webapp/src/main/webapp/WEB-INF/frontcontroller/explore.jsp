@@ -3,11 +3,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Explore | Skyplace</title>
+    <title><spring:message code="explore.title"/></title>
     <style>
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -22,12 +23,12 @@
     <div class="grow flex pt-16 max-h-[calc(100vh-5rem)] divide-x divide-slate-300">
         <div class="flex flex-col w-72 min-w-[250px] items-center">
             <span class="text-4xl"><c:out value="${category}"/></span>
-            <span><c:out value="${publicationsAmount}" /> resultados</span>
+            <span><c:out value="${publicationsAmount}" /> <spring:message code="explore.results"/></span>
 
             <div class="grow w-full">
                 <div class="py-4 flex flex-col w-full px-4">
                     <div class="flex space-evenly">
-                        <span class="text-2xl">Filter</span>
+                        <span class="text-2xl"><spring:message code="explore.filter"/></span>
                     </div>
 
                     <div class="py-4 px-2 flex flex-col gap-4">
@@ -35,7 +36,7 @@
                         <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
 
                             <form:label class="flex justify-between text-lg mb-6" path="category">
-                                <span>Category</span>
+                                <span><spring:message code="explore.category"/></span>
                                 <form:select id="categoryFilter" multiple="true"
                                         class="border-2 rounded-xl text-sm pl-2 py-1 pr-8 cursor-pointer w-1/2 text-ellipsis" path="category">
                                     <form:option value="all" selected="true">All</form:option>
@@ -45,7 +46,7 @@
                                 </form:select>
                             </form:label>
                             <div class="flex justify-between mb-6">
-                                <span>Price</span>
+                                <span><spring:message code="explore.price"/></span>
                                 <div class="flex justify-end">
                                 <form:label class="text-lg w-2/5" path="minPrice">
                                     <form:input type="number" step="0.00000001" placeholder="Min" min="0" id="minPriceFilter"
@@ -62,20 +63,20 @@
                             <form:label class="flex justify-between text-lg mb-6" path="chain">Chain
                                 <form:select id="chainFilter" multiple="true"
                                         class="border-2 rounded-xl text-sm pl-2 pr-8 cursor-pointer py-1 text-ellipsis w-1/2" path="chain">
-                                    <form:option value="all" selected="true">All</form:option>
+                                    <form:option value="all" selected="true"><spring:message code="explore.all"/></form:option>
                                     <c:forEach var="chain_i" items="${chains}">
                                         <form:option value="${fn:toLowerCase(chain_i)}"><c:out value="${chain_i}"/></form:option>
                                     </c:forEach>
                                 </form:select>
                             </form:label>
 
-                            <form:label class="flex justify-between text-lg mb-6" path="sort">Sort by
+                            <form:label class="flex justify-between text-lg mb-6" path="sort"><spring:message code="explore.sortby"/>
                                 <form:select id="sortSelect"
                                         class="border-2 rounded-xl text-sm pl-2 pr-8 cursor-pointer py-1 text-ellipsis w-1/2" path="sort">
-                                    <form:option value="default">Default</form:option>
-                                    <form:option value="name">Name</form:option>
-                                    <form:option value="priceAsc">Price ascending</form:option>
-                                    <form:option value="priceDsc">Price descending</form:option>
+                                    <form:option value="default"><spring:message code="explore.default"/></form:option>
+                                    <form:option value="name"><spring:message code="explore.name"/></form:option>
+                                    <form:option value="priceAsc"><spring:message code="explore.PriceAs"/></form:option>
+                                    <form:option value="priceDsc"><spring:message code="explore.PriceDe"/></form:option>
                                 </form:select>
                             </form:label>
 

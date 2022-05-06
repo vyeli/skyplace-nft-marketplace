@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 
 <html>
 <%@ include file="Head.jsp" %>
@@ -27,7 +29,7 @@
                         <span class="text-xl ml-1 text-gray-400 font-semibold truncate w-28 lg:w-40 hover:text-gray-600" id="walletId">${user.wallet}</span>
                     </button>
                     <div id="tooltip-dark" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                        Copy
+                        <spring:message code="profile.copy"/>
                         <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
                 </div>
@@ -57,7 +59,7 @@
             <li>
                 <a href="<c:url value='/profile/${user.id}'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="inventoryTab">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    Inventory
+                    <spring:message code="profile.inventory"/>
                 </a>
             </li>
             <li>
@@ -68,7 +70,7 @@
                         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M48 80h64l48 272h256"></path>
                         <path d="M160 288h249.44a8 8 0 007.85-6.43l28.8-144a8 8 0 00-7.85-9.57H128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
                     </svg>
-                    Selling
+                    <spring:message code="profile.selling"/>
                 </a>
             </li>
             <c:if test="${isOwner}">
@@ -77,7 +79,7 @@
                         <svg class="mr-2 h-6 w-6" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M26.0502 5.76252C25.4117 5.12378 24.6537 4.61708 23.8193 4.27138C22.985 3.92568 22.0908 3.74774 21.1877 3.74774C20.2845 3.74774 19.3903 3.92568 18.556 4.27138C17.7216 4.61708 16.9636 5.12378 16.3252 5.76252L15.0002 7.08752L13.6751 5.76252C12.3855 4.47291 10.6364 3.74841 8.81265 3.74841C6.98886 3.74841 5.23976 4.47291 3.95015 5.76252C2.66053 7.05214 1.93604 8.80123 1.93604 10.625C1.93604 12.4488 2.66053 14.1979 3.95015 15.4875L5.27515 16.8125L15.0002 26.5375L24.7252 16.8125L26.0502 15.4875C26.6889 14.8491 27.1956 14.091 27.5413 13.2567C27.887 12.4224 28.0649 11.5281 28.0649 10.625C28.0649 9.72191 27.887 8.82765 27.5413 7.99333C27.1956 7.15901 26.6889 6.40097 26.0502 5.76252V5.76252Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
-                        Favorited
+                        <spring:message code="profile.favorited"/>
                     </a>
                 </li>
             </c:if>
@@ -116,7 +118,7 @@
                     </jsp:include>
                 </c:forEach>
                 <c:if test="${publicationsSize == 0}">
-                    <span class="text-center text-slay-700">No NFTs to show.</span>
+                    <span class="text-center text-slay-700"><spring:message code="profile.noNft"/></span>
                 </c:if>
             </div>
         </c:when>

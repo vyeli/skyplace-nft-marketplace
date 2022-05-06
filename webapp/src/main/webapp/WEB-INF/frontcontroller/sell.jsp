@@ -9,7 +9,7 @@
 <%@ include file="../components/navbar.jsp" %>
     <div class="w-full max-w-5xl mx-auto p-4 grow flex flex-col justify-center py-12">
       <h1 class="text-3xl text-center">
-        Sell an NFT
+        <spring:message code="sell.sell"/>
       </h1>
       <c:url value="/sell/${productId}" var="postPath"/>
       <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
@@ -21,12 +21,12 @@
         </div>
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">
-            <span class="font-bold">NFT contract: </span>
+            <span class="font-bold"><spring:message code="sell.contract"/> </span>
               ${nft.contractAddr}
           </p>
         </div>
         <form:label path="category" class="flex flex-col gap-1">
-          <span class="text-slate-600">Category</span>
+          <span class="text-slate-600"><spring:message code="sell.category"/></span>
           <form:select
                   path="category"
                   required="true"
@@ -39,7 +39,7 @@
           <form:errors path="category" element="p" cssStyle="color: tomato" />
         </form:label>
         <form:label path="price" class="flex flex-col gap-1">
-          <span class="text-slate-600 flex">Price<img class="w-8" src="<c:url value="/resources/eth_logo.svg" />" alt="ETH_logo"/> </span>
+          <span class="text-slate-600 flex"><spring:message code="sell.price"/><img class="w-8" src="<c:url value="/resources/eth_logo.svg" />" alt="ETH_logo"/> </span>
           <form:input
             type="number"
             path="price"

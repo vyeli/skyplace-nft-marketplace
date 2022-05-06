@@ -286,7 +286,7 @@ public class FrontController {
         return mav;
     }
 
-    // Create
+
     @RequestMapping( value = "/register", method = RequestMethod.GET)
     public ModelAndView createUserForm(@ModelAttribute("userForm") final UserForm form) {
         final ModelAndView mav = new ModelAndView("frontcontroller/register");
@@ -438,11 +438,6 @@ public class FrontController {
         return "redirect:"+ referer;
     }
 
-    @RequestMapping("/newProduct")
-    public ModelAndView newProduct() {
-        final ModelAndView mav = new ModelAndView("product");
-        return mav;
-    }
 
     @RequestMapping(value = "/images/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody

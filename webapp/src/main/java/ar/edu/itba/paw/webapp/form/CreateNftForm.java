@@ -11,13 +11,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class CreateNftForm {
-    @Digits(message = "Id is not a valid number!", integer = 8, fraction = 0)
-    @Min(value=0L, message = "ID must be a positive number")
+    @Digits(integer = 8, fraction = 0)
+    @Min(value=0L)
     @NotNull
     private long nftId;
 
     @NotBlank
-    @Pattern(regexp = "^0x[a-fA-F0-9]{40}$", message = "Contract must begin with 0x and contain 40 characters (a-f or 0-9)")
+    @Pattern(regexp = "^0x[a-fA-F0-9]{40}$")
     private String contractAddr;
 
     @NotBlank

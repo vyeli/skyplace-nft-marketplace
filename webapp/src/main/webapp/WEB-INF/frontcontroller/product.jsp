@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 
 
 <html>
@@ -43,7 +45,7 @@
                                         <path fill="none" d="M0 0h24v24H0z"></path>
                                         <path d="M8 4h13v2H8V4zm-5-.5h3v3H3v-3zm0 7h3v3H3v-3zm0 7h3v3H3v-3zM8 11h13v2H8v-2zm0 7h13v2H8v-2z"></path>
                                     </svg>
-                                    <span class="font-display text-base font-medium">Details</span>
+                                    <span class="font-display text-base font-medium"><spring:message code="product.details"/></span>
                                 </button>
                             </li>
                             <!-- Properties -->
@@ -56,7 +58,7 @@
                                         <path fill="none" d="M0 0h24v24H0z"></path>
                                         <path d="M6.17 18a3.001 3.001 0 0 1 5.66 0H22v2H11.83a3.001 3.001 0 0 1-5.66 0H2v-2h4.17zm6-7a3.001 3.001 0 0 1 5.66 0H22v2h-4.17a3.001 3.001 0 0 1-5.66 0H2v-2h10.17zm-6-7a3.001 3.001 0 0 1 5.66 0H22v2H11.83a3.001 3.001 0 0 1-5.66 0H2V4h4.17z"></path>
                                     </svg>
-                                    <span class="font-display text-base font-medium">Properties</span>
+                                    <span class="font-display text-base font-medium"><spring:message code="product.properties"/></span>
                                 </button>
                             </li>
 
@@ -70,7 +72,7 @@
                                         <path fill="none" d="M0 0h24v24H0z"></path>
                                         <path d="M20 22H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1zm-1-2V4H5v16h14zM7 6h4v4H7V6zm0 6h10v2H7v-2zm0 4h10v2H7v-2zm6-9h4v2h-4V7z"></path>
                                     </svg>
-                                    <span class="font-display text-base font-medium">Offers</span>
+                                    <span class="font-display text-base font-medium"><spring:message code="product.offers"/></span>
                                 </button>
                             </li>
                         </ul>
@@ -80,7 +82,7 @@
                                  aria-labelledby="tabs-home-tab">
                                 <div class="flex flex-col gap-2">
                                     <div class="flex justify-between">
-                                        <p>Contract address </p>
+                                        <p><spring:message code="product.contractAddress"/> </p>
                                         <p class="w-3/5 break-words max-h-20 overflow-hidden text-right">
                                             <c:out value="${nft.contractAddr}" />
                                         </p>
@@ -91,7 +93,7 @@
                                     </div>
                                     <c:if test="${sellOrder != null}">
                                         <div class="flex justify-between">
-                                            <p>Category</p>
+                                            <p><spring:message code="product.category"/></p>
                                             <p><c:out value="${sellOrder.category}" /></p>
                                         </div>
                                     </c:if>
@@ -103,7 +105,7 @@
                             </div>
                             <div class="tab-pane fade" id="tabs-profile" role="tabpanel"
                                  aria-labelledby="tabs-profile-tab">
-                                This NFT does not contain any special property
+                                <spring:message code="prodcut.noproperty"/>
                             </div>
                             <div class="tab-pane fade ${showOffer} ${offerActive}" id="tabs-messages" role="tabpanel"
                                  aria-labelledby="tabs-profile-tab">
@@ -117,7 +119,7 @@
                                                     <span class="font-semibold">Offer #${offerCount+5*(offerPage-1)}</span>
                                                 </div>
                                                 <p class="text-sm">
-                                                    by
+                                                    <spring:message code="product.by"/>
                                                     <a href="<c:url value="/profile/${offer.buyer.id}" />" class="text-cyan-600">
                                                         ${offer.buyer.email}
                                                     </a>
@@ -139,10 +141,10 @@
                                                 <c:if test="${sellOrder != null && owner.id == currentUser.id}">
                                                     <div class="flex gap-2">
                                                         <button onclick="handleReject(${offer.buyOrder.idSellOrder}, ${offer.buyOrder.idBuyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
-                                                            Reject
+                                                            <spring:message code="product.reject"/>
                                                         </button>
                                                         <button onclick="handleAccept(${offer.buyOrder.idSellOrder}, ${offer.buyOrder.idBuyer}, ${currentUser.id}, ${sellOrder.price}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
-                                                            Accept
+                                                            <spring:message code="product.accept"/>
                                                         </button>
                                                     </div>
                                                 </c:if>
@@ -152,10 +154,10 @@
                                     </c:forEach>
                                     <c:choose>
                                         <c:when test="${sellOrder == null}">
-                                            <span>This NFT is not for sale!</span>
+                                            <span><spring:message code="product.nosale"/></span>
                                         </c:when>
                                         <c:when test="${offerCount == 1}">
-                                            <span>There are no offers for this NFT yet</span>
+                                            <span><spring:message code="product.noOffers"/></span>
                                         </c:when>
                                     </c:choose>
                                     <c:if test="${amountOfferPages > 1 && offerPage <= amountOfferPages}">
@@ -164,7 +166,7 @@
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" class="pr-2">
                                                 <input type="hidden" name="offerPage" value="${offerPage-1}" />
                                                 <button type="submit" class="text-cyan-700 text-lg">
-                                                    Previous
+                                                    <spring:message code="prodcut.previous"/>
                                                 </button>
                                             </form>
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get">
@@ -204,7 +206,7 @@
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" class="px-2">
                                                 <input type="hidden" name="offerPage" value="${offerPage+1}" />
                                                 <button type="submit" class="text-cyan-700 text-lg">
-                                                    Next
+                                                    <spring:message code="product.next"/>
                                                 </button>
                                             </form>
                                         </c:if>
@@ -278,13 +280,13 @@
                                                 <c:if test="${currentUser.id == owner.id}">
                                                 <li class="z-20">
                                                     <a href="<c:url value="/sell/update/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                        <span>Update sell</span>
+                                                        <span><spring:message code="product.updateSell"/></span>
                                                     </a>
                                                 </li>
                                                 </c:if>
                                                 <li class="z-20">
                                                     <span id="open-delete-modal" class="block cursor-pointer flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                        Delete sell
+                                                        <spring:message code="product.deleteSell"/>
                                                     </span>
                                                 </li>
                                             </c:when>
@@ -292,13 +294,13 @@
                                                 <c:if test="${currentUser.id == owner.id}">
                                                     <li class="z-20">
                                                         <a href="<c:url value="/sell/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                            <span>Sell nft</span>
+                                                            <span><spring:message code="product.sell"/></span>
                                                         </a>
                                                     </li>
                                                 </c:if>
                                                 <li class="z-20">
                                                     <span id="open-delete-modal" class="block cursor-pointer flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
-                                                        Delete nft
+                                                        <spring:message code="product.delete"/>
                                                     </span>
                                                 </li>
                                             </c:otherwise>
@@ -313,7 +315,7 @@
                     <h1 class="font-display text-jacarta-700 mb-2 text-4xl font-semibold"><c:out value="${nft.nftName}" /><span>#<c:out value="${nft.nftId}" /></span></h1>
                     <!-- Owner -->
                     <div class="flex pt-2 pb-4">
-                        <span class="text-jacarta-400 block text-sm">Owned by </span>
+                        <span class="text-jacarta-400 block text-sm"><spring:message code="product.own"/> </span>
                         <a href="<c:url value="/profile/${owner.id}" />" class="text-accent block">
                             <span class="text-sm font-bold pl-2 text-cyan-600"><c:out value="${owner.email}" /></span>
                         </a>
@@ -345,7 +347,7 @@
                     <div class=" border-gray-200 rounded-2xl border bg-white pb-4 flex-col justify-between mb-8 bg-slate-50">
                         <div class="flex text-xl px-4  py-2 border-b bg-white rounded-t-2xl">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-                            <span class="pl-2 font-semibold">Description</span>
+                            <span class="pl-2 font-semibold"><spring:message code="product.description"/></span>
                         </div>
                         <p class="mb-4 px-4 pt-4">
                             <c:out value="${nft.description}" />
@@ -356,13 +358,13 @@
                     <div class=" border-gray-200 rounded-2xl border bg-white pb-4 flex-col justify-between mb-8 bg-slate-50">
                         <div class="flex text-xl px-4  py-2 border-b bg-white rounded-t-2xl">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                            <span class="pl-2 font-semibold">Buy</span>
+                            <span class="pl-2 font-semibold"><spring:message code="product.buy"/></span>
                         </div>
                         <div class="mb-4 px-4 pt-4">
                             <c:url value="/product/${nft.id}" var="postPath" />
                             <form:form modelAttribute="buyNftForm" action="${postPath}" method="post">
                                 <label class="flex mb-4 items-center">
-                                    <span class="text-lg pr-2">Your offer</span>
+                                    <span class="text-lg pr-2"><spring:message code="product.yourOffer"/></span>
                                     <svg x="0" y="0" viewBox="0 0 1920 1920" xml:space="preserve" class="mr-1 h-6 w-6">
                                     <path fill="#8A92B2" d="M959.8 80.7L420.1 976.3 959.8 731z"></path>
                                         <path fill="#62688F" d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"></path>

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!-- Card -->
 <div class="relative rounded-lg group shadow-sm hover:shadow-xl w-full max-w-sm">
@@ -22,7 +23,7 @@
             </c:when>
             <c:otherwise>
                 <div class="flex h-8 items-center">
-                    <span>Not for sale</span>
+                    <span><spring:message code="card.noSale"/></span>
                 </div>
             </c:otherwise>
         </c:choose>

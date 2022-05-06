@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 
 <!DOCTYPE html>
 <html>
@@ -12,17 +14,21 @@
     <!-- Message and buttons -->
     <div class="flex flex-1 flex-col items-center lg:items-start lg:mt-[-7rem]">
         <h2 class="text-3xl mid:text-4 lg:text-5xl text-center lg:text-left mb-6 font-semibold pt-12">
-            Discover, buy and sell NFTs
+            <spring:message code="index.discover"/>
         </h2>
         <p class="text-bookmark-grey text-lg text-center lg:text-left mb-6">
-            Become the owner of any NFT available in the market
+            <spring:message code="index.become"/>
         </p>
         <div class="flex justify-center flex-wrap gap-6">
             <a href="<c:url value="/sell" />">
-            <button type="button" class="shadow-md px-6 rounded-md transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl h-12">Get started</button>
+            <button type="button" class="shadow-md px-6 rounded-md transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl h-12">
+                <spring:message code="index.create"/>
+            </button>
             </a>
             <a href="<c:url value="/explore" />">
-            <button type="button" class="shadow-md px-6 rounded-md transition duration-300 border-2 border-cyan-600 hover:border-cyan-800 hover:bg-cyan-800 text-cyan-600 hover:text-white hover:shadow-xl h-12">Explore</button>
+            <button type="button" class="shadow-md px-6 rounded-md transition duration-300 border-2 border-cyan-600 hover:border-cyan-800 hover:bg-cyan-800 text-cyan-600 hover:text-white hover:shadow-xl h-12">
+                <spring:message code="index.explore"/>
+            </button>
             </a>
         </div>
     </div>

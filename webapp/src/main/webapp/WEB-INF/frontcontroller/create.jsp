@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <!DOCTYPE html>
 <html>
@@ -9,12 +10,12 @@
 <%@ include file="../components/navbar.jsp" %>
 <div class="w-full max-w-5xl mx-auto p-4 grow flex flex-col justify-center py-12">
     <h1 class="text-3xl text-center">
-        Create an NFT
+        <spring:message code="create.create"/>
     </h1>
     <c:url value="/create" var="postPath"/>
     <form:form modelAttribute="createNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
         <form:label path="name" class="flex flex-col gap-1">
-            <span class="text-slate-600">Name</span>
+            <span class="text-slate-600"><spring:message code="create.name"/></span>
             <form:input
                     type="text"
                     path="name"
@@ -39,7 +40,7 @@
             <form:errors path="nftId" element="p" cssStyle="color: tomato" />
         </form:label>
         <form:label path="contractAddr" class="flex flex-col gap-1">
-            <span class="text-slate-600">Contract</span>
+            <span class="text-slate-600"><spring:message code="create.contract"/></span>
             <form:input
                     type="text"
                     path="contractAddr"
@@ -51,7 +52,7 @@
             <form:errors path="contractAddr" element="p" cssStyle="color: tomato" />
         </form:label>
         <form:label path="chain" class="flex flex-col gap-1">
-            <span class="text-slate-600">Blockchain</span>
+            <span class="text-slate-600"><spring:message code="create.blockchain"/></span>
             <form:select
                     path="chain"
                     required="true"
@@ -64,7 +65,7 @@
             <form:errors path="chain" element="p" cssStyle="color: tomato" />
         </form:label>
         <form:label path="collection" class="flex flex-col gap-1">
-            <span class="text-slate-600">Collection</span>
+            <span class="text-slate-600"><spring:message code="create.collection"/></span>
             <form:input
                     type="text"
                     path="collection"
@@ -76,7 +77,7 @@
             <form:errors path="collection" element="p" cssStyle="color: tomato" />
         </form:label>
         <label class="flex flex-col gap-1">
-            <span class="text-slate-600">Image</span>
+            <span class="text-slate-600"><spring:message code="create.image"/></span>
             <form:input
                     path="image"
                     type="file"
@@ -88,7 +89,7 @@
             <form:errors path="image" element="p" cssStyle="color: tomato" />
         </label>
         <form:label path="description" class="flex flex-col gap-1">
-            <span class="text-slate-600">Description</span>
+            <span class="text-slate-600"><spring:message code="create.description"/></span>
             <form:textarea
                     path="description"
                     autoComplete="off"
@@ -98,7 +99,7 @@
         </form:label>
         <input
                 type="submit"
-                value="Publish"
+                value="<spring:message code="create.publish"/>"
                 class="px-1 py-4 col-start-2 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
         />
         <form:errors path="publish" element="p" cssStyle="color: tomato" />

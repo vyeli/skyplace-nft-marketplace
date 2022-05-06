@@ -9,7 +9,7 @@
 <%@ include file="../components/navbar.jsp" %>
     <div class="w-full max-w-5xl mx-auto p-4 grow flex flex-col justify-center py-12">
       <h1 class="text-3xl text-center mb-12">
-        Update sell order
+        <spring:message code="updateSellOrder.update"/>
       </h1>
       <c:url value="/sell/update/${nft.id}" var="postPath"/>
       <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
@@ -21,12 +21,12 @@
         </div>
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">
-            <span class="font-bold">NFT contract: </span> 
+            <span class="font-bold"><spring:message code="updateSellOrder.contract"/> </span>
             ${nft.contractAddr}
           </p>
         </div>
         <form:label path="category" class="flex flex-col gap-1">
-          <span class="text-slate-600">Category</span>
+          <span class="text-slate-600"><spring:message code="updateSellOrder.category"/></span>
           <form:select
             path="category"
             required="true"
@@ -46,7 +46,7 @@
           <form:errors path="category" element="p" cssStyle="color: tomato" />
         </form:label>
         <form:label path="price" class="flex flex-col gap-1">
-          <span class="text-slate-600">Price</span>
+          <span class="text-slate-600"><spring:message code="updateSellOrder.price"/></span>
           <form:input
             type="number"
             path="price"
