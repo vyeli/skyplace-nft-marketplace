@@ -14,13 +14,17 @@ public interface NftService {
 
     Optional<Nft> getNFTById(int nftId);
 
-    List<Publication> getAllPublications(String page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser);
+    List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search);
 
     List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale);
 
     int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search);
 
     boolean userOwnsNft(int productId, User user);
+
+    boolean currentUserOwnsNft(int productId);
+
+    boolean currentUserOwnsSellOrder(int productId);
 
     void delete(int productId);
 }

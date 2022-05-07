@@ -8,7 +8,7 @@ import java.util.List;
 public interface BuyOrderDao {
     boolean create(int sellOrderId, BigDecimal price, int userId);
 
-    List<BuyOrder> getOrdersBySellOrderId(Integer offerPage, int sellOrderId);
+    List<BuyOrder> getOrdersBySellOrderId(int offerPage, int sellOrderId);
 
     int getAmountPagesBySellOrderId(int sellOrderId);
 

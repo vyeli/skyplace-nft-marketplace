@@ -41,10 +41,8 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
     }
 
     @Override
-    public List<BuyOrder> getOrdersBySellOrderId(Integer offerPage, int idSellOrder) {
-        int page = offerPage == null ? 1 : offerPage;
-
-        return jdbcTemplate.query("SELECT amount, id_buyer FROM buyorders WHERE id_sellorder = ? ORDER BY amount DESC LIMIT ? OFFSET ?", new Object[]{idSellOrder, PAGE_SIZE, (page-1)*PAGE_SIZE}, (rs, rowNum) -> {
+    public List<BuyOrder> getOrdersBySellOrderId(int offerPage, int idSellOrder) {
+        return jdbcTemplate.query("SELECT amount, id_buyer FROM buyorders WHERE id_sellorder = ? ORDER BY amount DESC LIMIT ? OFFSET ?", new Object[]{idSellOrder, PAGE_SIZE, (offerPage-1)*PAGE_SIZE}, (rs, rowNum) -> {
            BigDecimal amount = rs.getBigDecimal("amount");
            int idBuyer = rs.getInt("id_buyer");
            return new BuyOrder(idSellOrder, amount, idBuyer);

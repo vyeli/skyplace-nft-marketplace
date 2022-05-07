@@ -2,12 +2,8 @@ package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Publication;
-import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
-import ar.edu.itba.paw.persistence.FavoriteDao;
 import ar.edu.itba.paw.persistence.NftDao;
-import ar.edu.itba.paw.persistence.SellOrderDao;
-import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,10 +15,14 @@ import java.util.Optional;
 @Service
 public class NftServiceImpl implements NftService{
     private final NftDao nftDao;
+    private final UserService userService;
+    private final SellOrderService sellOrderService;
 
     @Autowired
-    public NftServiceImpl(NftDao nftDao) {
+    public NftServiceImpl(NftDao nftDao, UserService userService, SellOrderService sellOrderService) {
         this.nftDao = nftDao;
+        this.userService = userService;
+        this.sellOrderService = sellOrderService;
     }
 
     @Override
@@ -36,7 +36,8 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public List<Publication> getAllPublications(String page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
+    public List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search) {
+        User currentUser = userService.getCurrentUser().orElse(null);
         return nftDao.getAllPublications(page, status, category, chain, minPrice, maxPrice, sort, search, currentUser);
     }
 
@@ -53,6 +54,17 @@ public class NftServiceImpl implements NftService{
     @Override
     public boolean userOwnsNft(int productId, User user) {
         return getNFTById(productId).filter(value -> value.getIdOwner() == user.getId()).isPresent();
+    }
+
+    @Override
+    public boolean currentUserOwnsNft(int productId) {
+        User currentUser = userService.getCurrentUser().orElseThrow(RuntimeException::new); // UserNotLoggedInException
+        return userOwnsNft(productId, currentUser);
+    }
+
+    @Override
+    public boolean currentUserOwnsSellOrder(int productId) {
+        return currentUserOwnsNft(sellOrderService.getNftWithOrder(productId));
     }
 
     @Override

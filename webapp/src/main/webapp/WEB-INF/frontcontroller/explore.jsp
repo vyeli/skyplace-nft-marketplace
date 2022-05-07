@@ -40,88 +40,88 @@
 
                     <c:url value="/explore" var="explorePath"/>
                     <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
-                    <form:hidden path="page" value="${currentPage}" />
-                    <form:hidden path="sort" value="${sortValue}" />
-                    <form:hidden path="search" value="${searchValue}"/>
-                    <div id="accordionStatus" data-accordion="open" data-active-classes="text-black bg-white">
-                        <h2 id="accordionStatusHeader">
-                            <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionStatusBody" aria-expanded="true" aria-controls="accordionStatusBody" >
-                                <span>Status</span>
-                                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                            </button>
-                        </h2>
-                        <div id="accordionStatusBody" class="hidden" aria-labelledby="accordionStatusHeader">
-                            <div class="px-5 py-2 space-y-2 flex flex-col">
-                                <div>
-                                    <form:checkbox class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="status" value="onSale"/>
-                                    <form:label path="status">
-                                        On Sale
-                                    </form:label>
+                        <form:hidden path="page" value="${currentPage}" />
+                        <form:hidden path="sort" value="${sortValue}" />
+                        <form:hidden path="search" value="${searchValue}"/>
+                        <div id="accordionStatus" data-accordion="open" data-active-classes="text-black bg-white">
+                            <h2 id="accordionStatusHeader">
+                                <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionStatusBody" aria-expanded="true" aria-controls="accordionStatusBody" >
+                                    <span>Status</span>
+                                    <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </h2>
+                            <div id="accordionStatusBody" class="hidden" aria-labelledby="accordionStatusHeader">
+                                <div class="px-5 py-2 space-y-2 flex flex-col">
+                                    <div>
+                                        <form:checkbox class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="status" value="onSale"/>
+                                        <form:label path="status">
+                                            On Sale
+                                        </form:label>
+                                    </div>
+                                    <div>
+                                        <form:checkbox class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="status" value="notSale"/>
+                                        <form:label path="status">
+                                            Not on Sale
+                                        </form:label>
+                                    </div>
                                 </div>
-                                <div>
-                                    <form:checkbox class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="status" value="notSale"/>
-                                    <form:label path="status">
-                                        Not on Sale
-                                    </form:label>
+                            </div>
+                        </div>
+
+                        <div id="accordionCategory" data-accordion="open" data-active-classes="text-black bg-white">
+                            <h2 id="accordionCategoryHeader">
+                                <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionCategoryBody" aria-expanded="true" aria-controls="accordionCategoryBody" >
+                                    <span>Category</span>
+                                    <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </h2>
+                            <div id="accordionCategoryBody" class="hidden" aria-labelledby="accordionCategoryHeader">
+                                <div class="px-5 py-2 space-y-2 flex flex-col">
+                                    <form:checkboxes class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="category" items="${categories}" />
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="accordionCategory" data-accordion="open" data-active-classes="text-black bg-white">
-                        <h2 id="accordionCategoryHeader">
-                            <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionCategoryBody" aria-expanded="true" aria-controls="accordionCategoryBody" >
-                                <span>Category</span>
-                                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                            </button>
-                        </h2>
-                        <div id="accordionCategoryBody" class="hidden" aria-labelledby="accordionCategoryHeader">
-                            <div class="px-5 py-2 space-y-2 flex flex-col">
-                                <form:checkboxes class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="category" items="${categories}" />
+                        <div id="accordionChain" data-accordion="open" data-active-classes="text-black bg-white">
+                            <h2 id="accordionChainHeader">
+                                <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionChainBody" aria-expanded="true" aria-controls="accordionChainBody" >
+                                    <span>Chain</span>
+                                    <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </h2>
+                            <div id="accordionChainBody" class="hidden" aria-labelledby="accordionChainHeader">
+                                <div class="px-5 py-2 space-y-2 flex flex-col">
+                                    <form:checkboxes class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="chain" items="${chains}" />
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div id="accordionChain" data-accordion="open" data-active-classes="text-black bg-white">
-                        <h2 id="accordionChainHeader">
-                            <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionChainBody" aria-expanded="true" aria-controls="accordionChainBody" >
-                                <span>Chain</span>
-                                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                            </button>
-                        </h2>
-                        <div id="accordionChainBody" class="hidden" aria-labelledby="accordionChainHeader">
-                            <div class="px-5 py-2 space-y-2 flex flex-col">
-                                <form:checkboxes class="w-5 h-5 border-gray-300 rounded mr-2 cursor-pointer" path="chain" items="${chains}" />
+                        <div id="accordionPrice" data-accordion="open" data-active-classes="text-black bg-white">
+                            <h2 id="accordionPriceHeader">
+                                <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionPriceBody" aria-expanded="true" aria-controls="accordionPriceBody" >
+                                    <span>Price</span>
+                                    <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </h2>
+                            <div id="accordionPriceBody" class="hidden flex items-end" aria-labelledby="accordionChainHeader">
+                                <div class="relative z-0  px-2 w-full group">
+                                    <form:label path="minPrice" class="font-mono font-bold w-1/3 text-[11px] text-gray-300 bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
+                                        Min
+                                    </form:label>
+                                    <form:input type="number" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="minPrice"/>
+                                </div>
+                                <span class="pb-1">to</span>
+                                <div class="relative z-0  px-2 w-full group">
+                                    <form:label path="maxPrice" class="font-mono font-bold w-1/3 text-[11px]  text-gray-300  bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
+                                        Max
+                                    </form:label>
+                                    <form:input type="number" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="maxPrice"/>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div id="accordionPrice" data-accordion="open" data-active-classes="text-black bg-white">
-                        <h2 id="accordionPriceHeader">
-                            <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionPriceBody" aria-expanded="true" aria-controls="accordionPriceBody" >
-                                <span>Price</span>
-                                <svg data-accordion-icon class="w-6 h-6 rotate-180 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                            </button>
-                        </h2>
-                        <div id="accordionPriceBody" class="hidden flex items-end" aria-labelledby="accordionChainHeader">
-                            <div class="relative z-0  px-2 w-full group">
-                                <form:label path="minPrice" class="font-mono font-bold w-1/3 text-[11px] text-gray-300 bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
-                                    Min
-                                </form:label>
-                                <form:input type="number" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="minPrice"/>
-                            </div>
-                            <span class="pb-1">to</span>
-                            <div class="relative z-0  px-2 w-full group">
-                                <form:label path="maxPrice" class="font-mono font-bold w-1/3 text-[11px]  text-gray-300  bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
-                                    Max
-                                </form:label>
-                                <form:input type="number" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="maxPrice"/>
-                            </div>
-                        </div>
-                    </div>
 
 
-                    <input type="submit" value="Apply" class="rounded-lg flex px-4 py-1 mx-auto mt-4 cursor-pointer text-white bg-cyan-600 hover:bg-cyan-700" />
+                        <input type="submit" value="Apply" class="rounded-lg flex px-4 py-1 mx-auto mt-4 cursor-pointer text-white bg-cyan-600 hover:bg-cyan-700" />
 
 
                     </form:form>

@@ -29,8 +29,8 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public void update(int id, String category, BigDecimal price) {
-        sellOrderDao.update(id, category, price);
+    public boolean update(int id, String category, BigDecimal price) {
+        return sellOrderDao.update(id, category, price);
     }
 
     @Override

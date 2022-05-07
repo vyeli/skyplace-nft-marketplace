@@ -18,15 +18,17 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     private final NftDao nftDao;
     private final ImageDao imageDao;
     private final MailingService mailingService;
+    private final PurchaseService purchaseService;
 
     @Autowired
-    public BuyOrderServiceImpl(BuyOrderDao  buyOrderDao, UserDao userDao, SellOrderDao sellOrderDao, NftDao nftDao, ImageDao imageDao, MailingService mailingService) {
+    public BuyOrderServiceImpl(BuyOrderDao  buyOrderDao, UserDao userDao, SellOrderDao sellOrderDao, NftDao nftDao, ImageDao imageDao, MailingService mailingService, PurchaseService purchaseService) {
         this.buyOrderDao = buyOrderDao;
         this.userDao = userDao;
         this.sellOrderDao = sellOrderDao;
         this.nftDao = nftDao;
         this.imageDao = imageDao;
         this.mailingService = mailingService;
+        this.purchaseService = purchaseService;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public List<BuyOffer> getOrdersBySellOrderId(Integer offerPage, int idSellOrder) {
+    public List<BuyOffer> getOrdersBySellOrderId(int offerPage, int idSellOrder) {
         List<BuyOrder> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder);
         List<BuyOffer> buyOffers = new ArrayList<>();
         buyOrders.forEach(buyOrder -> {
@@ -61,7 +63,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public void confirmBuyOrder(int sellOrderId, int buyerId) {
+    public void confirmBuyOrder(int sellOrderId, int buyerId, int seller, int productId, BigDecimal price) {
         Optional<SellOrder> sOrder = sellOrderDao.getOrderById(sellOrderId);
         if(!sOrder.isPresent())
             return;
@@ -72,6 +74,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         nftDao.updateOwner(sOrder.get().getNftId(), buyerUser.get().getId());
 
         sellOrderDao.delete(sOrder.get().getId());
+
+        purchaseService.createPurchase(buyerId, seller, productId, price);
     }
 
     @Override

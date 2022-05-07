@@ -124,8 +124,7 @@ public class NftJdbcDao implements NftDao{
 
     @Override
     public Optional<Nft> getNFTById(int nftId) {
-        List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nftId}, SELECT_NFT_MAPPER);
-        return Optional.ofNullable(result.get(0));
+        return jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nftId}, SELECT_NFT_MAPPER).stream().findFirst();
     }
 
     private Pair<StringBuilder, List<Object>> applyFilter(String columnName, String filter) {
@@ -218,17 +217,14 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public List<Publication> getAllPublications(String page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
+    public List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
         Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, sort, currentUser);
         StringBuilder sb = queryBuilder.getLeft();
         List<Object> args = queryBuilder.getRight();
 
         sb.append(" LIMIT ? OFFSET ? ");
-        int pageInt = Integer.parseInt(page)-1;
-        if(pageInt < 0)
-            pageInt = 0;
         args.add(PAGE_SIZE);
-        args.add(pageInt*PAGE_SIZE);
+        args.add((page-1)*PAGE_SIZE);
 
         List<Publication> result = jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
         result = applySearchAlgorithms(result, search);

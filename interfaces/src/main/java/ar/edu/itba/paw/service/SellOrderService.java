@@ -11,7 +11,7 @@ public interface SellOrderService {
 
     Optional<SellOrder> getOrderById(int id);
 
-    void update(int id, String category, BigDecimal price);
+    boolean update(int id, String category, BigDecimal price);
 
     void delete(int id);
 

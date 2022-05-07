@@ -9,11 +9,11 @@ public interface BuyOrderService {
 
     boolean create(int sellOrderId, BigDecimal price, int userId);
 
-    List<BuyOffer> getOrdersBySellOrderId(Integer offerPage, int sellOrderId);
+    List<BuyOffer> getOrdersBySellOrderId(int offerPage, int sellOrderId);
 
     int getAmountPagesBySellOrderId(int sellOrderId);
 
-    void confirmBuyOrder(int sellOrderId, int buyerId);
+    void confirmBuyOrder(int sellOrderId, int buyerId, int seller, int productId, BigDecimal price);
 
     void deleteBuyOrder(int sellOrderId, int buyerId);
 }

@@ -66,7 +66,7 @@ public class ExploreFilter {
     }
 
     public BigDecimal getMinPrice() {
-        return new BigDecimal(minPrice.stripTrailingZeros().toPlainString());
+        return minPrice == null ? new BigDecimal(0) : new BigDecimal(minPrice.stripTrailingZeros().toPlainString());
     }
 
     public void setMinPrice(BigDecimal minPrice) {
@@ -74,7 +74,7 @@ public class ExploreFilter {
     }
 
     public BigDecimal getMaxPrice() {
-        return new BigDecimal(maxPrice.stripTrailingZeros().toPlainString());
+        return maxPrice == null ? new BigDecimal(0) : new BigDecimal(maxPrice.stripTrailingZeros().toPlainString());
     }
 
     public void setMaxPrice(BigDecimal maxPrice) {
