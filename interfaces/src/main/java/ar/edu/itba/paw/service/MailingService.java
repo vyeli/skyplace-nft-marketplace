@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.service;
 
-import ar.edu.itba.paw.model.Image;
 import org.springframework.scheduling.annotation.Async;
 
 import java.math.BigDecimal;

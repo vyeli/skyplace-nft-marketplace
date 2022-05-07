@@ -241,6 +241,12 @@
 </div>
 
 <script>
+    const params = new URLSearchParams(window.location.search)
+
+    for(const param of params.values()) {
+        document.querySelector("input[value='" + param + "']").checked = true
+    }
+
     document.getElementById("closeFilter").addEventListener('click', () => {
         document.getElementById("smallFilterBar").classList.remove("hidden");
         document.getElementById("filterBar").classList.add("hidden");
