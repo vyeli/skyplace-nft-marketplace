@@ -11,8 +11,6 @@ public interface UserService {
 
     Optional<User> getUserById(int id);
 
-    Optional<User> getUserById(String id);
-
     Optional<User> getCurrentUser();
 
     boolean isAdmin();

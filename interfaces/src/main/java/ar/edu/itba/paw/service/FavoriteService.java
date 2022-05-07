@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FavoriteService {
-    void addNftFavorite(String productId, User user);
+    void addNftFavorite(int productId, User user);
 
-    void removeNftFavorite(String productId, User user);
+    void removeNftFavorite(int productId, User user);
 
-    int getNftFavorites(String productId);
+    int getNftFavorites(int productId);
 
-    boolean userFavedNft(int userId, int id_nft);
+    boolean userFavedNft(int userId, int nftId);
 }

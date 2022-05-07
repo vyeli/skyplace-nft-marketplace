@@ -34,7 +34,7 @@ public class PurchaseJdbcDao implements PurchaseDao {
         ROW_MAPPER = (rs, rownum) -> {
             User buyer = userDao.getUserById(rs.getInt("id_buyer")).orElse(new User());
             User seller = userDao.getUserById(rs.getInt("id_seller")).orElse(new User());
-            Nft nft = nftDao.getNFTById(String.valueOf(rs.getInt("id_nft"))).orElse(new Nft());
+            Nft nft = nftDao.getNFTById(rs.getInt("id_nft")).orElse(new Nft());
             Timestamp date = rs.getTimestamp("buy_date");
             date.setNanos(0);
             return new Purchase(rs.getInt("id"), buyer, seller, nft, rs.getBigDecimal("price").stripTrailingZeros(), date);

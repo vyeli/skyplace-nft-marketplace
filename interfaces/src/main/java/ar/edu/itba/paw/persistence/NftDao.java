@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface NftDao {
     Optional<Nft> create(int nftId, String contractAddr, String nftName, String chain, MultipartFile image, int idOwner, String collection, String description, String[] properties);
 
-    Optional<Nft> getNFTById(String nftId);
+    Optional<Nft> getNFTById(int nftId);
 
     List<Publication> getAllPublications(String page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser);
 
@@ -22,5 +22,5 @@ public interface NftDao {
 
     void updateOwner(int nftId, int idBuyer);
 
-    void delete(String productId);
+    void delete(int productId);
 }

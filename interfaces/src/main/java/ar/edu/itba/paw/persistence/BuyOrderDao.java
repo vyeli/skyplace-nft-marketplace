@@ -6,11 +6,11 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface BuyOrderDao {
-    boolean create(int idSellOrder, BigDecimal price, int userId);
+    boolean create(int sellOrderId, BigDecimal price, int userId);
 
-    List<BuyOrder> getOrdersBySellOrderId(String offerPage, int idSellOrder);
+    List<BuyOrder> getOrdersBySellOrderId(Integer offerPage, int sellOrderId);
 
-    int getAmountPagesBySellOrderId(int idSellOrder);
+    int getAmountPagesBySellOrderId(int sellOrderId);
 
-    void deleteBuyOrder(String sellOrder, String buyer);
+    void deleteBuyOrder(int sellOrderId, int buyerId);
 }

@@ -19,7 +19,7 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public Optional<SellOrder> create(BigDecimal price, String idNft, String category) {
+    public Optional<SellOrder> create(BigDecimal price, int idNft, String category) {
         return sellOrderDao.create(price, idNft, category);
     }
 
@@ -39,7 +39,8 @@ public class SellOrderServiceImpl implements SellOrderService {
     }
 
     @Override
-    public int getNftWithOrder(String id) {
+    public int getNftWithOrder(int id) {
         return sellOrderDao.getNftWithOrder(id);
     }
+
 }

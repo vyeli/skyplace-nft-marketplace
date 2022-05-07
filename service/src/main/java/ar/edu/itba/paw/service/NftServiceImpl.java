@@ -31,7 +31,7 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public Optional<Nft> getNFTById(String nftId) {
+    public Optional<Nft> getNFTById(int nftId) {
         return nftDao.getNFTById(nftId);
     }
 
@@ -51,12 +51,12 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public boolean userOwnsNft(String productId, User user) {
+    public boolean userOwnsNft(int productId, User user) {
         return getNFTById(productId).filter(value -> value.getIdOwner() == user.getId()).isPresent();
     }
 
     @Override
-    public void delete(String productId) {
+    public void delete(int productId) {
         nftDao.delete(productId);
     }
 

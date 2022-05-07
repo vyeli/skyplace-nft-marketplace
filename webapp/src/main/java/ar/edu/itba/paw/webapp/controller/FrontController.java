@@ -111,8 +111,10 @@ public class FrontController {
 
     @RequestMapping(value = "/sell/{productId}", method = RequestMethod.GET)
     public ModelAndView createSellOrderForm(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
+        int parsedProductId = parseId(productId);
+
         final ModelAndView mav = new ModelAndView("frontcontroller/sell");
-        Optional<Nft> nft = nftService.getNFTById(productId);
+        Optional<Nft> nft = nftService.getNFTById(parsedProductId);
         if(!nft.isPresent())
             return notFound();
         Optional<User> user = userService.getCurrentUser();
@@ -131,23 +133,27 @@ public class FrontController {
         if(errors.hasErrors())
             return createSellOrderForm(form, productId);
 
-        Optional<SellOrder> sellOrder = sellOrderService.create(form.getPrice(), productId, form.getCategory());
+        int parsedProductId = parseId(productId);
+
+        Optional<SellOrder> sellOrder = sellOrderService.create(form.getPrice(), parsedProductId, form.getCategory());
         return sellOrder.map(order -> new ModelAndView("redirect:/product/" + order.getNftId())).orElseGet(() -> createSellOrderForm(form, productId));
     }
 
     @RequestMapping(value = "/sell/update/{productId}", method = RequestMethod.GET)
     public ModelAndView getUpdateSellOrder(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
+        int parsedProductId = parseId(productId);
+
         Optional<User> currentUser = userService.getCurrentUser();
         if(!currentUser.isPresent())
             return new ModelAndView("redirect:/403");
 
-        if (!nftService.userOwnsNft(productId, currentUser.get()) && !userService.isAdmin())
+        if (!nftService.userOwnsNft(parsedProductId, currentUser.get()) && !userService.isAdmin())
             return new ModelAndView("redirect:/403");
 
         final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
         List<String> categories = categoryService.getCategories();
         mav.addObject("categories", categories);
-        Optional<Nft> nft = nftService.getNFTById(productId);
+        Optional<Nft> nft = nftService.getNFTById(parsedProductId);
         if(!nft.isPresent() || nft.get().getSellOrder() == null)
             return notFound();
         mav.addObject(  "nft", nft.get());
@@ -164,14 +170,16 @@ public class FrontController {
             return getUpdateSellOrder(form, productId);
         }
 
+        int parsedProductId = parseId(productId);
+
         Optional<User> currentUser = userService.getCurrentUser();
         if(!currentUser.isPresent())
             return new ModelAndView("redirect:/403");
 
-        if (!nftService.userOwnsNft(productId, currentUser.get()) && !userService.isAdmin())
+        if (!nftService.userOwnsNft(parsedProductId, currentUser.get()) && !userService.isAdmin())
             return new ModelAndView("redirect:/403");
 
-        Optional<Nft> nft = nftService.getNFTById(productId);
+        Optional<Nft> nft = nftService.getNFTById(parsedProductId);
         if(!nft.isPresent() || nft.get().getSellOrder() == null)
             return notFound();
         sellOrderService.update(nft.get().getSellOrder(), form.getCategory(), form.getPrice());
@@ -180,14 +188,16 @@ public class FrontController {
 
     @RequestMapping(value = "/sell/delete/{productId}", method = RequestMethod.POST)
     public ModelAndView deleteSellOrder(@PathVariable String productId) {
+        int parsedProductId = parseId(productId);
+
         Optional<User> currentUser = userService.getCurrentUser();
         if(!currentUser.isPresent())
             return new ModelAndView("redirect:/403");
 
-        if (!nftService.userOwnsNft(productId, currentUser.get()) && !userService.isAdmin())
+        if (!nftService.userOwnsNft(parsedProductId, currentUser.get()) && !userService.isAdmin())
             return new ModelAndView("redirect:/403");
 
-        Optional<Nft> nft = nftService.getNFTById(productId);
+        Optional<Nft> nft = nftService.getNFTById(parsedProductId);
         if(!nft.isPresent() || nft.get().getSellOrder() == null)
             return notFound();
 
@@ -197,8 +207,10 @@ public class FrontController {
 
     /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
-        final Optional<Nft> nft = nftService.getNFTById(productId);
+    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) Integer offerPage) {
+        int parsedProductId = parseId(productId);
+
+        final Optional<Nft> nft = nftService.getNFTById(parsedProductId);
         if(!nft.isPresent())
             return notFound();
         Optional<User> owner = userService.getUserById(nft.get().getIdOwner());
@@ -213,7 +225,7 @@ public class FrontController {
                 amountOfferPages = buyOrderService.getAmountPagesBySellOrderId(sellOrders.get().getId());
             }
         }
-        int favorites = favoriteService.getNftFavorites(productId);
+        int favorites = favoriteService.getNftFavorites(parsedProductId);
         boolean isFaved = false;
 
 
@@ -226,12 +238,7 @@ public class FrontController {
         mav.addObject("favorites", favorites);
         mav.addObject("nft", nft.get());
         mav.addObject("isFaved", isFaved);
-        int offPage = 1;
-        try {
-            offPage = Integer.parseLong(offerPage);
-        } catch(Exception ignored){}
-        if(offPage < 1)
-            offPage = 1;
+        int offPage = offerPage != null ? offerPage : 1;
         mav.addObject("offerPage", offPage);
         mav.addObject("showOfferTab", offerPage != null);
         mav.addObject("amountOfferPages", amountOfferPages);
@@ -240,33 +247,35 @@ public class FrontController {
         owner.ifPresent(user -> mav.addObject("owner", user));
         currentUser.ifPresent(user -> mav.addObject("currentUser", currentUser.get()));
 
-        mav.addObject("productId", productId);
+        mav.addObject("productId", parsedProductId);
         return mav;
     }
 
     @RequestMapping(value="/buyorder/confirm", method = RequestMethod.POST)
-    public ModelAndView confirmBuyOrder(@RequestParam(value = "sellOrder") String sellorder, @RequestParam(value = "idBuyer") int buyer, @RequestParam(value = "idNft") int productId, @RequestParam(value = "idSeller") int seller, @RequestParam(value = "price") BigDecimal price) {
+    public ModelAndView confirmBuyOrder(@RequestParam(value = "sellOrder") int sellOrderId, @RequestParam(value = "idBuyer") int buyerId, @RequestParam(value = "idNft") int productId, @RequestParam(value = "idSeller") int seller, @RequestParam(value = "price") BigDecimal price) {
         // TODO: check success
-        buyOrderService.confirmBuyOrder(sellorder, buyer);
-        purchaseService.createPurchase(buyer, seller, productId, price);
+        buyOrderService.confirmBuyOrder(sellOrderId, buyerId);
+        purchaseService.createPurchase(buyerId, seller, productId, price);
 
         return new ModelAndView("redirect:/product/" + productId);
     }
 
     @RequestMapping(value="/buyorder/delete", method = RequestMethod.POST)
-    public ModelAndView deleteBuyOrder(@RequestParam(value = "sellOrder") String sellorder, @RequestParam(value = "idBuyer") String buyer, @RequestParam(value = "idNft") String productId) {
-        buyOrderService.deleteBuyOrder(sellorder, buyer);
+    public ModelAndView deleteBuyOrder(@RequestParam(value = "sellOrder") int sellOrderId, @RequestParam(value = "idBuyer") int buyerId, @RequestParam(value = "idNft") String productId) {
+        buyOrderService.deleteBuyOrder(sellOrderId, buyerId);
 
         return new ModelAndView("redirect:/product/" + productId);
     }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
+    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) Integer offerPage) {
         if (errors.hasErrors()) {
             return product(form, productId, offerPage);
         }
 
-        Optional<Nft> nft = nftService.getNFTById(productId);
+        int parsedProductId = parseId(productId);
+
+        Optional<Nft> nft = nftService.getNFTById(parsedProductId);
         if(!nft.isPresent())
             return product(form, productId, offerPage);
         if(nft.get().getSellOrder() == null)
@@ -292,8 +301,8 @@ public class FrontController {
 
     @RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
     public ModelAndView deleteNft(@PathVariable String productId) {
-        nftService.delete(productId);
-
+        int parsedProductId = parseId(productId);
+        nftService.delete(parsedProductId);
         return new ModelAndView("redirect:/explore");
     }
 
@@ -380,7 +389,7 @@ public class FrontController {
     public ModelAndView getUser(@PathVariable String userId, @RequestParam(required = false, name = "tab") String tab){
         int parsedUserId = parseId(userId);
         ModelAndView mav = new ModelAndView("frontcontroller/profile");
-        final Optional<User> user = userService.getUserById(userId);
+        final Optional<User> user = userService.getUserById(parsedUserId);
 
         if(!user.isPresent()) return new ModelAndView("redirect:/404");
 
@@ -423,14 +432,16 @@ public class FrontController {
 
     @RequestMapping(value = "/favorite/add/{productId}", method = RequestMethod.POST)
     public String addFavorite(@PathVariable String productId, HttpServletRequest request){
-        userService.getCurrentUser().ifPresent(user -> favoriteService.addNftFavorite(productId, user));
+        int parsedProductId = parseId(productId);
+        userService.getCurrentUser().ifPresent(user -> favoriteService.addNftFavorite(parsedProductId, user));
         String referer = request.getHeader("Referer");
         return "redirect:"+ referer;
     }
 
     @RequestMapping(value = "/favorite/remove/{productId}", method = RequestMethod.POST)
     public String removeFavorite(@PathVariable String productId, HttpServletRequest request){
-        userService.getCurrentUser().ifPresent(user -> favoriteService.removeNftFavorite(productId, user));
+        int parsedProductId = parseId(productId);
+        userService.getCurrentUser().ifPresent(user -> favoriteService.removeNftFavorite(parsedProductId, user));
         String referer = request.getHeader("Referer");
         return "redirect:"+ referer;
     }

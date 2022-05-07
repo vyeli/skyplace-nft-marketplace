@@ -3,11 +3,11 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.model.User;
 
 public interface FavoriteDao {
-    void addNftFavorite(String productId, User user);
+    void addNftFavorite(int productId, User user);
 
-    void removeNftFavorite(String productId, User user);
+    void removeNftFavorite(int productId, User user);
 
     boolean userFavedNft(int userId, int idNft);
 
-    int getNftFavorites(String productId);
+    int getNftFavorites(int productId);
 }

@@ -34,7 +34,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         if(buyOrderDao.create(idSellOrder, price, userId)){
             BuyOrder buyOrder = new BuyOrder(idSellOrder, price, userId);
             SellOrder sellOrder = sellOrderDao.getOrderById(idSellOrder).get();
-            Nft nft = nftDao.getNFTById(String.valueOf(sellOrder.getNftId())).get();
+            Nft nft = nftDao.getNFTById(sellOrder.getNftId()).get();
             User seller = userDao.getUserById(nft.getIdOwner()).get();
             User bidder = userDao.getUserById(userId).get();
             Image image = imageDao.getImage(nft.getIdImage());
@@ -45,7 +45,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public List<BuyOffer> getOrdersBySellOrderId(String offerPage, int idSellOrder) {
+    public List<BuyOffer> getOrdersBySellOrderId(Integer offerPage, int idSellOrder) {
         List<BuyOrder> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder);
         List<BuyOffer> buyOffers = new ArrayList<>();
         buyOrders.forEach(buyOrder -> {
@@ -61,18 +61,12 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public void confirmBuyOrder(String sellOrder, int buyer) {
-        int sellOrderId;
-        try {
-            sellOrderId = Integer.parseLong(sellOrder);
-        } catch(Exception e) {
-            return;
-        }
+    public void confirmBuyOrder(int sellOrderId, int buyerId) {
         Optional<SellOrder> sOrder = sellOrderDao.getOrderById(sellOrderId);
         if(!sOrder.isPresent())
             return;
 
-        Optional<User> buyerUser = userDao.getUserById(buyer);
+        Optional<User> buyerUser = userDao.getUserById(buyerId);
         if(!buyerUser.isPresent())
             return;
         nftDao.updateOwner(sOrder.get().getNftId(), buyerUser.get().getId());
@@ -81,7 +75,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public void deleteBuyOrder(String sellOrder, String buyer) {
-        buyOrderDao.deleteBuyOrder(sellOrder, buyer);
+    public void deleteBuyOrder(int sellOrderId, int buyerId) {
+        buyOrderDao.deleteBuyOrder(sellOrderId, buyerId);
     }
 }

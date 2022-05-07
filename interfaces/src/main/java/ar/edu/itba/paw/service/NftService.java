@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface NftService {
     Optional<Nft> create(int nftId, String contractAddr, String nftName, String chain, MultipartFile image, int idOwner, String collection, String description, String[] properties);
 
-    Optional<Nft> getNFTById(String nftId);
+    Optional<Nft> getNFTById(int nftId);
 
     List<Publication> getAllPublications(String page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser);
 
@@ -20,7 +20,7 @@ public interface NftService {
 
     int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search);
 
-    boolean userOwnsNft(String productId, User user);
+    boolean userOwnsNft(int productId, User user);
 
-    void delete(String productId);
+    void delete(int productId);
 }

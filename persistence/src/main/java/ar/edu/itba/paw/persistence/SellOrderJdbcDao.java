@@ -21,7 +21,7 @@ public class SellOrderJdbcDao implements SellOrderDao {
     private final NftDao nftDao;
 
     private static final RowMapper<SellOrder> ROW_MAPPER = (rs, rowNum) ->
-            new SellOrder(rs.getLong("id"), rs.getBigDecimal("price"), rs.getLong("id_nft"), rs.getString("category"));
+            new SellOrder(rs.getInt("id"), rs.getBigDecimal("price"), rs.getInt("id_nft"), rs.getString("category"));
 
     @Autowired
     public SellOrderJdbcDao(final DataSource ds, final CategoryDao categoryDao, final NftDao nftDao) {
@@ -34,7 +34,7 @@ public class SellOrderJdbcDao implements SellOrderDao {
     }
 
     @Override
-    public Optional<SellOrder> create(BigDecimal price, String idNft, String category) {
+    public Optional<SellOrder> create(BigDecimal price, int idNft, String category) {
         List<String> categories = categoryDao.getCategories();
         if (!categories.contains(category))
             return Optional.empty();
@@ -42,21 +42,15 @@ public class SellOrderJdbcDao implements SellOrderDao {
         Optional<Nft> nft = nftDao.getNFTById(idNft);
         if (!nft.isPresent())
             return Optional.empty();
-        int idNftLong;
-        try {
-            idNftLong = Integer.parseLong(idNft);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
 
         Map<String, Object> sellOrderData = new HashMap<>();
         sellOrderData.put("price", price);
-        sellOrderData.put("id_nft", idNftLong);
+        sellOrderData.put("id_nft", idNft);
         sellOrderData.put("category", category);
 
-        int id = jdbcInsertSellOrder.executeAndReturnKey(sellOrderData).longValue();
+        int id = jdbcInsertSellOrder.executeAndReturnKey(sellOrderData).intValue();
 
-        return Optional.of(new SellOrder(id, price, idNftLong, category));
+        return Optional.of(new SellOrder(id, price, idNft, category));
     }
 
     @Override
@@ -78,15 +72,10 @@ public class SellOrderJdbcDao implements SellOrderDao {
     }
 
     @Override
-    public int getNftWithOrder(String id) {
-        try {
-            int idToLong = Integer.parseLong(id);
-            List<Integer> nftId = jdbcTemplate.query("SELECT id_nft FROM sellorders WHERE id = ?", new Object[]{idToLong}, (rs , rn) -> rs.getLong("id_nft"));
-            if(nftId.size() > 0)
-                return nftId.get(0);
-            return -1;
-        } catch (Exception e) {
-            return -1;
-        }
+    public int getNftWithOrder(int id) {
+        List<Integer> nftId = jdbcTemplate.query("SELECT id_nft FROM sellorders WHERE id = ?", new Object[]{id}, (rs , rn) -> rs.getInt("id_nft"));
+        if(nftId.size() > 0)
+            return nftId.get(0);
+        return -1;
     }
 }

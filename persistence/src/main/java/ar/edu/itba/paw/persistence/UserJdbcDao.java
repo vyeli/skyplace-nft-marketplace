@@ -25,7 +25,7 @@ public class UserJdbcDao implements UserDao{
     private final SimpleJdbcInsert jdbcInsertSellOrder;
 
     private static final RowMapper<User> ROW_MAPPER = (rs, rowNum) ->
-            new User(rs.getLong("id"), rs.getString("email"), rs.getString("username"), rs.getString("wallet"), rs.getString("wallet_chain"), rs.getString("password"), rs.getString("role"));
+            new User(rs.getInt("id"), rs.getString("email"), rs.getString("username"), rs.getString("wallet"), rs.getString("wallet_chain"), rs.getString("password"), rs.getString("role"));
 
     @Autowired
     public UserJdbcDao(final DataSource ds) {
@@ -46,7 +46,7 @@ public class UserJdbcDao implements UserDao{
         userData.put("role", "User");
 
         try {
-            final int userId = jdbcInsertSellOrder.executeAndReturnKey(userData).longValue();
+            final int userId = jdbcInsertSellOrder.executeAndReturnKey(userData).intValue();
             return Optional.of(new User(userId, email, username, wallet, walletChain, password, "User"));
         } catch (DuplicateKeyException e) {
             LOGGER.error("User already exists", e);
@@ -67,12 +67,4 @@ public class UserJdbcDao implements UserDao{
         return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ id }, ROW_MAPPER).stream().findFirst();
     }
 
-    @Override
-    public Optional<User> getUserById(final String id) {
-        try {
-            return getUserById(Integer.parseLong(id));
-        } catch(Exception e) {
-            return Optional.empty();
-        }
-    }
 }

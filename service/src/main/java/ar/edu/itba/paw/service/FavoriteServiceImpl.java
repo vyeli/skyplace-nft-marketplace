@@ -19,17 +19,17 @@ public class FavoriteServiceImpl implements FavoriteService{
     }
 
     @Override
-    public void addNftFavorite(String productId, User user) {
+    public void addNftFavorite(int productId, User user) {
         favoriteDao.addNftFavorite(productId, user);
     }
 
     @Override
-    public void removeNftFavorite(String productId, User user) {
+    public void removeNftFavorite(int productId, User user) {
         favoriteDao.removeNftFavorite(productId, user);
     }
 
     @Override
-    public int getNftFavorites(String productId) {
+    public int getNftFavorites(int productId) {
         return favoriteDao.getNftFavorites(productId);
     }
 

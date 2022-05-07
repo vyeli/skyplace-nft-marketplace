@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface BuyOrderService {
 
-    boolean create(int idSellOrder, BigDecimal price, int userId);
+    boolean create(int sellOrderId, BigDecimal price, int userId);
 
-    List<BuyOffer> getOrdersBySellOrderId(String offerPage, int idSellOrder);
+    List<BuyOffer> getOrdersBySellOrderId(Integer offerPage, int sellOrderId);
 
-    int getAmountPagesBySellOrderId(int idSellOrder);
+    int getAmountPagesBySellOrderId(int sellOrderId);
 
-    void confirmBuyOrder(String sellOrder, int buyer);
+    void confirmBuyOrder(int sellOrderId, int buyerId);
 
-    void deleteBuyOrder(String sellOrder, String buyer);
+    void deleteBuyOrder(int sellOrderId, int buyerId);
 }

@@ -65,7 +65,9 @@ public class NftJdbcDao implements NftDao{
         boolean isFaved = rs.getBoolean("isFaved");
         return new Publication(nft, sellOrder, user, isFaved);
     };
+
     private final RowMapper<Nft> SELECT_NFT_MAPPER = (rs, i) -> createNftFromResultSet(rs);
+
     @Autowired
     public NftJdbcDao(final DataSource ds, final ImageDao imageDao) {
         jdbcTemplate = new JdbcTemplate(ds);
@@ -76,20 +78,20 @@ public class NftJdbcDao implements NftDao{
     }
 
     private Nft createNftFromResultSet(ResultSet rs) throws SQLException {
-        int id = rs.getLong("id");
-        int idNft = rs.getLong("nftId");
+        int id = rs.getInt("id");
+        int idNft = rs.getInt("nftId");
         String contractAddr = rs.getString("contractAddr");
         String name = rs.getString("nftName");
         String chain = rs.getString("chain");
-        int idImage = rs.getLong("idImage");
-        int idOwner = rs.getLong("idOwner");
+        int idImage = rs.getInt("idImage");
+        int idOwner = rs.getInt("idOwner");
         String collection = rs.getString("collection");
         String description = rs.getString("description");
         Array propertiesArray = rs.getArray("properties");
         String[] properties = null;
         if(propertiesArray != null)
             properties = (String[])propertiesArray.getArray();
-        Integer idSellOrder = rs.getLong("sellOrderId");
+        Integer idSellOrder = rs.getInt("sellOrderId");
         if(idSellOrder == 0)
             idSellOrder = null;
         return new Nft(id, idNft, contractAddr, name ,chain, idImage, idOwner, collection, description, properties, idSellOrder);
@@ -115,20 +117,15 @@ public class NftJdbcDao implements NftDao{
             return Optional.empty();
 
         nftData.put("id_image", idImage.get());
-        int id = jdbcInsertNft.executeAndReturnKey(nftData).longValue();
+        int id = jdbcInsertNft.executeAndReturnKey(nftData).intValue();
 
         return Optional.of(new Nft(id, nftId, contractAddr, nftName, chain, idImage.get(), idOwner, collection, description, properties, null));
     }
 
     @Override
-    public Optional<Nft> getNFTById(String nftId) {
-        try {
-            int nftIdLong = Integer.parseLong(nftId);
-            List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nftIdLong}, SELECT_NFT_MAPPER);
-            return Optional.ofNullable(result.get(0));
-        } catch(Exception e) {
-            return Optional.empty();
-        }
+    public Optional<Nft> getNFTById(int nftId) {
+        List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nftId}, SELECT_NFT_MAPPER);
+        return Optional.ofNullable(result.get(0));
     }
 
     private Pair<StringBuilder, List<Object>> applyFilter(String columnName, String filter) {
@@ -281,12 +278,9 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public void delete(String productId) {
-        try {
-            int productIdLong = Integer.parseLong(productId);
-            jdbcTemplate.update("DELETE FROM nfts WHERE id=?", productIdLong);
-        } catch(Exception ignored){}
-        }
+    public void delete(int productId) {
+        jdbcTemplate.update("DELETE FROM nfts WHERE id=?", productId);
+    }
 
     // Code extracted from https://github.com/crwohlfeil/damerau-levenshtein/blob/master/src/main/java/com/codeweasel/DamerauLevenshtein.java
     private int calculateDistance(CharSequence source, CharSequence target) {

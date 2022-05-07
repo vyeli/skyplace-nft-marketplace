@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface SellOrderDao {
 
-    Optional<SellOrder> create(BigDecimal price, String idNft, String category);
+    Optional<SellOrder> create(BigDecimal price, int idNft, String category);
 
     Optional<SellOrder> getOrderById(int id);
 
@@ -15,6 +15,6 @@ public interface SellOrderDao {
 
     boolean delete(int id);
 
-    int getNftWithOrder(String id);
+    int getNftWithOrder(int id);
 
 }

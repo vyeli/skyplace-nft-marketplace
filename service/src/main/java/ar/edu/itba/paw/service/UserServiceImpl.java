@@ -47,11 +47,6 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Optional<User> getUserById(String id) {
-        return userDao.getUserById(id);
-    }
-
-    @Override
     public Optional<User> getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(principal instanceof UserDetails){
