@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.model.*;
+import ar.edu.itba.paw.webapp.exceptions.InvalidIdException;
 import ar.edu.itba.paw.webapp.form.*;
 import ar.edu.itba.paw.service.*;
 import org.slf4j.Logger;
@@ -377,56 +378,47 @@ public class FrontController {
 
     @RequestMapping("/profile/{userId}")
     public ModelAndView getUser(@PathVariable String userId, @RequestParam(required = false, name = "tab") String tab){
+        int parsedUserId = parseId(userId);
         ModelAndView mav = new ModelAndView("frontcontroller/profile");
         final Optional<User> user = userService.getUserById(userId);
 
-        if(user.isPresent()){
-            User currentUser = null;
-            Optional<User> optionalCurrentUser = userService.getCurrentUser();
-            if(optionalCurrentUser.isPresent()) {
-                currentUser = optionalCurrentUser.get();
-                mav.addObject("isOwner", currentUser.getId()==user.get().getId());
-            }
-            mav.addObject("user", user.get());
+        if(!user.isPresent()) return new ModelAndView("redirect:/404");
 
-            List<Publication> publications = new ArrayList<>();
-
-            if (tab == null) // inventory
-                publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, false);
-            else {
-                switch (tab) {
-                    case "favorited":
-                        if (currentUser != null && currentUser.getId() == user.get().getId())
-                            publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, true, false);
-                        break;
-                    case "selling":
-                        publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, true);
-                        break;
-                    case "history":
-                        // TODO
-                        int _userId;
-                        try {
-                            _userId = Integer.parseInt(userId);
-                        }
-                        catch (NumberFormatException e) {
-                            LOGGER.error("Invalid user id", e);
-                            return new ModelAndView("redirect:/404");
-                        }
-                        List<Purchase> transactions = purchaseService.getAllTransactions(_userId);
-                        mav.addObject("historyItems", transactions);
-                        mav.addObject("historyItemsSize", transactions.size());
-                        mav.addObject("showHistory", true);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            mav.addObject("publications", publications);
-            mav.addObject("publicationsSize", publications.size());
-            return mav;
+        User currentUser = null;
+        Optional<User> optionalCurrentUser = userService.getCurrentUser();
+        if(optionalCurrentUser.isPresent()) {
+            currentUser = optionalCurrentUser.get();
+            mav.addObject("isOwner", currentUser.getId()==user.get().getId());
         }
-        return new ModelAndView("redirect:/404");
+        mav.addObject("user", user.get());
+
+        List<Publication> publications = new ArrayList<>();
+
+        if (tab == null) // inventory
+            publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, false);
+        else {
+            switch (tab) {
+                case "favorited":
+                    if (currentUser != null && currentUser.getId() == user.get().getId())
+                        publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, true, false);
+                    break;
+                case "selling":
+                    publications = nftService.getAllPublicationsByUser(1, user.get(), currentUser, false, true);
+                    break;
+                case "history":
+                    List<Purchase> transactions = purchaseService.getAllTransactions(parsedUserId);
+                    mav.addObject("historyItems", transactions);
+                    mav.addObject("historyItemsSize", transactions.size());
+                    mav.addObject("showHistory", true);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        mav.addObject("publications", publications);
+        mav.addObject("publicationsSize", publications.size());
+        return mav;
     }
 
     @RequestMapping(value = "/favorite/add/{productId}", method = RequestMethod.POST)
@@ -455,6 +447,16 @@ public class FrontController {
     @RequestMapping("/**")
     public ModelAndView notFound() {
         return new ModelAndView("error/404");
+    }
+
+    private int parseId(String id) {
+        int parsedId;
+        try {
+            parsedId = Integer.parseInt(id);
+        } catch (NumberFormatException e) {
+            throw new InvalidIdException("Invalid id: " + id);
+        }
+        return parsedId;
     }
 
 }
