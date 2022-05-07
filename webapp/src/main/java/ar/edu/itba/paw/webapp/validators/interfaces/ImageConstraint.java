@@ -19,5 +19,5 @@ public @interface ImageConstraint {
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
-    long maxSize();
+    int maxSize();
 }

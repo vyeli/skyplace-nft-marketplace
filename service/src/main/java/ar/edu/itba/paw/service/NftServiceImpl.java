@@ -26,7 +26,7 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public Optional<Nft> create(long nftId, String contractAddr, String nftName, String chain, MultipartFile image, long idOwner, String collection, String description, String[] properties) {
+    public Optional<Nft> create(int nftId, String contractAddr, String nftName, String chain, MultipartFile image, int idOwner, String collection, String description, String[] properties) {
         return nftDao.create(nftId, contractAddr, nftName, chain, image, idOwner, collection, description, properties);
     }
 
@@ -46,7 +46,7 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public long getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
+    public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
         return nftDao.getAmountPublications(status, category, chain, minPrice, maxPrice, search);
     }
 

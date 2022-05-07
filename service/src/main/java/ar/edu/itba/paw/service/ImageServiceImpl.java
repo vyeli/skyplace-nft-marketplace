@@ -16,7 +16,7 @@ public class ImageServiceImpl implements ImageService{
     }
 
     @Override
-    public Image getImage(long id) {
+    public Image getImage(int id) {
         return imageDao.getImage(id);
     }
 }

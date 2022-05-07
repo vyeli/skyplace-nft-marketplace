@@ -9,12 +9,12 @@ public interface SellOrderService {
 
     Optional<SellOrder> create(BigDecimal price, String idNft, String category);
 
-    Optional<SellOrder> getOrderById(long id);
+    Optional<SellOrder> getOrderById(int id);
 
-    void update(long id, String category, BigDecimal price);
+    void update(int id, String category, BigDecimal price);
 
-    void delete(long id);
+    void delete(int id);
 
-    long getNftWithOrder(String id);
+    int getNftWithOrder(String id);
 
 }

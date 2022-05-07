@@ -1,19 +1,19 @@
 package ar.edu.itba.paw.model;
 
 public class Nft {
-    private long id;
-    private long nftId;
+    private int id;
+    private int nftId;
     private String contractAddr;
     private String name;
     private String chain;
-    private long idImage;
-    private long idOwner;
+    private int idImage;
+    private int idOwner;
     private String collection;
     private String description;
     private String[] properties;
-    private Long sellOrder;
+    private Integer sellOrder;
 
-    public Nft(long id, long nftId, String contractAddr, String name, String chain, long idImage, long idOwner, String collection, String description, String[] properties, Long sellOrder) {
+    public Nft(int id, int nftId, String contractAddr, String name, String chain, int idImage, int idOwner, String collection, String description, String[] properties, Integer sellOrder) {
         this.id = id;
         this.nftId = nftId;
         this.contractAddr = contractAddr;
@@ -31,11 +31,11 @@ public class Nft {
         this.name = "Deleted NFT";
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public long getNftId() {return nftId;}
+    public int getNftId() {return nftId;}
 
     public String getContractAddr() {
         return contractAddr;
@@ -49,11 +49,11 @@ public class Nft {
         return chain;
     }
 
-    public long getIdImage() {
+    public int getIdImage() {
         return idImage;
     }
 
-    public long getIdOwner() {
+    public int getIdOwner() {
         return idOwner;
     }
 
@@ -69,7 +69,7 @@ public class Nft {
         return properties;
     }
 
-    public Long getSellOrder() {
+    public Integer getSellOrder() {
         return sellOrder;
     }
 }

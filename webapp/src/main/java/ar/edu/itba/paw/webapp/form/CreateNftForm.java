@@ -14,7 +14,7 @@ public class CreateNftForm {
     @Digits(integer = 8, fraction = 0)
     @Min(value=0L)
     @NotNull
-    private long nftId;
+    private int nftId;
 
     @NotBlank
     @Pattern(regexp = "^0x[a-fA-F0-9]{40}$")
@@ -36,11 +36,11 @@ public class CreateNftForm {
 
     private String[] properties;
 
-    public long getNftId() {
+    public int getNftId() {
         return nftId;
     }
 
-    public void setNftId(long nftId) {
+    public void setNftId(int nftId) {
         this.nftId = nftId;
     }
 

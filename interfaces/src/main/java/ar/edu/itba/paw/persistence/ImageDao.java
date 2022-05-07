@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface ImageDao {
 
-    Optional<Long> createImage(MultipartFile image);
+    Optional<Integer> createImage(MultipartFile image);
 
-    Image getImage(long id);
+    Image getImage(int id);
 }

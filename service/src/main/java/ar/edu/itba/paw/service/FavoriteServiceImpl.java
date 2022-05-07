@@ -29,12 +29,12 @@ public class FavoriteServiceImpl implements FavoriteService{
     }
 
     @Override
-    public long getNftFavorites(String productId) {
+    public int getNftFavorites(String productId) {
         return favoriteDao.getNftFavorites(productId);
     }
 
     @Override
-    public boolean userFavedNft(long userId, long idNft) {
+    public boolean userFavedNft(int userId, int idNft) {
         return favoriteDao.userFavedNft(userId, idNft);
     }
 }

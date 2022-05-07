@@ -9,12 +9,12 @@ public interface SellOrderDao {
 
     Optional<SellOrder> create(BigDecimal price, String idNft, String category);
 
-    Optional<SellOrder> getOrderById(long id);
+    Optional<SellOrder> getOrderById(int id);
 
-    boolean update(long id, String category, BigDecimal price);
+    boolean update(int id, String category, BigDecimal price);
 
-    boolean delete(long id);
+    boolean delete(int id);
 
-    long getNftWithOrder(String id);
+    int getNftWithOrder(String id);
 
 }

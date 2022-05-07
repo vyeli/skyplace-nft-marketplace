@@ -2,7 +2,7 @@ package ar.edu.itba.paw.model;
 
 public class User {
 
-    private long id;
+    private int id;
     private String email;
     private String username;
     private String wallet;
@@ -10,7 +10,7 @@ public class User {
     private String password;
     private String role;
 
-    public User(long id, String email, String username, String wallet, String chain, String password, String role) {
+    public User(int id, String email, String username, String wallet, String chain, String password, String role) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -20,7 +20,7 @@ public class User {
         this.role = role;
     }
 
-    public User(long id, String email) {
+    public User(int id, String email) {
         this.id = id;
         this.email = email;
     }
@@ -30,7 +30,7 @@ public class User {
         this.username = "Deleted User";
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 

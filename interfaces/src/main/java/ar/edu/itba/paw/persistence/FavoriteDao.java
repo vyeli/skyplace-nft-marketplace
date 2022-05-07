@@ -7,7 +7,7 @@ public interface FavoriteDao {
 
     void removeNftFavorite(String productId, User user);
 
-    boolean userFavedNft(long userId, long idNft);
+    boolean userFavedNft(int userId, int idNft);
 
-    long getNftFavorites(String productId);
+    int getNftFavorites(String productId);
 }

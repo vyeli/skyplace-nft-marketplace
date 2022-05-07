@@ -35,9 +35,9 @@ public class FavoriteJdbcDao implements FavoriteDao{
     public void addNftFavorite(String productId, User user) {
         if(!nftDao.getNFTById(productId).isPresent())
             return;
-        long idNft;
+        int idNft;
         try {
-            idNft = Long.parseLong(productId);
+            idNft = Integer.parseLong(productId);
         } catch(Exception e) {
             return;
         }
@@ -54,9 +54,9 @@ public class FavoriteJdbcDao implements FavoriteDao{
     public void removeNftFavorite(String productId, User user) {
         if(!nftDao.getNFTById(productId).isPresent())
             return;
-        long idNft;
+        int idNft;
         try {
-            idNft = Long.parseLong(productId);
+            idNft = Integer.parseLong(productId);
         } catch(Exception e) {
             return;
         }
@@ -66,15 +66,15 @@ public class FavoriteJdbcDao implements FavoriteDao{
     }
 
     @Override
-    public boolean userFavedNft(long userId, long idNft) {
+    public boolean userFavedNft(int userId, int idNft) {
         return jdbcTemplate.query("SELECT * FROM favorited WHERE user_id=? AND id_nft=?", new Object[]{userId, idNft}, (rs, rownum) -> rs.getString("id_nft")).size() > 0;
     }
 
     @Override
-    public long getNftFavorites(String productId) {
+    public int getNftFavorites(String productId) {
         try {
-            long nftId = Long.parseLong(productId);
-            List<Long> res = jdbcTemplate.query("SELECT count(*) FROM favorited WHERE id_nft=?", new Object[]{nftId}, (rs, rownum) -> rs.getLong("count"));
+            int nftId = Integer.parseLong(productId);
+            List<Integer> res = jdbcTemplate.query("SELECT count(*) FROM favorited WHERE id_nft=?", new Object[]{nftId}, (rs, rownum) -> rs.getLong("count"));
             if(res.size() > 0)
                 return res.get(0);
             return 0;

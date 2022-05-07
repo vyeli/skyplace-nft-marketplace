@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 
 public class ImageConstraintValidator implements ConstraintValidator<ImageConstraint, MultipartFile> {
 
-    private long maxSize;
+    private int maxSize;
 
     @Override
     public void initialize(ImageConstraint imageConstraint) {

@@ -46,7 +46,7 @@ public class UserJdbcDao implements UserDao{
         userData.put("role", "User");
 
         try {
-            final long userId = jdbcInsertSellOrder.executeAndReturnKey(userData).longValue();
+            final int userId = jdbcInsertSellOrder.executeAndReturnKey(userData).longValue();
             return Optional.of(new User(userId, email, username, wallet, walletChain, password, "User"));
         } catch (DuplicateKeyException e) {
             LOGGER.error("User already exists", e);
@@ -63,14 +63,14 @@ public class UserJdbcDao implements UserDao{
     }
 
     @Override
-    public Optional<User> getUserById(final long id) {
+    public Optional<User> getUserById(final int id) {
         return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ id }, ROW_MAPPER).stream().findFirst();
     }
 
     @Override
     public Optional<User> getUserById(final String id) {
         try {
-            return getUserById(Long.parseLong(id));
+            return getUserById(Integer.parseLong(id));
         } catch(Exception e) {
             return Optional.empty();
         }

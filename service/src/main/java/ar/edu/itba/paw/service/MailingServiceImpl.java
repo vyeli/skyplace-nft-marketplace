@@ -125,7 +125,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendOfferMail(String bidderMail, String sellerMail, String nftName, long nftId, String nftAddress, BigDecimal nftPrice, byte[] imageBytes){
+    public void sendOfferMail(String bidderMail, String sellerMail, String nftName, int nftId, String nftAddress, BigDecimal nftPrice, byte[] imageBytes){
         final MimeMessage message = mailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);

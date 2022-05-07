@@ -76,27 +76,27 @@ public class NftJdbcDao implements NftDao{
     }
 
     private Nft createNftFromResultSet(ResultSet rs) throws SQLException {
-        long id = rs.getLong("id");
-        long idNft = rs.getLong("nftId");
+        int id = rs.getLong("id");
+        int idNft = rs.getLong("nftId");
         String contractAddr = rs.getString("contractAddr");
         String name = rs.getString("nftName");
         String chain = rs.getString("chain");
-        long idImage = rs.getLong("idImage");
-        long idOwner = rs.getLong("idOwner");
+        int idImage = rs.getLong("idImage");
+        int idOwner = rs.getLong("idOwner");
         String collection = rs.getString("collection");
         String description = rs.getString("description");
         Array propertiesArray = rs.getArray("properties");
         String[] properties = null;
         if(propertiesArray != null)
             properties = (String[])propertiesArray.getArray();
-        Long idSellOrder = rs.getLong("sellOrderId");
+        Integer idSellOrder = rs.getLong("sellOrderId");
         if(idSellOrder == 0)
             idSellOrder = null;
         return new Nft(id, idNft, contractAddr, name ,chain, idImage, idOwner, collection, description, properties, idSellOrder);
     }
 
     @Override
-    public Optional<Nft> create(long nftId, String contractAddr, String nftName, String chain, MultipartFile image, long idOwner, String collection, String description, String[] properties) {
+    public Optional<Nft> create(int nftId, String contractAddr, String nftName, String chain, MultipartFile image, int idOwner, String collection, String description, String[] properties) {
         List<String> chains = jdbcTemplate.query("SELECT chain FROM chains", (rs, i) -> rs.getString("chain"));
         if(!chains.contains(chain))
             return Optional.empty();
@@ -110,12 +110,12 @@ public class NftJdbcDao implements NftDao{
         nftData.put("collection", collection);
         nftData.put("description", description);
 
-        Optional<Long> idImage = imageDao.createImage(image);
+        Optional<Integer> idImage = imageDao.createImage(image);
         if(!idImage.isPresent())
             return Optional.empty();
 
         nftData.put("id_image", idImage.get());
-        long id = jdbcInsertNft.executeAndReturnKey(nftData).longValue();
+        int id = jdbcInsertNft.executeAndReturnKey(nftData).longValue();
 
         return Optional.of(new Nft(id, nftId, contractAddr, nftName, chain, idImage.get(), idOwner, collection, description, properties, null));
     }
@@ -123,7 +123,7 @@ public class NftJdbcDao implements NftDao{
     @Override
     public Optional<Nft> getNFTById(String nftId) {
         try {
-            long nftIdLong = Long.parseLong(nftId);
+            int nftIdLong = Integer.parseLong(nftId);
             List<Nft> result = jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nftIdLong}, SELECT_NFT_MAPPER);
             return Optional.ofNullable(result.get(0));
         } catch(Exception e) {
@@ -265,7 +265,7 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public long getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
+    public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
         Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, "noSort", null);
         StringBuilder sb = queryBuilder.getLeft();
         List<Object> args = queryBuilder.getRight();
@@ -276,14 +276,14 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public void updateOwner(long nftId, long idBuyer) {
+    public void updateOwner(int nftId, int idBuyer) {
         jdbcTemplate.update("UPDATE nfts SET id_owner = ? WHERE id = ?", idBuyer, nftId);
     }
 
     @Override
     public void delete(String productId) {
         try {
-            long productIdLong = Long.parseLong(productId);
+            int productIdLong = Integer.parseLong(productId);
             jdbcTemplate.update("DELETE FROM nfts WHERE id=?", productIdLong);
         } catch(Exception ignored){}
         }

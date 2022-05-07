@@ -70,7 +70,7 @@ public class FrontController {
             currentUser = currentUserOptional.get();
 
         final List<Publication> publications = nftService.getAllPublications(exploreFilter.getPage(), exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), currentUser);
-        final long publicationsAmount = nftService.getAmountPublications(exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSearch());
+        final int publicationsAmount = nftService.getAmountPublications(exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSearch());
         if(publications.isEmpty())
             mav.addObject("noPublication", true);
 
@@ -205,7 +205,7 @@ public class FrontController {
         Optional<User> currentUser = userService.getCurrentUser();
         Optional<SellOrder> sellOrders = Optional.empty();
         List<BuyOffer> buyOffers = new ArrayList<>();
-        long amountOfferPages = 0;
+        int amountOfferPages = 0;
         if(nft.get().getSellOrder() != null) {
             sellOrders = sellOrderService.getOrderById(nft.get().getSellOrder());
             if(sellOrders.isPresent()) {
@@ -213,7 +213,7 @@ public class FrontController {
                 amountOfferPages = buyOrderService.getAmountPagesBySellOrderId(sellOrders.get().getId());
             }
         }
-        long favorites = favoriteService.getNftFavorites(productId);
+        int favorites = favoriteService.getNftFavorites(productId);
         boolean isFaved = false;
 
 
@@ -226,9 +226,9 @@ public class FrontController {
         mav.addObject("favorites", favorites);
         mav.addObject("nft", nft.get());
         mav.addObject("isFaved", isFaved);
-        long offPage = 1;
+        int offPage = 1;
         try {
-            offPage = Long.parseLong(offerPage);
+            offPage = Integer.parseLong(offerPage);
         } catch(Exception ignored){}
         if(offPage < 1)
             offPage = 1;
@@ -368,7 +368,7 @@ public class FrontController {
         Optional<User> user = userService.getCurrentUser();
         if(!user.isPresent())
             return notFound();
-        final long userId = user.get().getId();
+        final int userId = user.get().getId();
         StringBuilder redirectUrl = new StringBuilder("redirect:/profile/" + userId);
         if(tab != null){
             redirectUrl.append("?tab=").append(tab);
@@ -438,7 +438,7 @@ public class FrontController {
 
     @RequestMapping(value = "/images/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody
-    public byte[] getImage(@PathVariable long id) {
+    public byte[] getImage(@PathVariable int id) {
         Image image = imageService.getImage(id);
         return image.getImage();
     }

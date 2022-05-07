@@ -42,9 +42,9 @@ public class SellOrderJdbcDao implements SellOrderDao {
         Optional<Nft> nft = nftDao.getNFTById(idNft);
         if (!nft.isPresent())
             return Optional.empty();
-        long idNftLong;
+        int idNftLong;
         try {
-            idNftLong = Long.parseLong(idNft);
+            idNftLong = Integer.parseLong(idNft);
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -54,34 +54,34 @@ public class SellOrderJdbcDao implements SellOrderDao {
         sellOrderData.put("id_nft", idNftLong);
         sellOrderData.put("category", category);
 
-        long id = jdbcInsertSellOrder.executeAndReturnKey(sellOrderData).longValue();
+        int id = jdbcInsertSellOrder.executeAndReturnKey(sellOrderData).longValue();
 
         return Optional.of(new SellOrder(id, price, idNftLong, category));
     }
 
     @Override
-    public Optional<SellOrder> getOrderById(long id) {
+    public Optional<SellOrder> getOrderById(int id) {
         return jdbcTemplate.query("SELECT * FROM SellOrders WHERE id = ?", new Object[]{id}, ROW_MAPPER).stream().findFirst();
     }
 
     @Override
-    public boolean update(long id, String category, BigDecimal price) {
+    public boolean update(int id, String category, BigDecimal price) {
         String updateQuery = "UPDATE sellorders SET category = ?, price = ? WHERE id = ?";
             // returns the number of affected rows
         return jdbcTemplate.update(updateQuery, category, price, id) == 1;
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean delete(int id) {
         String updateQuery = "DELETE FROM sellorders WHERE id = ?";
         return jdbcTemplate.update(updateQuery, id) == 1;
     }
 
     @Override
-    public long getNftWithOrder(String id) {
+    public int getNftWithOrder(String id) {
         try {
-            long idToLong = Long.parseLong(id);
-            List<Long> nftId = jdbcTemplate.query("SELECT id_nft FROM sellorders WHERE id = ?", new Object[]{idToLong}, (rs , rn) -> rs.getLong("id_nft"));
+            int idToLong = Integer.parseLong(id);
+            List<Integer> nftId = jdbcTemplate.query("SELECT id_nft FROM sellorders WHERE id = ?", new Object[]{idToLong}, (rs , rn) -> rs.getLong("id_nft"));
             if(nftId.size() > 0)
                 return nftId.get(0);
             return -1;

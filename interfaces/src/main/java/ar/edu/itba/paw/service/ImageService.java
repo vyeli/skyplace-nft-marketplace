@@ -4,5 +4,5 @@ import ar.edu.itba.paw.model.Image;
 
 public interface ImageService {
 
-    Image getImage(long id);
+    Image getImage(int id);
 }

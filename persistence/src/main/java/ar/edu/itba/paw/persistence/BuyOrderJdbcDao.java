@@ -14,7 +14,7 @@ import java.util.*;
 public class BuyOrderJdbcDao implements BuyOrderDao{
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertBuyOrder;
-    private final long PAGE_SIZE = 5;
+    private final int PAGE_SIZE = 5;
 
     @Autowired
     public BuyOrderJdbcDao(DataSource ds) {
@@ -24,7 +24,7 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
     }
 
     @Override
-    public boolean create(long idSellOrder, BigDecimal price, long userId) {
+    public boolean create(int idSellOrder, BigDecimal price, int userId) {
         List<BigDecimal> buyOrder = jdbcTemplate.query("SELECT amount FROM buyorders WHERE id_sellorder = ? AND id_buyer = ?", new Object[]{idSellOrder, userId}, (rs, rn) -> rs.getBigDecimal("amount"));
 
         if(buyOrder.size()>0) {
@@ -41,13 +41,13 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
     }
 
     @Override
-    public List<BuyOrder> getOrdersBySellOrderId(String offerPage, long idSellOrder) {
-        long page;
+    public List<BuyOrder> getOrdersBySellOrderId(String offerPage, int idSellOrder) {
+        int page;
         if(offerPage == null)
             page = 1;
         else
             try {
-                page = Long.parseLong(offerPage);
+                page = Integer.parseLong(offerPage);
             } catch(Exception e) {
                 return Collections.emptyList();
             }
@@ -56,7 +56,7 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
 
         List<BuyOrder> res = jdbcTemplate.query("SELECT amount, id_buyer FROM buyorders WHERE id_sellorder = ? ORDER BY amount DESC LIMIT ? OFFSET ?", new Object[]{idSellOrder, PAGE_SIZE, (page-1)*PAGE_SIZE}, (rs, rowNum) -> {
            BigDecimal amount = rs.getBigDecimal("amount");
-           long idBuyer = rs.getLong("id_buyer");
+           int idBuyer = rs.getLong("id_buyer");
            return new BuyOrder(idSellOrder, amount, idBuyer);
         } );
 
@@ -64,16 +64,16 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
     }
 
     @Override
-    public long getAmountPagesBySellOrderId(long id_sellorder) {
-        Optional<Long> res = jdbcTemplate.query("SELECT (count(*)-1)/"+PAGE_SIZE+"+1 AS count FROM buyorders WHERE id_sellorder = ?", new Object[]{id_sellorder}, (rs , rowNum) -> rs.getLong("count")).stream().findFirst();
+    public int getAmountPagesBySellOrderId(int id_sellorder) {
+        Optional<Integer> res = jdbcTemplate.query("SELECT (count(*)-1)/"+PAGE_SIZE+"+1 AS count FROM buyorders WHERE id_sellorder = ?", new Object[]{id_sellorder}, (rs , rowNum) -> rs.getLong("count")).stream().findFirst();
         return res.isPresent() ? res.get():0;
     }
 
     @Override
     public void deleteBuyOrder(String sellOrder, String buyer) {
         try{
-            long sellOrderLong = Long.parseLong(sellOrder);
-            long buyerLong = Long.parseLong(buyer);
+            int sellOrderLong = Integer.parseLong(sellOrder);
+            int buyerLong = Integer.parseLong(buyer);
             jdbcTemplate.update("DELETE FROM buyorders WHERE id_sellorder = ? AND id_buyer = ?", sellOrderLong, buyerLong);
         }catch(Exception ignored){}
     }

@@ -9,7 +9,7 @@ public interface UserService {
 
     Optional<User> getUserByEmail(String email);
 
-    Optional<User> getUserById(long id);
+    Optional<User> getUserById(int id);
 
     Optional<User> getUserById(String id);
 

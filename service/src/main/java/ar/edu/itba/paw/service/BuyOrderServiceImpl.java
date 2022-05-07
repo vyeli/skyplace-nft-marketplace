@@ -30,7 +30,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public boolean create(long idSellOrder, BigDecimal price, long userId) {
+    public boolean create(int idSellOrder, BigDecimal price, int userId) {
         if(buyOrderDao.create(idSellOrder, price, userId)){
             BuyOrder buyOrder = new BuyOrder(idSellOrder, price, userId);
             SellOrder sellOrder = sellOrderDao.getOrderById(idSellOrder).get();
@@ -45,7 +45,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public List<BuyOffer> getOrdersBySellOrderId(String offerPage, long idSellOrder) {
+    public List<BuyOffer> getOrdersBySellOrderId(String offerPage, int idSellOrder) {
         List<BuyOrder> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder);
         List<BuyOffer> buyOffers = new ArrayList<>();
         buyOrders.forEach(buyOrder -> {
@@ -56,15 +56,15 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public long getAmountPagesBySellOrderId(long idSellOrder) {
+    public int getAmountPagesBySellOrderId(int idSellOrder) {
         return buyOrderDao.getAmountPagesBySellOrderId(idSellOrder);
     }
 
     @Override
     public void confirmBuyOrder(String sellOrder, int buyer) {
-        long sellOrderId;
+        int sellOrderId;
         try {
-            sellOrderId = Long.parseLong(sellOrder);
+            sellOrderId = Integer.parseLong(sellOrder);
         } catch(Exception e) {
             return;
         }

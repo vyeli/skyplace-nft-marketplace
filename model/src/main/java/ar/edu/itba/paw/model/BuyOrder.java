@@ -3,17 +3,17 @@ package ar.edu.itba.paw.model;
 import java.math.BigDecimal;
 
 public class BuyOrder {
-    private long idSellOrder;
+    private int idSellOrder;
     private BigDecimal amount;
-    private long idBuyer;
+    private int idBuyer;
 
-    public BuyOrder(long idSellOrder, BigDecimal amount, long idBuyer) {
+    public BuyOrder(int idSellOrder, BigDecimal amount, int idBuyer) {
         this.idSellOrder = idSellOrder;
         this.amount = amount;
         this.idBuyer = idBuyer;
     }
 
-    public long getIdSellOrder() {
+    public int getIdSellOrder() {
         return idSellOrder;
     }
 
@@ -23,7 +23,7 @@ public class BuyOrder {
         return new BigDecimal(amount.stripTrailingZeros().toPlainString());
     }
 
-    public long getIdBuyer() {
+    public int getIdBuyer() {
         return idBuyer;
     }
 }

@@ -28,7 +28,7 @@ public class ImageJdbcDao implements ImageDao{
     }
 
     @Override
-    public Optional<Long> createImage(MultipartFile image) {
+    public Optional<Integer> createImage(MultipartFile image) {
         try {
             byte[] bytes = image.getBytes();
             final Map<String, Object> imageData = new HashMap<>();
@@ -39,7 +39,7 @@ public class ImageJdbcDao implements ImageDao{
         }
     }
 
-    public Image getImage(long id) {
+    public Image getImage(int id) {
         List<byte[]> result = jdbcTemplate.query("SELECT image FROM images WHERE id_image = ?", new Object[]{id}, ROW_MAPPER);
         return result.size() > 0 ? new Image(result.get(0)): null;
     }

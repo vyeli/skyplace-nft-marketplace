@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 
 public class SellOrder {
 
-    private long id;
+    private int id;
     private String category;
     private BigDecimal price;
-    private long nftId;
+    private int nftId;
 
-    public SellOrder(long id, BigDecimal price, long nftId, String category) {
+    public SellOrder(int id, BigDecimal price, int nftId, String category) {
         this.id = id;
         this.price = price;
         this.category = category;
         this.nftId = nftId;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
@@ -30,7 +30,7 @@ public class SellOrder {
         return category;
     }
 
-    public long getNftId() {
+    public int getNftId() {
         return nftId;
     }
 
