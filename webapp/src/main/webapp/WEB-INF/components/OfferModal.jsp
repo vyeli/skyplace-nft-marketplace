@@ -2,9 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-
-<%-- TODO: mandar los inputs necesarios y usar PurchaseForm --%>
-
 <!-- Confirm Sell Modal -->
 <dialog class="relative p-4 rounded-lg text-center max-w-md" id="confirm-offer-modal">
     <button class="absolute top-4 right-6 font-bold text-slate-600" id="close-confirm-offer-modal">X</button>
@@ -37,7 +34,7 @@
   </form>
 </dialog>
 
-<script>
+<script defer>
     const confirmOfferModal = document.querySelector("#confirm-offer-modal")
     const closeConfirmOfferModal = document.querySelector("#close-confirm-offer-modal")
     const rejectOfferModal = document.querySelector("#reject-offer-modal")

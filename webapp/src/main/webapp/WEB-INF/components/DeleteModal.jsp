@@ -15,7 +15,7 @@
     </form>
 </dialog>
 
-<script>
+<script defer>
     const modal = document.querySelector("#delete-modal");
     const openModal = document.querySelector("#open-delete-modal");
     const closeModal = document.querySelector("#close-delete-modal");

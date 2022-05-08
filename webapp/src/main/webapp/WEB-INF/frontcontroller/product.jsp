@@ -227,7 +227,7 @@
                     <div class="mb-3 flex">
                         <!-- Collection -->
                         <div class="flex items-center">
-                            <a href="collection" class="text-accent mr-2 underline decoration-cyan-700 font-bold">Collection: <c:out value="${nft.collection}" /></a>
+                            <span class="text-accent mr-2 underline decoration-cyan-700 font-bold">Collection: <c:out value="${nft.collection}" /></span>
                             <span class=" bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                                   data-tippy-content="Verified Collection">
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
@@ -336,6 +336,7 @@
                             <c:choose>
                                 <c:when test="${sellOrder != null}">
                                     <span class="text-green font-bold tracking-tight">${sellOrder.price}</span>
+                                    <span id="priceTag" class="ml-4 text-slate-500 text-base">~ 600 USD</span>
                                 </c:when>
                                 <c:otherwise>
                                     <span class="text-green text-[1.1rem] font-bold tracking-tight">Not for sale</span>
@@ -372,9 +373,10 @@
                                         <path fill="#8A92B2" d="M420.1 1078.7l539.7 760.6v-441.7z"></path>
                                         <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
                                     </svg>
-                                    <form:input type="number" value="0" class="rounded-lg border-slate-300" min="0" step="0.000000000000000001" path="price" />
+                                    <form:input id="offerInput" type="number" value="0" class="rounded-lg border-slate-300" min="0" step="0.000000000000000001" path="price" />
                                 </label>
                                 <input type="submit" class="bg-cyan-600 shadow-accent-volume hover:bg-cyan-700 inline-block w-1/2 rounded-lg py-3 px-8 text-center font-semibold text-white transition-all cursor-pointer" value="Make offer">
+                                <span id="offerDisplay" class="ml-4 text-slate-500 text-base"></span>
                                 <form:errors path="price" element="p" cssStyle="color: tomato" />
                             </form:form>
                         </div>
@@ -405,5 +407,22 @@
         </c:otherwise>
     </c:choose>
 </c:if>
+
+<script type="module" defer>
+    const coingeckoApiEndpoint = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+
+    const response = await fetch(coingeckoApiEndpoint).catch(e => console.log(e))
+    const prices = await response.json()
+    const usdPrice = ${sellOrder.price} * prices.ethereum.usd
+    document.getElementById("priceTag").innerText = "~ " + usdPrice.toFixed(0) + " USD"
+
+    const offerInput = document.getElementById("offerInput")
+    const offerDisplay = document.getElementById("offerDisplay")
+
+    offerInput.addEventListener("keyup", e => {
+        const _usdPrice = e.target.value * prices.ethereum.usd
+        offerDisplay.innerText = "~ " + _usdPrice.toFixed(0) + " USD"
+    })
+</script>
 </body>
 </html>
