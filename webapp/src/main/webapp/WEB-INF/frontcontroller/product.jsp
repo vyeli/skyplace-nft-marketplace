@@ -375,7 +375,7 @@
                                     </svg>
                                     <form:input id="offerInput" type="number" value="0" class="rounded-lg border-slate-300" min="0" step="0.000000000000000001" path="price" />
                                 </label>
-                                <input type="submit" class="bg-cyan-600 shadow-accent-volume hover:bg-cyan-700 inline-block w-1/2 rounded-lg py-3 px-8 text-center font-semibold text-white transition-all cursor-pointer" value="Make offer">
+                                <input type="submit" class="bg-cyan-600 shadow-accent-volume hover:bg-cyan-700 inline-block w-1/2 rounded-lg py-3 px-8 text-center font-semibold text-white transition-all cursor-pointer" value="<spring:message code="product.makeOffer"/>">
                                 <span id="offerDisplay" class="ml-4 text-slate-500 text-base"></span>
                                 <form:errors path="price" element="p" cssStyle="color: tomato" />
                             </form:form>
@@ -388,20 +388,27 @@
     </section>
 </main>
 <%@ include file="../components/OfferModal.jsp" %>
+<spring:message code="product.deleteSellOrder" var="deleteSellOrder"/>
+<spring:message code="product.deleteSellOrderConfirm" var="deleteSellOrderConfirm"/>
+<spring:message code="product.deleteNft" var="deleteNft"/>
+<spring:message code="product.deleteNftConfirm" var="deleteNftConfirm"/>
+
 
 <c:if test="${currentUser.id == owner.id}">
     <c:choose>
         <c:when test="${sellOrder != null}">
+            <% request.setCharacterEncoding("utf-8"); %>
             <jsp:include page="../components/DeleteModal.jsp">
-                <jsp:param name="title" value="Delete Sell Order"/>
-                <jsp:param name="description" value="Are you sure you want to delete this sell order? All buy orders for this NFT will be lost."/>
+                <jsp:param name="title" value="${deleteSellOrder}"/>
+                <jsp:param name="description" value="${deleteSellOrderConfirm}"/>
                 <jsp:param name="deletePath" value="/sell/delete/${nft.id}"/>
             </jsp:include>
         </c:when>
         <c:otherwise>
+            <% request.setCharacterEncoding("utf-8"); %>
             <jsp:include page="../components/DeleteModal.jsp">
-                <jsp:param name="title" value="Delete NFT"/>
-                <jsp:param name="description" value="Are you sure you want to delete this NFT? This action is irreversible."/>
+                <jsp:param name="title" value="${deleteNft}"/>
+                <jsp:param name="description" value="${deleteNftConfirm}"/>
                 <jsp:param name="deletePath" value="/product/delete/${nft.id}"/>
             </jsp:include>
         </c:otherwise>

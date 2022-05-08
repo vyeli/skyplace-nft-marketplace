@@ -100,5 +100,24 @@ public class WebConfig extends WebMvcConfigurationSupport {
         return messageSource;
     }
 
+    //FIXME: CHANGE LANGUAGE NOT WORKING
+//    @Bean
+//    public LocaleResolver localeResolver() {
+//        CookieLocaleResolver slr = new CookieLocaleResolver();
+//        return slr;
+//    }
+//
+//    @Bean
+//    public LocaleChangeInterceptor localeChangeInterceptor() {
+//        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+//        lci.setParamName("lang");
+//        return lci;
+//    }
+//
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(localeChangeInterceptor());
+//    }
+
 
 }

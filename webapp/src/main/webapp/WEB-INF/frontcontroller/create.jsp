@@ -12,6 +12,12 @@
     <h1 class="text-3xl text-center">
         <spring:message code="create.create"/>
     </h1>
+
+    <c:set var="nftName"><spring:message code="create.nftName"/></c:set>
+    <c:set var="nftDescription"><spring:message code="create.nftDescription"/></c:set>
+
+
+
     <c:url value="/create" var="postPath"/>
     <form:form modelAttribute="createNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
         <form:label path="name" class="flex flex-col gap-1">
@@ -21,7 +27,7 @@
                     path="name"
                     required="true"
                     autoComplete="off"
-                    placeholder="Nft name"
+                    placeholder="${nftName}"
                     class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
             />
             <form:errors path="name" element="p" cssStyle="color: tomato" />
@@ -93,7 +99,7 @@
             <form:textarea
                     path="description"
                     autoComplete="off"
-                    placeholder="Nft description"
+                    placeholder="${nftDescription}"
                     class="min-h-16 max-h-32 pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
             />
         </form:label>
