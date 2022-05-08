@@ -243,6 +243,10 @@
 <script>
     const params = new URLSearchParams(window.location.search)
 
+    if(params.get("category") != null) {
+        document.querySelector("input[value='onSale']").checked = true
+    }
+
     for(const param of params.values()) {
         const paramList = param.split(",")
         for (const item of paramList) {

@@ -23,14 +23,17 @@
             </c:when>
             <c:otherwise>
                 <div class="flex h-8 items-center">
-                    <span><spring:message code="card.noSale"/></span>
+                    <span class="min-w-max"><spring:message code="card.noSale"/></span>
                 </div>
             </c:otherwise>
         </c:choose>
     </div>
     <!-- Seller email -->
-    <p class="pt-1 pb-4 px-4 text-sm rounded-b-lg text-slate-500 border-x border-b border-gray-300">
+    <p class="flex justify-between pt-1 pb-4 px-4 text-sm rounded-b-lg text-slate-500 border-x border-b border-gray-300">
         <span class="max-w-[40ch] inline-block truncate"><c:out value="${param.sellerEmail}" /></span>
+        <c:if test="${param.onSale}">
+            <span class="min-w-max">${param.category}</span>
+        </c:if>
     </p>
     <!-- Fav button -->
     <c:if test="${param.isFaved != null}">
