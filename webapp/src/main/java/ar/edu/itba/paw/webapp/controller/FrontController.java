@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -181,7 +182,14 @@ public class FrontController {
 
     /* Product Detail */
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
+    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) throws UnsupportedEncodingException {
+        try {
+            request.setCharacterEncoding("utf-8");
+        }
+        catch(UnsupportedEncodingException e) {
+            LOGGER.error(String.valueOf(e));
+        }
+        request.setCharacterEncoding("utf-8");
         int parsedProductId = parseInt(productId);
         int parsedOfferPage = offerPage == null ? 1 : parseInt(offerPage);
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
@@ -248,9 +256,16 @@ public class FrontController {
     }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage) {
+    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) throws UnsupportedEncodingException {
+        try {
+            request.setCharacterEncoding("utf-8");
+        }
+        catch(UnsupportedEncodingException e) {
+            LOGGER.error(String.valueOf(e));
+        }
+
         if (errors.hasErrors()) {
-            return product(form, productId, offerPage);
+            return product(form, productId, offerPage, request);
         }
         int parsedProductId = parseInt(productId);
 
@@ -262,7 +277,7 @@ public class FrontController {
             throw new UserNoPermissionException();
         buyOrderService.create(sellOrder.getId(), form.getPrice(), currentUser.getId());
 
-        ModelAndView mav = product(form, productId, offerPage);
+        ModelAndView mav = product(form, productId, offerPage, request);
         mav.addObject("emailSent", true);
         return mav;
     }

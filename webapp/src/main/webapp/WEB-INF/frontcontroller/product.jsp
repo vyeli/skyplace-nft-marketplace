@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
@@ -336,10 +336,10 @@
                             <c:choose>
                                 <c:when test="${sellOrder != null}">
                                     <span class="text-green font-bold tracking-tight">${sellOrder.price}</span>
-                                    <span id="priceTag" class="ml-4 text-slate-500 text-base">~ 600 USD</span>
+                                    <span id="priceTag" class="ml-4 text-slate-500 text-base"></span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="text-green text-[1.1rem] font-bold tracking-tight">Not for sale</span>
+                                    <span class="text-green text-[1.1rem] font-bold tracking-tight"><spring:message code="product.notforsale"/></span>
                                 </c:otherwise>
                             </c:choose>
                         </div>
@@ -397,7 +397,6 @@
 <c:if test="${currentUser.id == owner.id}">
     <c:choose>
         <c:when test="${sellOrder != null}">
-            <% request.setCharacterEncoding("utf-8"); %>
             <jsp:include page="../components/DeleteModal.jsp">
                 <jsp:param name="title" value="${deleteSellOrder}"/>
                 <jsp:param name="description" value="${deleteSellOrderConfirm}"/>
@@ -405,7 +404,6 @@
             </jsp:include>
         </c:when>
         <c:otherwise>
-            <% request.setCharacterEncoding("utf-8"); %>
             <jsp:include page="../components/DeleteModal.jsp">
                 <jsp:param name="title" value="${deleteNft}"/>
                 <jsp:param name="description" value="${deleteNftConfirm}"/>
