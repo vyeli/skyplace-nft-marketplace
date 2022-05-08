@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
         "ar.edu.itba.paw.service",
         "ar.edu.itba.paw.persistence"
 })
-
 @EnableAsync
 @EnableWebMvc
 @Configuration

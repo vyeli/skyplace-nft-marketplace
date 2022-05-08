@@ -65,9 +65,6 @@ public class FavoriteJdbcDao implements FavoriteDao {
 
     @Override
     public int getNftFavorites(int productId) {
-        List<Integer> res = jdbcTemplate.query("SELECT count(*) FROM favorited WHERE id_nft=?", new Object[]{productId}, (rs, rownum) -> rs.getInt("count"));
-        if(res.size() > 0)
-            return res.get(0);
-        return 0;
+        return jdbcTemplate.query("SELECT count(*) AS count FROM favorited WHERE id_nft=?", new Object[]{productId}, (rs, rownum) -> rs.getInt("count")).stream().findFirst().orElse(0);
     }
 }

@@ -6,6 +6,7 @@ import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.NftDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -25,6 +26,7 @@ public class NftServiceImpl implements NftService{
         this.sellOrderService = sellOrderService;
     }
 
+    @Transactional
     @Override
     public Optional<Nft> create(int nftId, String contractAddr, String nftName, String chain, MultipartFile image, int idOwner, String collection, String description, String[] properties) {
         return nftDao.create(nftId, contractAddr, nftName, chain, image, idOwner, collection, description, properties);

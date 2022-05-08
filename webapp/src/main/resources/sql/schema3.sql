@@ -57,3 +57,10 @@ ALTER TABLE favorited ADD CONSTRAINT favorited_unique UNIQUE(user_id, id_nft);
 ALTER TABLE sellorders ADD CONSTRAINT nft_unique UNIQUE(id_nft);
 
 ALTER TABLE buyorders ADD CONSTRAINT buyorder_unique UNIQUE(id_sellorder, id_buyer);
+
+ALTER TABLE nfts ADD FOREIGN KEY (id_owner) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE sellorders ADD FOREIGN KEY (category) REFERENCES categories(category) ON DELETE CASCADE;
+ALTER TABLE purchases DROP CONSTRAINT purchases_id_buyer_fkey;
+ALTER TABLE purchases DROP CONSTRAINT purchases_id_seller_fkey;
+ALTER TABLE purchases ADD FOREIGN KEY (id_buyer) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE purchases ADD FOREIGN KEY (id_seller) REFERENCES users(id) ON DELETE CASCADE;

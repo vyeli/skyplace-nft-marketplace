@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
@@ -77,7 +78,7 @@ public class NftJdbcDao implements NftDao{
         this.imageDao = imageDao;
     }
 
-    private Nft createNftFromResultSet(ResultSet rs) throws SQLException {
+    protected Nft createNftFromResultSet(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         int idNft = rs.getInt("nftId");
         String contractAddr = rs.getString("contractAddr");
@@ -127,7 +128,7 @@ public class NftJdbcDao implements NftDao{
         return jdbcTemplate.query(SELECT_NFT_QUERY+" WHERE nfts.id=?", new Object[]{nftId}, SELECT_NFT_MAPPER).stream().findFirst();
     }
 
-    private Pair<StringBuilder, List<Object>> applyFilter(String columnName, String filter) {
+    protected Pair<StringBuilder, List<Object>> applyFilter(String columnName, String filter) {
         if(filter == null || filter.equals(""))
             return null;
         StringBuilder sb = new StringBuilder();
@@ -146,7 +147,7 @@ public class NftJdbcDao implements NftDao{
         return new Pair<>(sb, args);
     }
 
-    private Pair<StringBuilder, List<Object>> buildFilterQuery(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort) {
+    protected Pair<StringBuilder, List<Object>> buildFilterQuery(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort) {
         StringBuilder sb = new StringBuilder();
         List<Object> args = new ArrayList<>();
         sb.append(" WHERE true ");
@@ -177,11 +178,11 @@ public class NftJdbcDao implements NftDao{
             args.addAll(applyChainFilter.getRight());
         }
 
-        if(minPrice.compareTo(new BigDecimal(0)) > 0) {
+        if(minPrice != null && minPrice.compareTo(new BigDecimal(0)) > 0) {
             sb.append(" AND price >= ? ");
             args.add(minPrice);
         }
-        if(maxPrice.compareTo(new BigDecimal(0)) > 0) {
+        if(maxPrice != null && maxPrice.compareTo(new BigDecimal(0)) > 0) {
             sb.append(" AND price <=  ? ");
             args.add(maxPrice);
         }
@@ -202,7 +203,7 @@ public class NftJdbcDao implements NftDao{
         return new Pair<>(sb, args);
     }
 
-    private Pair<StringBuilder, List<Object>> buildQueryPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, User currentUser) {
+    protected Pair<StringBuilder, List<Object>> buildQueryPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, User currentUser) {
         StringBuilder sb = new StringBuilder(SELECT_PUBLICATION_QUERY);
         List<Object> args = new ArrayList<>();
         if (currentUser != null)
@@ -232,7 +233,7 @@ public class NftJdbcDao implements NftDao{
         return result;
     }
 
-    private List<Publication> applySearchAlgorithms(List<Publication> publications, String search) {
+    protected List<Publication> applySearchAlgorithms(List<Publication> publications, String search) {
         JaroWinklerSimilarity jaroWinkler = new JaroWinklerSimilarity();
 
         if(search != null && !search.equals(""))
@@ -279,7 +280,7 @@ public class NftJdbcDao implements NftDao{
     }
 
     // Code extracted from https://github.com/crwohlfeil/damerau-levenshtein/blob/master/src/main/java/com/codeweasel/DamerauLevenshtein.java
-    private int calculateDistance(CharSequence source, CharSequence target) {
+    protected int calculateDistance(CharSequence source, CharSequence target) {
         if (source == null || target == null) {
             throw new IllegalArgumentException("Parameter must not be null");
         }
@@ -309,7 +310,7 @@ public class NftJdbcDao implements NftDao{
         return dist[sourceLength][targetLength];
     }
 
-    private static class Pair<T, U> {
+    protected static class Pair<T, U> {
         private final T left;
         private final U right;
 

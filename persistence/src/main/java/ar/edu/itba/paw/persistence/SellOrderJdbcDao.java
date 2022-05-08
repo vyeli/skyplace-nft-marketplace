@@ -73,9 +73,7 @@ public class SellOrderJdbcDao implements SellOrderDao {
 
     @Override
     public int getNftWithOrder(int id) {
-        List<Integer> nftId = jdbcTemplate.query("SELECT id_nft FROM sellorders WHERE id = ?", new Object[]{id}, (rs , rn) -> rs.getInt("id_nft"));
-        if(nftId.size() > 0)
-            return nftId.get(0);
-        return -1;
+        Optional<Integer> nftId = jdbcTemplate.query("SELECT id_nft FROM sellorders WHERE id = ?", new Object[]{id}, (rs , rn) -> rs.getInt("id_nft")).stream().findFirst();
+        return nftId.orElse(-1);
     }
 }
