@@ -389,7 +389,7 @@
 
 <c:if test="${currentUser.id == owner.id}">
     <c:choose>
-        <c:when test="${sellorder != null}">
+        <c:when test="${sellOrder != null}">
             <jsp:include page="../components/DeleteModal.jsp">
                 <jsp:param name="title" value="Delete Sell Order"/>
                 <jsp:param name="description" value="Are you sure you want to delete this sell order? All buy orders for this NFT will be lost."/>

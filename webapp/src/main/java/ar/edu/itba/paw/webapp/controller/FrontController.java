@@ -112,7 +112,7 @@ public class FrontController {
         final ModelAndView mav = new ModelAndView("frontcontroller/sell");
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
         User user = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
-        if(nft.getIdOwner() != user.getId())
+        if (nft.getIdOwner() != user.getId())
             throw new UserIsNotNftOwnerException();
         mav.addObject("nft", nft);
 
@@ -127,7 +127,7 @@ public class FrontController {
             return createSellOrderForm(form, productId);
 
         int parsedProductId = parseInt(productId);
-        if(!nftService.currentUserOwnsNft(parsedProductId))
+        if (!nftService.currentUserOwnsNft(parsedProductId))
             throw new UserIsNotNftOwnerException();
         SellOrder sellOrder = sellOrderService.create(form.getPrice(), parsedProductId, form.getCategory()).orElseThrow(CreateSellOrderException::new);
         return new ModelAndView("redirect:/product/" + sellOrder.getNftId());
@@ -228,7 +228,7 @@ public class FrontController {
         int parsedBuyerId = parseInt(buyerId);
         int parsedSeller = parseInt(seller);
         int parsedProductId = parseInt(productId);
-        if(nftService.currentUserOwnsNft(parsedProductId))
+        if (!nftService.currentUserOwnsNft(parsedProductId))
             throw new UserIsNotNftOwnerException();
         buyOrderService.confirmBuyOrder(parsedSellOrderId, parsedBuyerId, parsedSeller, parsedProductId, price);
 
@@ -270,7 +270,7 @@ public class FrontController {
     @RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
     public ModelAndView deleteNft(@PathVariable String productId) {
         int parsedProductId = parseInt(productId);
-        if(nftService.currentUserOwnsNft(parsedProductId))
+        if (!nftService.currentUserOwnsNft(parsedProductId))
             throw new UserIsNotNftOwnerException();
         nftService.delete(parsedProductId);
 

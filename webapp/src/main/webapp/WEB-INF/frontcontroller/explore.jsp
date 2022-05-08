@@ -244,7 +244,10 @@
     const params = new URLSearchParams(window.location.search)
 
     for(const param of params.values()) {
-        document.querySelector("input[value='" + param + "']").checked = true
+        const paramList = param.split(",")
+        for (const item of paramList) {
+            document.querySelector("input[value='" + item + "']").checked = true
+        }
     }
 
     document.getElementById("closeFilter").addEventListener('click', () => {
