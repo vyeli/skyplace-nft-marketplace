@@ -11,7 +11,9 @@ public interface PurchaseDao {
 
     List<Purchase> getUserPurchases(int userId);
 
-    List<Purchase> getAllTransactions(int userId);
+    List<Purchase> getAllTransactions(int userId, int page, int pageSize);
+
+    int getAmountPagesByUserId(int userId, int pageSize);
 
     int createPurchase(int idBuyer, int idSeller, int idNft, BigDecimal price);
 

@@ -28,7 +28,6 @@ public class NftJdbcDao implements NftDao{
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertNft;
     private final ImageDao imageDao;
-    private final int PAGE_SIZE = 12;
     private final static Double JARO_WINKLER_UMBRAL = 0.8;
     private final String NFT_SQL_VARIABLES = " nfts.id AS id , nft_id AS nftId, contract_addr AS contractAddr, nft_name AS nftName, chain, id_image AS idImage, id_owner AS idOwner, collection, description, properties, sellorders.id AS sellOrderId ";
     private final String SELECT_NFT_QUERY =
@@ -218,14 +217,16 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
+    public List<Publication> getAllPublications(int page, int pageSize, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
         Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, sort, currentUser);
         StringBuilder sb = queryBuilder.getLeft();
         List<Object> args = queryBuilder.getRight();
 
         sb.append(" LIMIT ? OFFSET ? ");
-        args.add(PAGE_SIZE);
-        args.add((page-1)*PAGE_SIZE);
+        if(page < 0)
+            page = 0;
+        args.add(pageSize);
+        args.add(pageSize * (page-1));
 
         List<Publication> result = jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
         result = applySearchAlgorithms(result, search);
@@ -242,7 +243,7 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
+    public List<Publication> getAllPublicationsByUser(int page, int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale, String sort) {
         StringBuilder sb = new StringBuilder(SELECT_PUBLICATION_QUERY);
         List<Object> args = new ArrayList<>();
         args.add(currentUser != null ? currentUser.getId():0);
@@ -254,6 +255,24 @@ public class NftJdbcDao implements NftDao{
             sb.append(" AND favorited.user_id IS NOT NULL ");
         if(onlyOnSale)
             sb.append(" AND sellorders.id IS NOT NULL ");
+
+        switch (sort) {
+            case "priceAsc":
+                sb.append(" ORDER BY price ");
+                break;
+            case "priceDsc":
+                sb.append(" ORDER BY price DESC ");
+                break;
+            case "noSort":
+                break;
+            default:
+                sb.append(" ORDER BY nftName ");
+                break;
+        }
+
+        sb.append("LIMIT ? OFFSET ?");
+        args.add(pageSize);
+        args.add(pageSize * (page-1));
 
         return jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
     }
@@ -267,6 +286,33 @@ public class NftJdbcDao implements NftDao{
         List<Publication> result = jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
         result = applySearchAlgorithms(result, search);
         return result.size();
+    }
+
+    @Override
+    public int getAmountPublicationPagesByUser(int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
+        StringBuilder sb = new StringBuilder("SELECT (count(*)-1)/?+1 AS count" +
+                " FROM" +
+                " nfts" +
+                " LEFT OUTER JOIN sellorders" +
+                " ON nfts.id=sellorders.id_nft" +
+                " JOIN users" +
+                " ON id_owner=users.id" +
+                " LEFT OUTER JOIN favorited" +
+                " ON (favorited.user_id=? AND favorited.id_nft=nfts.id) ");
+        List<Object> args = new ArrayList<>();
+        args.add(pageSize);
+        args.add(currentUser != null ? currentUser.getId():0);
+        sb.append(" WHERE TRUE ");
+        if(!onlyFaved) {
+            sb.append(" AND id_owner=? ");
+            args.add(user.getId());
+        } else
+            sb.append(" AND favorited.user_id IS NOT NULL ");
+        if(onlyOnSale)
+            sb.append(" AND sellorders.id IS NOT NULL ");
+
+        Optional<Integer> res = jdbcTemplate.query(sb.toString(), args.toArray(), (rs , rowNum) -> rs.getInt("count")).stream().findFirst();
+        return res.orElse(0);
     }
 
     @Override

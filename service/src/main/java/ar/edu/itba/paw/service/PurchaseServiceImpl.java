@@ -12,10 +12,16 @@ import java.util.List;
 public class PurchaseServiceImpl implements PurchaseService {
 
     private final PurchaseDao purchaseDao;
+    private final int pageSize = 8;
 
     @Autowired
     public PurchaseServiceImpl(PurchaseDao purchaseDao) {
         this.purchaseDao = purchaseDao;
+    }
+
+    @Override
+    public int getPageSize() {
+        return pageSize;
     }
 
     @Override
@@ -29,8 +35,13 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public List<Purchase> getAllTransactions(int userId) {
-        return purchaseDao.getAllTransactions(userId);
+    public int getAmountPagesByUserId(int userId) {
+        return purchaseDao.getAmountPagesByUserId(userId, pageSize);
+    }
+
+    @Override
+    public List<Purchase> getAllTransactions(int userId, int page) {
+        return purchaseDao.getAllTransactions(userId, page, pageSize);
     }
 
     @Override

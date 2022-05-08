@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class PurchaseJdbcDao implements PurchaseDao {
@@ -44,7 +45,7 @@ public class PurchaseJdbcDao implements PurchaseDao {
     @Override
     public List<Purchase> getUserSales(int userId) {
         return jdbcTemplate.query(
-            "SELECT * FROM purchases WHERE id_seller=? ORDER BY buy_date DESC",
+            "SELECT count(*) FROM purchases WHERE id_seller=? GROUP BY id, buy_date ORDER BY buy_date DESC",
                 new Object[]{ userId },
                 ROW_MAPPER
         );
@@ -60,10 +61,16 @@ public class PurchaseJdbcDao implements PurchaseDao {
     }
 
     @Override
-    public List<Purchase> getAllTransactions(int userId) {
+    public int getAmountPagesByUserId(int userId, int pageSize) {
+        Optional<Integer> res = jdbcTemplate.query("SELECT (count(*)-1)/?+1 AS count FROM purchases WHERE id_buyer = ? OR id_seller = ?", new Object[]{ pageSize, userId, userId }, (rs , rowNum) -> rs.getInt("count")).stream().findFirst();
+        return res.orElse(0);
+    }
+
+    @Override
+    public List<Purchase> getAllTransactions(int userId, int page, int pageSize) {
         return jdbcTemplate.query(
-                "SELECT * FROM purchases WHERE id_buyer = ? OR id_seller = ? ORDER BY buy_date DESC",
-                new Object[]{ userId, userId },
+                "SELECT * FROM purchases WHERE id_buyer = ? OR id_seller = ? ORDER BY buy_date DESC LIMIT ? OFFSET ?",
+                new Object[]{ userId, userId, pageSize, pageSize * (page-1)},
                 ROW_MAPPER
         );
     }

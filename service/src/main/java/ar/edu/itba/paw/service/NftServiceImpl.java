@@ -16,6 +16,7 @@ import java.util.Optional;
 @Service
 public class NftServiceImpl implements NftService{
     private final NftDao nftDao;
+    private final int pageSize = 12;
     private final UserService userService;
     private final SellOrderService sellOrderService;
 
@@ -33,6 +34,11 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    @Override
     public Optional<Nft> getNFTById(int nftId) {
         return nftDao.getNFTById(nftId);
     }
@@ -40,17 +46,22 @@ public class NftServiceImpl implements NftService{
     @Override
     public List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search) {
         User currentUser = userService.getCurrentUser().orElse(null);
-        return nftDao.getAllPublications(page, status, category, chain, minPrice, maxPrice, sort, search, currentUser);
+        return nftDao.getAllPublications(page, pageSize, status, category, chain, minPrice, maxPrice, sort, search, currentUser);
     }
 
     @Override
-    public List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
-        return nftDao.getAllPublicationsByUser(page, user, currentUser, onlyFaved, onlyOnSale);
+    public List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale, String sort) {
+        return nftDao.getAllPublicationsByUser(page, pageSize, user, currentUser, onlyFaved, onlyOnSale, sort);
     }
 
     @Override
     public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
         return nftDao.getAmountPublications(status, category, chain, minPrice, maxPrice, search);
+    }
+
+    @Override
+    public int getAmountPublicationPagesByUser(User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
+        return nftDao.getAmountPublicationPagesByUser(pageSize, user, currentUser, onlyFaved, onlyOnSale);
     }
 
     @Override

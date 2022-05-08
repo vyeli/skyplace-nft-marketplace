@@ -139,7 +139,7 @@ public class NftJdbcDaoTest {
             jdbcInsertNft.execute(nftData);
         }
 
-        List<Publication> publications = nftJdbcDao.getAllPublications(1, "notSale", null, "Ethereum", null, null, "priceAsc", null, null);
+        List<Publication> publications = nftJdbcDao.getAllPublications(1, 12, "notSale", null, "Ethereum", null, null, "priceAsc", null, null);
 
         assertEquals(5, publications.size());
     }
@@ -160,7 +160,7 @@ public class NftJdbcDaoTest {
             jdbcInsertNft.execute(nftData);
         }
 
-        List<Publication> publications = nftJdbcDao.getAllPublications(1, "onSale,notSale", null, "Ethereum", null, null, "priceDsc", null, null);
+        List<Publication> publications = nftJdbcDao.getAllPublications(1, 12, "onSale,notSale", null, "Ethereum", null, null, "priceDsc", null, null);
 
         assertEquals(12, publications.size());
     }
@@ -181,7 +181,7 @@ public class NftJdbcDaoTest {
             jdbcInsertNft.execute(nftData);
         }
 
-        List<Publication> publications = nftJdbcDao.getAllPublications(1, "onSale", "Other,Art", "Ethereum", new BigDecimal(1), new BigDecimal(2), "name", "abc", new User(0, ""));
+        List<Publication> publications = nftJdbcDao.getAllPublications(1, 12, "onSale", "Other,Art", "Ethereum", new BigDecimal(1), new BigDecimal(2), "name", "abc", new User(0, ""));
 
         assertEquals(0, publications.size());
     }
@@ -203,7 +203,7 @@ public class NftJdbcDaoTest {
         }
         User user = new User(ID_OWNER, "");
 
-        List<Publication> publications = nftJdbcDao.getAllPublicationsByUser(1, user, null, false, false);
+        List<Publication> publications = nftJdbcDao.getAllPublicationsByUser(1, 12, user, null, false, false, "noSort");
 
         assertEquals(5, publications.size());
     }

@@ -91,7 +91,7 @@ public class PurchaseJdbcDaoTest {
         purchasesData.put("id_seller", USER_ID);
         purchaseJdbcInsert.execute(purchasesData);
 
-        List<Purchase> purchases = purchaseJdbcDao.getAllTransactions(USER_ID);
+        List<Purchase> purchases = purchaseJdbcDao.getAllTransactions(USER_ID, 1, 12);
 
         assertNotNull(purchases);
         assertEquals(2, purchases.size());

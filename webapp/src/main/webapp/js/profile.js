@@ -1,24 +1,3 @@
-const tabs = {
-    inventory: document.getElementById('inventoryTab'),
-    selling: document.getElementById('sellingTab'),
-    favorited: document.getElementById('favoritedTab'),
-    history: document.getElementById('historyTab'),
-}
-
-window.onload = function setDefaultTab() {
-    const params = new URLSearchParams(window.location.search)
-    const currentTab = params.get('tab') || "inventory"
-    Object.entries(tabs).forEach(([tab, elem]) => tab === currentTab ? setActiveTab(tabs[currentTab]) : setInactiveTab(elem))
-}
-
-function setActiveTab(tab){
-    tab.classList.add('text-cyan-600', 'border-cyan-600', 'active')
-}
-
-function setInactiveTab(tab){
-    tab.classList.add('border-transparent', 'hover:text-gray-600')
-}
-
 function copyToClipboard(){
     // Copy text
     const walletAddress = document.getElementById("walletId").textContent;

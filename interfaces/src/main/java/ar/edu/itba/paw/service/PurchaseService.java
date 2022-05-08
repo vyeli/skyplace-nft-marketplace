@@ -7,11 +7,15 @@ import java.util.List;
 
 public interface PurchaseService {
 
+    int getPageSize();
+
     List<Purchase> getUserSales(int userId);
 
     List<Purchase> getUserPurchases(int userId);
 
-    List<Purchase> getAllTransactions(int userId);
+    List<Purchase> getAllTransactions(int userId, int page);
+
+    int getAmountPagesByUserId(int userId);
 
     int createPurchase(int idBuyer, int idSeller, int idNft, BigDecimal price);
 

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 
 <html>
@@ -8,9 +9,10 @@
 <body class="min-h-screen flex flex-col max-w-[100vw]">
 <!-- Header -->
 <%@ include file="../components/navbar.jsp" %>
-<div class="flex flex-col flex-wrap pb-8 gap-8 mt-8 mx-10 lg:mx-24 xl:mx-40">
+<div class="flex flex-col flex-wrap pb-8 gap-8 mx-10 lg:mx-24 xl:mx-40">
+    <c:url value='/profile/${userId}' var="profilePath"/>
     <!-- Profile -->
-    <div class="flex flex-col flex-grow md:flex-row items-center mt-5 mb-2">
+    <div class="flex flex-col flex-grow md:flex-row items-center mt-10">
         <img class="rounded-full h-40 w-40" src="<c:url value='/resources/profile_picture.png' />" alt="profile_icon"/>
         <!-- Profile info -->
         <div class="flex flex-col mt-5 md:ml-5 md:mt-0 items-start justify-center gap-3">
@@ -53,45 +55,170 @@
             -->
         </div>
     </div>
+
     <!-- Tabs -->
     <div class="flex border-b border-gray-200">
         <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500 dark:text-gray-400">
-            <li>
-                <a href="<c:url value='/profile/${user.id}'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="inventoryTab">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    <spring:message code="profile.inventory"/>
-                </a>
-            </li>
-            <li>
-                <a href="<c:url value='/profile/${user.id}?tab=selling'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="sellingTab">
-                    <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
-                        <circle cx="176" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
-                        <circle cx="400" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
-                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M48 80h64l48 272h256"></path>
-                        <path d="M160 288h249.44a8 8 0 007.85-6.43l28.8-144a8 8 0 00-7.85-9.57H128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
-                    </svg>
-                    <spring:message code="profile.selling"/>
-                </a>
-            </li>
-            <c:if test="${isOwner}">
-                <li>
-                    <a href="<c:url value='/profile/${user.id}?tab=favorited'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="favoritedTab">
-                        <svg class="mr-2 h-6 w-6" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M26.0502 5.76252C25.4117 5.12378 24.6537 4.61708 23.8193 4.27138C22.985 3.92568 22.0908 3.74774 21.1877 3.74774C20.2845 3.74774 19.3903 3.92568 18.556 4.27138C17.7216 4.61708 16.9636 5.12378 16.3252 5.76252L15.0002 7.08752L13.6751 5.76252C12.3855 4.47291 10.6364 3.74841 8.81265 3.74841C6.98886 3.74841 5.23976 4.47291 3.95015 5.76252C2.66053 7.05214 1.93604 8.80123 1.93604 10.625C1.93604 12.4488 2.66053 14.1979 3.95015 15.4875L5.27515 16.8125L15.0002 26.5375L24.7252 16.8125L26.0502 15.4875C26.6889 14.8491 27.1956 14.091 27.5413 13.2567C27.887 12.4224 28.0649 11.5281 28.0649 10.625C28.0649 9.72191 27.887 8.82765 27.5413 7.99333C27.1956 7.15901 26.6889 6.40097 26.0502 5.76252V5.76252Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <!-- Inventory -->
+            <c:set var="activeClasses" value="border-b-2 border-cyan-600 text-cyan-600 active"/>
+            <c:set var="inactiveClasses" value="border-transparent hover:text-gray-600"/>
+            <c:choose>
+                <c:when test="${showInventory}">
+                    <c:set var="inventoryClasses" value="${activeClasses}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="inventoryClasses" value="${inactiveClasses}"/>
+                </c:otherwise>
+            </c:choose>
+            <c:choose>
+                <c:when test="${showSelling}">
+                    <c:set var="sellingClasses" value="${activeClasses}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="sellingClasses" value="${inactiveClasses}"/>
+                </c:otherwise>
+            </c:choose>
+            <c:choose>
+                <c:when test="${showFavorited}">
+                    <c:set var="favoritedClasses" value="${activeClasses}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="favoritedClasses" value="${inactiveClasses}"/>
+                </c:otherwise>
+            </c:choose>
+            <c:choose>
+                <c:when test="${showHistory}">
+                    <c:set var="historyClasses" value="${activeClasses}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="historyClasses" value="${inactiveClasses}"/>
+                </c:otherwise>
+            </c:choose>
+
+            <!-- Inventory -->
+            <li class="${inventoryClasses}">
+                <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                    <form:button type="submit" path="tab" name="tab" value="inventory" class="flex">
+                        <svg class="mr-2 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                         </svg>
-                        <spring:message code="profile.favorited"/>
-                    </a>
+                        <spring:message code="profile.inventory"/>
+                    </form:button>
+                    <form:hidden path="sort" value="${sortValue}"/>
+                    <form:hidden path="page" value="${currentPage}"/>
+                </form:form>
+            </li>
+            <!-- Selling -->
+            <li class="${sellingClasses}">
+                <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                    <form:button type="submit" path="tab" name="tab" value="selling" class="flex">
+                        <svg class="mr-2 h-6 w-6" viewBox="0 0 512 512">
+                            <circle cx="176" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
+                            <circle cx="400" cy="416" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></circle>
+                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M48 80h64l48 272h256"></path>
+                            <path d="M160 288h249.44a8 8 0 007.85-6.43l28.8-144a8 8 0 00-7.85-9.57H128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path>
+                        </svg>
+                        <spring:message code="profile.selling"/>
+                    </form:button>
+                    <form:hidden path="sort" value="${sortValue}"/>
+                    <form:hidden path="page" value="${currentPage}"/>
+                </form:form>
+            </li>
+            <!-- Favorited -->
+            <c:if test="${isOwner}">
+                <li class="${favoritedClasses}">
+                    <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                        <form:button type="submit" path="tab" name="tab" value="favorited" class="flex">
+                            <svg class="mr-2 h-6 w-6" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M26.0502 5.76252C25.4117 5.12378 24.6537 4.61708 23.8193 4.27138C22.985 3.92568 22.0908 3.74774 21.1877 3.74774C20.2845 3.74774 19.3903 3.92568 18.556 4.27138C17.7216 4.61708 16.9636 5.12378 16.3252 5.76252L15.0002 7.08752L13.6751 5.76252C12.3855 4.47291 10.6364 3.74841 8.81265 3.74841C6.98886 3.74841 5.23976 4.47291 3.95015 5.76252C2.66053 7.05214 1.93604 8.80123 1.93604 10.625C1.93604 12.4488 2.66053 14.1979 3.95015 15.4875L5.27515 16.8125L15.0002 26.5375L24.7252 16.8125L26.0502 15.4875C26.6889 14.8491 27.1956 14.091 27.5413 13.2567C27.887 12.4224 28.0649 11.5281 28.0649 10.625C28.0649 9.72191 27.887 8.82765 27.5413 7.99333C27.1956 7.15901 26.6889 6.40097 26.0502 5.76252V5.76252Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <spring:message code="profile.favorited"/>
+                        </form:button>
+                        <form:hidden path="sort" value="${sortValue}"/>
+                        <form:hidden path="page" value="${currentPage}"/>
+                    </form:form>
                 </li>
             </c:if>
-            <li>
-                <a href="<c:url value='/profile/${user.id}?tab=history'/>" class="inline-flex p-4 rounded-t-lg border-b-2 group" id="historyTab">
-                    <svg class="mr-2 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <spring:message code="profile.history"/>
-                </a>
+            <!-- History -->
+            <li class="${historyClasses}">
+                <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                    <form:button type="submit" path="tab" name="tab" value="history" class="flex">
+                        <svg class="mr-2 h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <spring:message code="profile.history"/>
+                    </form:button>
+                    <form:hidden path="sort" value="${sortValue}"/>
+                    <form:hidden path="page" value="${currentPage}"/>
+                </form:form>
             </li>
         </ul>
+    </div>
+
+    <!-- Paginator and dropdown -->
+    <div class="flex flex-row items-center justify-between">
+        <!-- Paginator -->
+        <div class="flex flex-row text-xl items-start">
+            <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                <form:hidden path="tab" value="${tabName}"/>
+                <form:hidden path="sort" value="${sortValue}"/>
+                <c:choose>
+                    <c:when test="${currentPage > 1}">
+                        <form:button type="submit" path="page" name="page" value="${currentPage-1}" class="text-cyan-400 cursor-pointer mr-2" >Previous</form:button>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="text-gray-400 mr-2 cursor-default">Previous</span>
+                    </c:otherwise>
+                </c:choose>
+            </form:form>
+            <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                <form:hidden path="tab" value="${tabName}"/>
+                <form:hidden path="sort" value="${sortValue}"/>
+                <form:input path="page" type="number" min="1" value="${currentPage}"
+                            class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 py-0.5" />
+                <span> of ${pages}</span>
+            </form:form>
+            <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                <form:hidden path="tab" value="${tabName}"/>
+                <form:hidden path="sort" value="${sortValue}"/>
+                <c:choose>
+                    <c:when test="${currentPage < pages}">
+                        <form:button type="submit" path="page" name="page" value="${currentPage+1}" class="text-cyan-400 cursor-pointer ml-2" >Next</form:button>
+                    </c:when>
+                    <c:otherwise>
+                        <span class="text-gray-400 ml-2 cursor-default">Next</span>
+                    </c:otherwise>
+                </c:choose>
+            </form:form>
+        </div>
+
+        <!-- Dropdown menu -->
+        <c:if test="${!showHistory}">
+            <div class="flex flex-row text-2xl">
+                <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button">
+                    <c:out value="${sortName}" />
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div id="sortDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-48">
+                    <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                        <form:hidden path="tab" value="${tabName}"/>
+                        <form:hidden path="page" value="${currentPage}" />
+                        <ul class="py-1 text-sm text-gray-700" aria-labelledby="sortDropdownDefault">
+                            <li>
+                                <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Name</form:button>
+                            </li>
+                            <li>
+                                <form:button type="submit" path="sort" name="sort" value="priceAsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Price Ascending</form:button>
+                            </li>
+                            <li>
+                                <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Price Descending</form:button>
+                            </li>
+                        </ul>
+                    </form:form>
+                </div>
+            </div>
+        </c:if>
     </div>
 
     <!-- NFTs -->

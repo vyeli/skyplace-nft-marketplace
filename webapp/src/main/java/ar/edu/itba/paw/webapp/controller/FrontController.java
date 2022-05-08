@@ -79,7 +79,7 @@ public class FrontController {
 
         mav.addObject("category", categoryFormat);
         mav.addObject("publications", publications);
-        mav.addObject("pages", publicationsAmount/12+1);
+        mav.addObject("pages", publicationsAmount/nftService.getPageSize()+1);
         mav.addObject("publicationsAmount", publicationsAmount);
         mav.addObject("categories", categories);
         mav.addObject("chains", chains);
@@ -367,8 +367,11 @@ public class FrontController {
     }
 
     @RequestMapping("/profile/{userId}")
-    public ModelAndView getUser(@PathVariable String userId, @RequestParam(required = false, name = "tab") String tab){
+    public ModelAndView getUser(@ModelAttribute("profileFilter") @Valid ProfileFilter profileFilter, @PathVariable String userId, @RequestParam(name = "tab", required = false) String userTab){
         int parsedUserId = parseInt(userId);
+        int historyItemsSize = 0;
+        int publicationPages = 1;
+        String tabName = (userTab != null ? userTab : profileFilter.getTab());
         ModelAndView mav = new ModelAndView("frontcontroller/profile");
         final User user = userService.getUserById(parsedUserId).orElseThrow(UserNotFoundException::new);
 
@@ -381,31 +384,68 @@ public class FrontController {
         mav.addObject("user", user);
 
         List<Publication> publications = new ArrayList<>();
+        List<Purchase> transactions = new ArrayList<>();
 
-        if (tab == null) // inventory
-            publications = nftService.getAllPublicationsByUser(1, user, currentUser, false, false);
+        if(tabName == null){
+            publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, currentUser, false, false, profileFilter.getSort());
+            publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, false, false);
+            mav.addObject("showInventory", true);
+        }
         else {
-            switch (tab) {
+            switch (tabName) {
                 case "favorited":
-                    if (currentUser != null && currentUser.getId() == user.getId())
-                        publications = nftService.getAllPublicationsByUser(1, user, currentUser, true, false);
+                    if (currentUser != null && currentUser.getId() == user.getId()) {
+                        publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, currentUser, true, false, profileFilter.getSort());
+                        publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, true, false);
+                        mav.addObject("showFavorited", true);
+                    }
                     break;
                 case "selling":
-                    publications = nftService.getAllPublicationsByUser(1, user, currentUser, false, true);
+                    publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, currentUser, false, true, profileFilter.getSort());
+                    publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, false, true);
+                    mav.addObject("showSelling", true);
                     break;
                 case "history":
-                    List<Purchase> transactions = purchaseService.getAllTransactions(parsedUserId);
+                    transactions = purchaseService.getAllTransactions(parsedUserId, Integer.parseInt(profileFilter.getPage()));
                     mav.addObject("historyItems", transactions);
-                    mav.addObject("historyItemsSize", transactions.size());
                     mav.addObject("showHistory", true);
+                    historyItemsSize = transactions.size();
+                    break;
+                case "inventory":
+                    publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, currentUser, false, false, profileFilter.getSort());
+                    publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, false, false);
+                    mav.addObject("showInventory", true);
                     break;
                 default:
                     break;
             }
         }
-
         mav.addObject("publications", publications);
-        mav.addObject("publicationsSize", publications.size());
+        mav.addObject("tabName", tabName != null ? tabName : "inventory");
+
+        if(historyItemsSize == 0) {
+            mav.addObject("publicationsSize", publications.size());
+            mav.addObject("pages", publicationPages);
+        }
+        else {
+            mav.addObject("historyItemsSize", transactions.size());
+            mav.addObject("pages", purchaseService.getAmountPagesByUserId(parsedUserId));
+        }
+
+        String sortFormat = "Name";
+        switch(profileFilter.getSort()) {
+            case "priceAsc":
+                sortFormat = "Price Ascending";
+                break;
+            case "priceDsc":
+                sortFormat = "Price Descending";
+                break;
+        }
+
+        mav.addObject("sortName", sortFormat);
+        mav.addObject("sortValue", profileFilter.getSort());
+        mav.addObject("currentPage", profileFilter.getPage());
+
         return mav;
     }
 
