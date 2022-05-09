@@ -299,10 +299,4 @@ public class NftJdbcDaoTest {
         assertEquals(nft.getNftName(), NFT_NAME);
     }
 
-    @Test
-    public void testDaverauLevenshtein() {
-        int distance = nftJdbcDao.calculateDistance("testy","testing");
-
-        assertEquals(3, distance);
-    }
 }

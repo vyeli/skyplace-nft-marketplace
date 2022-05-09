@@ -4,13 +4,11 @@ import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Publication;
 import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
-import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
@@ -19,7 +17,6 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Repository
@@ -28,14 +25,13 @@ public class NftJdbcDao implements NftDao{
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertNft;
     private final ImageDao imageDao;
-    private final static Double JARO_WINKLER_UMBRAL = 0.8;
-    private final String NFT_SQL_VARIABLES = " nfts.id AS id , nft_id AS nftId, contract_addr AS contractAddr, nft_name AS nftName, chain, id_image AS idImage, id_owner AS idOwner, collection, description, properties, sellorders.id AS sellOrderId ";
-    private final String SELECT_NFT_QUERY =
+    private static final String NFT_SQL_VARIABLES = " nfts.id AS id , nft_id AS nftId, contract_addr AS contractAddr, nft_name AS nftName, chain, id_image AS idImage, id_owner AS idOwner, collection, description, properties, sellorders.id AS sellOrderId ";
+    private static final String SELECT_NFT_QUERY =
             "SELECT " +
                     NFT_SQL_VARIABLES +
             " FROM nfts LEFT OUTER JOIN sellorders ON sellorders.id_nft=nfts.id ";
 
-    private final String SELECT_PUBLICATION_QUERY =
+    private static final String SELECT_PUBLICATION_QUERY =
                     "SELECT " +
                     NFT_SQL_VARIABLES +
                     "            ,price," +
@@ -146,7 +142,7 @@ public class NftJdbcDao implements NftDao{
         return new Pair<>(sb, args);
     }
 
-    protected Pair<StringBuilder, List<Object>> buildFilterQuery(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort) {
+    protected Pair<StringBuilder, List<Object>> buildFilterQuery(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search) {
         StringBuilder sb = new StringBuilder();
         List<Object> args = new ArrayList<>();
         sb.append(" WHERE true ");
@@ -185,6 +181,12 @@ public class NftJdbcDao implements NftDao{
             sb.append(" AND price <=  ? ");
             args.add(maxPrice);
         }
+
+        if(search != null && !search.equals("")) {
+            sb.append(" AND nfts.nft_name LIKE '%'||?||'%' ");
+            args.add(search);
+        }
+
         switch (sort) {
             case "priceAsc":
                 sb.append(" ORDER BY price");
@@ -202,23 +204,21 @@ public class NftJdbcDao implements NftDao{
         return new Pair<>(sb, args);
     }
 
-    protected Pair<StringBuilder, List<Object>> buildQueryPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, User currentUser) {
+    protected Pair<StringBuilder, List<Object>> buildQueryPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, User currentUser, String search) {
         StringBuilder sb = new StringBuilder(SELECT_PUBLICATION_QUERY);
         List<Object> args = new ArrayList<>();
-        if (currentUser != null)
-            args.add(currentUser.getId());
-        else
-            args.add(0);
+        args.add(currentUser != null ? currentUser.getId():0);
 
-        Pair<StringBuilder, List<Object>> filterResults = buildFilterQuery(status, category, chain, minPrice, maxPrice, sort);
+        Pair<StringBuilder, List<Object>> filterResults = buildFilterQuery(status, category, chain, minPrice, maxPrice, sort, search);
         sb.append(filterResults.getLeft());
         args.addAll(filterResults.getRight());
+
         return new Pair<>(sb, args);
     }
 
     @Override
     public List<Publication> getAllPublications(int page, int pageSize, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
-        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, sort, currentUser);
+        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, sort, currentUser, search);
         StringBuilder sb = queryBuilder.getLeft();
         List<Object> args = queryBuilder.getRight();
 
@@ -228,25 +228,12 @@ public class NftJdbcDao implements NftDao{
         args.add(pageSize);
         args.add(pageSize * (page-1));
 
-        List<Publication> result = jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
-        result = applySearchAlgorithms(result, search);
-
-        return result;
+        return jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
     }
 
-    protected List<Publication> applySearchAlgorithms(List<Publication> publications, String search) {
-        JaroWinklerSimilarity jaroWinkler = new JaroWinklerSimilarity();
-
-        if(search != null && !search.equals(""))
-            publications = publications.stream().filter(publication -> (jaroWinkler.apply(publication.getNft().getNftName().toLowerCase(), search.toLowerCase()) >= JARO_WINKLER_UMBRAL || calculateDistance(publication.getNft().getNftName().toLowerCase(), search.toLowerCase()) < 4)).collect(Collectors.toList());
-        return publications;
-    }
-
-    @Override
-    public List<Publication> getAllPublicationsByUser(int page, int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale, String sort) {
-        StringBuilder sb = new StringBuilder(SELECT_PUBLICATION_QUERY);
-        List<Object> args = new ArrayList<>();
-        args.add(currentUser != null ? currentUser.getId():0);
+    private Pair<StringBuilder, List<Object>> buildQueryPublicationsByUser(String query, List<Object> preArgs, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale, String sort) {
+        StringBuilder sb = new StringBuilder(query);
+        List<Object> args = new ArrayList<>(preArgs);
         sb.append(" WHERE TRUE ");
         if(!onlyFaved) {
             sb.append(" AND id_owner=? ");
@@ -270,6 +257,15 @@ public class NftJdbcDao implements NftDao{
                 break;
         }
 
+        return new Pair<>(sb, args);
+    }
+
+    @Override
+    public List<Publication> getAllPublicationsByUser(int page, int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale, String sort) {
+        Pair<StringBuilder, List<Object>> queryPair = buildQueryPublicationsByUser(SELECT_PUBLICATION_QUERY, new ArrayList<>(Collections.singletonList(currentUser != null ? currentUser.getId():0)), user, currentUser, onlyFaved, onlyOnSale, sort);
+        StringBuilder sb = queryPair.getLeft();
+        List<Object> args = queryPair.getRight();
+
         sb.append("LIMIT ? OFFSET ?");
         args.add(pageSize);
         args.add(pageSize * (page-1));
@@ -279,18 +275,16 @@ public class NftJdbcDao implements NftDao{
 
     @Override
     public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
-        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, "noSort", null);
+        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, "noSort", null, search);
         StringBuilder sb = queryBuilder.getLeft();
         List<Object> args = queryBuilder.getRight();
 
-        List<Publication> result = jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER);
-        result = applySearchAlgorithms(result, search);
-        return result.size();
+        return jdbcTemplate.query(sb.toString(), args.toArray(), SELECT_PUBLICATION_MAPPER).size();
     }
 
     @Override
     public int getAmountPublicationPagesByUser(int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
-        StringBuilder sb = new StringBuilder("SELECT (count(*)-1)/?+1 AS count" +
+        String query = "SELECT (count(*)-1)/?+1 AS count" +
                 " FROM" +
                 " nfts" +
                 " LEFT OUTER JOIN sellorders" +
@@ -298,18 +292,15 @@ public class NftJdbcDao implements NftDao{
                 " JOIN users" +
                 " ON id_owner=users.id" +
                 " LEFT OUTER JOIN favorited" +
-                " ON (favorited.user_id=? AND favorited.id_nft=nfts.id) ");
+                " ON (favorited.user_id=? AND favorited.id_nft=nfts.id) ";
+        StringBuilder sb = new StringBuilder();
         List<Object> args = new ArrayList<>();
         args.add(pageSize);
         args.add(currentUser != null ? currentUser.getId():0);
-        sb.append(" WHERE TRUE ");
-        if(!onlyFaved) {
-            sb.append(" AND id_owner=? ");
-            args.add(user.getId());
-        } else
-            sb.append(" AND favorited.user_id IS NOT NULL ");
-        if(onlyOnSale)
-            sb.append(" AND sellorders.id IS NOT NULL ");
+
+        Pair<StringBuilder, List<Object>> buildQuery = buildQueryPublicationsByUser(query, Collections.emptyList(), user, currentUser, onlyFaved, onlyOnSale, "noSort");
+        sb.append(buildQuery.getLeft());
+        args.addAll(buildQuery.getRight());
 
         Optional<Integer> res = jdbcTemplate.query(sb.toString(), args.toArray(), (rs , rowNum) -> rs.getInt("count")).stream().findFirst();
         return res.orElse(0);
@@ -323,37 +314,6 @@ public class NftJdbcDao implements NftDao{
     @Override
     public void delete(int productId) {
         jdbcTemplate.update("DELETE FROM nfts WHERE id=?", productId);
-    }
-
-    // Code extracted from https://github.com/crwohlfeil/damerau-levenshtein/blob/master/src/main/java/com/codeweasel/DamerauLevenshtein.java
-    protected int calculateDistance(CharSequence source, CharSequence target) {
-        if (source == null || target == null) {
-            throw new IllegalArgumentException("Parameter must not be null");
-        }
-        int sourceLength = source.length();
-        int targetLength = target.length();
-        if (sourceLength == 0) return targetLength;
-        if (targetLength == 0) return sourceLength;
-        int[][] dist = new int[sourceLength + 1][targetLength + 1];
-        for (int i = 0; i < sourceLength + 1; i++) {
-            dist[i][0] = i;
-        }
-        for (int j = 0; j < targetLength + 1; j++) {
-            dist[0][j] = j;
-        }
-        for (int i = 1; i < sourceLength + 1; i++) {
-            for (int j = 1; j < targetLength + 1; j++) {
-                int cost = source.charAt(i - 1) == target.charAt(j - 1) ? 0 : 1;
-                dist[i][j] = Math.min(Math.min(dist[i - 1][j] + 1, dist[i][j - 1] + 1), dist[i - 1][j - 1] + cost);
-                if (i > 1 &&
-                        j > 1 &&
-                        source.charAt(i - 1) == target.charAt(j - 2) &&
-                        source.charAt(i - 2) == target.charAt(j - 1)) {
-                    dist[i][j] = Math.min(dist[i][j], dist[i - 2][j - 2] + cost);
-                }
-            }
-        }
-        return dist[sourceLength][targetLength];
     }
 
     protected static class Pair<T, U> {

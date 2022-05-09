@@ -406,10 +406,12 @@ public class FrontController {
                     mav.addObject("showSelling", true);
                     break;
                 case "history":
-                    transactions = purchaseService.getAllTransactions(parsedUserId, Integer.parseInt(profileFilter.getPage()));
-                    mav.addObject("historyItems", transactions);
-                    mav.addObject("showHistory", true);
-                    historyItemsSize = transactions.size();
+                    if (currentUser != null && currentUser.getId() == user.getId()) {
+                        transactions = purchaseService.getAllTransactions(parsedUserId, Integer.parseInt(profileFilter.getPage()));
+                        mav.addObject("historyItems", transactions);
+                        mav.addObject("showHistory", true);
+                        historyItemsSize = transactions.size();
+                    }
                     break;
                 case "inventory":
                     publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, currentUser, false, false, profileFilter.getSort());
