@@ -30,7 +30,7 @@
                         -->
                         <span class="text-xl ml-1 text-gray-400 font-semibold truncate w-28 lg:w-40 hover:text-gray-600" id="walletId">${user.wallet}</span>
                     </button>
-                    <div id="tooltip-dark" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                    <div id="tooltip-dark" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
                         <spring:message code="profile.copy"/>
                         <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
@@ -58,7 +58,7 @@
 
     <!-- Tabs -->
     <div class="flex border-b border-gray-200">
-        <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500 dark:text-gray-400">
+        <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500">
             <!-- Inventory -->
             <c:set var="activeClasses" value="border-b-2 border-cyan-600 text-cyan-600 active"/>
             <c:set var="inactiveClasses" value="border-transparent hover:text-gray-600"/>
@@ -174,7 +174,7 @@
             <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
                 <form:hidden path="tab" value="${tabName}"/>
                 <form:hidden path="sort" value="${sortValue}"/>
-                <form:input path="page" type="number" min="1" value="${currentPage}"
+                <form:input path="page" type="number" min="1" max="${pages}" value="${currentPage}"
                             class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 py-0.5" />
                 <span> of ${pages}</span>
             </form:form>

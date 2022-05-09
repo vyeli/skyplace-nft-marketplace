@@ -2,16 +2,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
 <!-- History item -->
-<a href="<c:url value="/product/${param.nftId}" />" class="dark:bg-jacarta-700 dark:border-jacarta-700 border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-4 transition-shadow hover:shadow-lg">
+<a href="<c:url value="/product/${param.nftId}" />" class="border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-4 transition-shadow hover:shadow-lg">
     <figure class="mr-5 self-start">
-        <img src="<c:url value="/images/${param.nftImg}" />" class="max-w-[6rem] rounded-lg aspect-square object-cover" alt="avatar 2" loading="lazy">
+        <img src="<c:url value="/images/${param.nftImg}" />" class="w-[6rem] h-[6rem] rounded-lg aspect-square object-cover" alt="avatar 2" loading="lazy">
     </figure>
 
     <div>
-        <h3 class="font-display text-jacarta-700 mb-1 text-base font-semibold dark:text-white">
+        <h3 class="font-display text-jacarta-700 mb-1 text-base font-semibold">
             ${param.nftName}
         </h3>
-        <span class="dark:text-jacarta-200 text-jacarta-500 mb-3 block text-sm">
+        <span class="text-jacarta-500 mb-3 block text-sm">
             <c:choose>
                 <c:when test="${param.sold}">
                     sold to <span class="text-cyan-700">@${param.buyerUsername}</span>
@@ -25,7 +25,7 @@
         <span class="text-jacarta-300 block text-xs">${param.date}</span>
     </div>
 
-    <div class="dark:border-jacarta-600 border-jacarta-100 ml-auto rounded-full border p-3">
+    <div class="border-jacarta-100 ml-auto rounded-full border p-3">
         <c:choose>
             <c:when test="${param.sold}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
