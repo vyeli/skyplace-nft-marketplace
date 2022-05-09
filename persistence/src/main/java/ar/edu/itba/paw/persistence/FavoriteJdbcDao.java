@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.exceptions.NftNotFoundException;
 import ar.edu.itba.paw.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -33,29 +33,19 @@ public class FavoriteJdbcDao implements FavoriteDao {
 
     @Override
     public void addNftFavorite(int productId, User user) {
-        if(!nftDao.getNFTById(productId).isPresent())
-            return;
+        nftDao.getNFTById(productId).orElseThrow(NftNotFoundException::new);
 
         Map<String, Object> favoriteData = new HashMap<>();
         favoriteData.put("user_id", user.getId());
         favoriteData.put("id_nft", productId);
-        try {
-            jdbcInsertFavorited.execute(favoriteData);
-        } catch (Exception e){
-            LOGGER.error("FavoriteDao: " + e.getMessage());
-        }
+        jdbcInsertFavorited.execute(favoriteData);
     }
 
     @Override
     public void removeNftFavorite(int productId, User user) {
-        if(!nftDao.getNFTById(productId).isPresent())
-            return;
+        nftDao.getNFTById(productId).orElseThrow(NftNotFoundException::new);
 
-        try {
-            jdbcTemplate.update("DELETE FROM favorited WHERE user_id=? AND id_nft=?", user.getId(), productId);
-        } catch (Exception e){
-            LOGGER.error("FavoriteDao: " + e.getMessage());
-        }
+        jdbcTemplate.update("DELETE FROM favorited WHERE user_id=? AND id_nft=?", user.getId(), productId);
     }
 
     @Override

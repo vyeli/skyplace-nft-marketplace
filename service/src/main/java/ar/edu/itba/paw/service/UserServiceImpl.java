@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.exceptions.UserAlreadyExistsException;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +27,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Optional<User> create(String email, String username, String wallet, String walletChain, String password) {
-        if(userDao.getUserByEmail(email).isPresent()) {
-            return Optional.empty();
-        }
+        if(userDao.getUserByEmail(email).isPresent())
+            throw new UserAlreadyExistsException();
         Optional<User> user = userDao.create(email, username, wallet, walletChain, passwordEncoder.encode(password));
-        if(user.isPresent()) {
+        if(user.isPresent())
             mailingService.sendRegisterMail(email, username);
-        }
         return user;
     }
 
@@ -49,9 +48,8 @@ public class UserServiceImpl implements UserService{
     @Override
     public Optional<User> getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(principal instanceof UserDetails){
+        if(principal instanceof UserDetails)
             return getUserByEmail(((UserDetails) principal).getUsername());
-        }
         return Optional.empty();
     }
 

@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.exceptions.UserIsNotNftOwnerException;
 import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.persistence.SellOrderDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class SellOrderServiceImpl implements SellOrderService {
 
     @Override
     public Optional<SellOrder> create(BigDecimal price, int idNft, String category) {
+
         return sellOrderDao.create(price, idNft, category);
     }
 

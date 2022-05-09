@@ -4,6 +4,7 @@ import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Publication;
 import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.exceptions.InvalidChainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -97,7 +98,7 @@ public class NftJdbcDao implements NftDao{
     public Optional<Nft> create(int nftId, String contractAddr, String nftName, String chain, MultipartFile image, int idOwner, String collection, String description, String[] properties) {
         List<String> chains = jdbcTemplate.query("SELECT chain FROM chains", (rs, i) -> rs.getString("chain"));
         if(!chains.contains(chain))
-            return Optional.empty();
+            throw new InvalidChainException();
 
         final Map<String, Object> nftData = new HashMap<>();
         nftData.put("nft_id", nftId);
@@ -108,14 +109,12 @@ public class NftJdbcDao implements NftDao{
         nftData.put("collection", collection);
         nftData.put("description", description);
 
-        Optional<Integer> idImage = imageDao.createImage(image);
-        if(!idImage.isPresent())
-            return Optional.empty();
+        int idImage = imageDao.createImage(image);
 
-        nftData.put("id_image", idImage.get());
+        nftData.put("id_image", idImage);
         int id = jdbcInsertNft.executeAndReturnKey(nftData).intValue();
 
-        return Optional.of(new Nft(id, nftId, contractAddr, nftName, chain, idImage.get(), idOwner, collection, description, properties, null));
+        return Optional.of(new Nft(id, nftId, contractAddr, nftName, chain, idImage, idOwner, collection, description, properties, null));
     }
 
     @Override

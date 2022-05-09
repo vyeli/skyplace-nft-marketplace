@@ -1,9 +1,14 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.exceptions.ImageNotFoundException;
+import ar.edu.itba.paw.exceptions.NftNotFoundException;
+import ar.edu.itba.paw.exceptions.SellOrderNotFoundException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,11 +40,11 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     public boolean create(int idSellOrder, BigDecimal price, int userId) {
         if(buyOrderDao.create(idSellOrder, price, userId)){
             BuyOrder buyOrder = new BuyOrder(idSellOrder, price, userId);
-            SellOrder sellOrder = sellOrderDao.getOrderById(idSellOrder).get();
-            Nft nft = nftDao.getNFTById(sellOrder.getNftId()).get();
-            User seller = userDao.getUserById(nft.getIdOwner()).get();
-            User bidder = userDao.getUserById(userId).get();
-            Image image = imageDao.getImage(nft.getIdImage());
+            SellOrder sellOrder = sellOrderDao.getOrderById(idSellOrder).orElseThrow(SellOrderNotFoundException::new);
+            Nft nft = nftDao.getNFTById(sellOrder.getNftId()).orElseThrow(NftNotFoundException::new);
+            User seller = userDao.getUserById(nft.getIdOwner()).orElseThrow(UserNotFoundException::new);
+            User bidder = userDao.getUserById(userId).orElseThrow(UserNotFoundException::new);
+            Image image = imageDao.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
             mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), buyOrder.getAmount(), image.getImage());
             return true;
         }
@@ -62,19 +67,14 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         return buyOrderDao.getAmountPagesBySellOrderId(idSellOrder);
     }
 
+    @Transactional
     @Override
     public void confirmBuyOrder(int sellOrderId, int buyerId, int seller, int productId, BigDecimal price) {
-        Optional<SellOrder> sOrder = sellOrderDao.getOrderById(sellOrderId);
-        if(!sOrder.isPresent())
-            return;
+        SellOrder sOrder = sellOrderDao.getOrderById(sellOrderId).orElseThrow(SellOrderNotFoundException::new);
+        User buyerUser = userDao.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
 
-        Optional<User> buyerUser = userDao.getUserById(buyerId);
-        if(!buyerUser.isPresent())
-            return;
-        nftDao.updateOwner(sOrder.get().getNftId(), buyerUser.get().getId());
-
-        sellOrderDao.delete(sOrder.get().getId());
-
+        nftDao.updateOwner(sOrder.getNftId(), buyerUser.getId());
+        sellOrderDao.delete(sOrder.getId());
         purchaseService.createPurchase(buyerId, seller, productId, price);
     }
 

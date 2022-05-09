@@ -9,13 +9,6 @@
 <html>
 <head>
     <title><spring:message code="explore.title"/></title>
-    <style>
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-    </style>
 </head>
 <body>
 <div class="min-h-screen flex flex-col">
@@ -108,14 +101,14 @@
                                     <form:label path="minPrice" class="font-mono font-bold w-1/3 text-[11px] text-gray-300 bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
                                         Min
                                     </form:label>
-                                    <form:input type="number" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="minPrice"/>
+                                    <form:input type="number" min="0" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="minPrice"/>
                                 </div>
                                 <span class="pb-1"><spring:message code="explore.to"/></span>
                                 <div class="relative z-0  px-2 w-full group">
                                     <form:label path="maxPrice" class="font-mono font-bold w-1/3 text-[11px]  text-gray-300  bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
                                         Max
                                     </form:label>
-                                    <form:input type="number" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="maxPrice"/>
+                                    <form:input type="number" min="0" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="maxPrice"/>
                                 </div>
                             </div>
                         </div>
@@ -161,7 +154,7 @@
                         <form:hidden path="chain" value="${chainValue}"/>
                         <form:hidden path="status" value="${statusValue}"/>
                         <form:label path="page">
-                            <form:input path="page" type="number" min="1" value="${currentPage}"
+                            <form:input path="page" type="number" min="1" max="${pages}" value="${currentPage}"
                                 class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 py-0.5" />
                         </form:label>
                         <span> <spring:message code="explore.of"/> ${pages}</span>

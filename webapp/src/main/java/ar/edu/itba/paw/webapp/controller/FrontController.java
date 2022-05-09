@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.webapp.exceptions.*;
 import ar.edu.itba.paw.webapp.form.*;
@@ -56,7 +57,6 @@ public class FrontController {
 
     @RequestMapping("/explore")
     public ModelAndView explore(@ModelAttribute("exploreFilter") @Valid ExploreFilter exploreFilter) {
-
         List<String> categories = categoryService.getCategories();
         List<String> chains = chainService.getChains();
 
@@ -83,15 +83,8 @@ public class FrontController {
         mav.addObject("publicationsAmount", publicationsAmount);
         mav.addObject("categories", categories);
         mav.addObject("chains", chains);
-        String sortFormat = "Name";
-        switch(exploreFilter.getSort()) {
-            case "priceAsc":
-                sortFormat = "Price Ascending";
-                break;
-            case "priceDsc":
-                sortFormat = "Price Descending";
-                break;
-        }
+        String sortFormat = getSortStringFormat(exploreFilter.getSort());
+
         mav.addObject("sortName", sortFormat);
         mav.addObject("currentPage", exploreFilter.getPage());
 
@@ -137,9 +130,8 @@ public class FrontController {
     @RequestMapping(value = "/sell/update/{productId}", method = RequestMethod.GET)
     public ModelAndView getUpdateSellOrder(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
         int parsedProductId = parseInt(productId);
-        User currentUser = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
 
-        if (!nftService.userOwnsNft(parsedProductId, currentUser) && !userService.isAdmin())
+        if (!nftService.currentUserOwnsNft(parsedProductId) && !userService.isAdmin())
             throw new UserNoPermissionException();
 
         final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
@@ -187,7 +179,7 @@ public class FrontController {
             request.setCharacterEncoding("utf-8");
         }
         catch(UnsupportedEncodingException e) {
-            LOGGER.error(String.valueOf(e));
+            LOGGER.error(e.getMessage());
         }
         request.setCharacterEncoding("utf-8");
         int parsedProductId = parseInt(productId);
@@ -434,15 +426,7 @@ public class FrontController {
             mav.addObject("pages", purchaseService.getAmountPagesByUserId(parsedUserId));
         }
 
-        String sortFormat = "Name";
-        switch(profileFilter.getSort()) {
-            case "priceAsc":
-                sortFormat = "Price Ascending";
-                break;
-            case "priceDsc":
-                sortFormat = "Price Descending";
-                break;
-        }
+        String sortFormat = getSortStringFormat(profileFilter.getSort());
 
         mav.addObject("sortName", sortFormat);
         mav.addObject("sortValue", profileFilter.getSort());
@@ -472,7 +456,7 @@ public class FrontController {
     @ResponseBody
     public byte[] getImage(@PathVariable String id) {
         int parseId = parseInt(id);
-        Image image = imageService.getImage(parseId);
+        Image image = imageService.getImage(parseId).orElseThrow(ImageNotFoundException::new);
         return image.getImage();
     }
 
@@ -496,6 +480,17 @@ public class FrontController {
             throw new NumberFormatException("Invalid number: " + number);
         }
         return parsedNumber;
+    }
+
+    private String getSortStringFormat(String sort) {
+        switch(sort) {
+            case "priceAsc":
+                return "Price Ascending";
+            case "priceDsc":
+                return "Price Descending";
+            default:
+                return "Name";
+        }
     }
 
 }

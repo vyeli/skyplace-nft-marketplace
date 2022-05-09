@@ -5,6 +5,8 @@ import ar.edu.itba.paw.persistence.ImageDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ImageServiceImpl implements ImageService{
 
@@ -16,7 +18,7 @@ public class ImageServiceImpl implements ImageService{
     }
 
     @Override
-    public Image getImage(int id) {
+    public Optional<Image> getImage(int id) {
         return imageDao.getImage(id);
     }
 }

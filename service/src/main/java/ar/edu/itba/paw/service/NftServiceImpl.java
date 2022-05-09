@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.exceptions.UserNotLoggedInException;
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Publication;
 import ar.edu.itba.paw.model.User;
@@ -71,7 +72,7 @@ public class NftServiceImpl implements NftService{
 
     @Override
     public boolean currentUserOwnsNft(int productId) {
-        User currentUser = userService.getCurrentUser().orElseThrow(RuntimeException::new); // UserNotLoggedInException
+        User currentUser = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
         return userOwnsNft(productId, currentUser);
     }
 
