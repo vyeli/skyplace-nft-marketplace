@@ -3,6 +3,7 @@ package ar.edu.itba.paw.service;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,7 +41,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
             User seller = userDao.getUserById(nft.getIdOwner()).get();
             User bidder = userDao.getUserById(userId).get();
             Image image = imageDao.getImage(nft.getIdImage());
-            mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), buyOrder.getAmount(), image.getImage());
+            mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), buyOrder.getAmount(), image.getImage(), LocaleContextHolder.getLocale());
             return true;
         }
         return false;
