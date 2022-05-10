@@ -101,7 +101,4 @@ public class CreateNftForm {
         this.properties = properties;
     }
 
-    public String getPublish() {
-        return "";
-    }
 }

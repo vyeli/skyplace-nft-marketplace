@@ -117,8 +117,13 @@ public class FrontController {
 
     @RequestMapping(value = "/sell/{productId}", method = RequestMethod.POST)
     public ModelAndView createSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors, @PathVariable String productId) {
-        if(errors.hasErrors())
+        if(errors.hasErrors()) {
+            errors.getAllErrors().forEach(error -> {
+                if(error.getCode().equals("typeMismatch"))
+                    throw new InvalidInputTypeException();
+            });
             return createSellOrderForm(form, productId);
+        }
 
         int parsedProductId = parseInt(productId);
         SellOrder sellOrder = sellOrderService.create(form.getPrice(), parsedProductId, form.getCategory()).orElseThrow(CreateSellOrderException::new);
@@ -323,12 +328,9 @@ public class FrontController {
             return createNft(form);
         }
         User user = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
-        final Optional<Nft> nft = nftService.create(form.getNftId(), form.getContractAddr(), form.getName(), form.getChain(), form.getImage(), user.getId(), form.getCollection(), form.getDescription(), form.getProperties());
-        if(!nft.isPresent()) {
-            errors.rejectValue("publish", "publish.error", "Nft can not be created with this information");
-            return createNft(form);
-        }
-        return new ModelAndView("redirect:/product/"+nft.get().getId());
+        final Nft nft = nftService.create(form.getNftId(), form.getContractAddr(), form.getName(), form.getChain(), form.getImage(), user.getId(), form.getCollection(), form.getDescription(), form.getProperties()).orElseThrow(CreateNftException::new);
+
+        return new ModelAndView("redirect:/product/"+nft.getId());
     }
 
     // Login
