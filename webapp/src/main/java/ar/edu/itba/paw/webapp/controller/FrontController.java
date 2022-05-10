@@ -79,7 +79,7 @@ public class FrontController {
 
         mav.addObject("category", categoryFormat);
         mav.addObject("publications", publications);
-        mav.addObject("pages", publicationsAmount/nftService.getPageSize()+1);
+        mav.addObject("pages", (publicationsAmount-1)/nftService.getPageSize()+1);
         mav.addObject("publicationsAmount", publicationsAmount);
         mav.addObject("categories", categories);
         mav.addObject("chains", chains);
@@ -121,8 +121,6 @@ public class FrontController {
             return createSellOrderForm(form, productId);
 
         int parsedProductId = parseInt(productId);
-        if (!nftService.currentUserOwnsNft(parsedProductId))
-            throw new UserIsNotNftOwnerException();
         SellOrder sellOrder = sellOrderService.create(form.getPrice(), parsedProductId, form.getCategory()).orElseThrow(CreateSellOrderException::new);
         return new ModelAndView("redirect:/product/" + sellOrder.getNftId());
     }
@@ -131,7 +129,7 @@ public class FrontController {
     public ModelAndView getUpdateSellOrder(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
         int parsedProductId = parseInt(productId);
 
-        if (!nftService.currentUserOwnsNft(parsedProductId) && !userService.isAdmin())
+        if (!userService.currentUserOwnsNft(parsedProductId) && !userService.isAdmin())
             throw new UserNoPermissionException();
 
         final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
@@ -150,8 +148,6 @@ public class FrontController {
         if (errors.hasErrors())
             return getUpdateSellOrder(form, productId);
 
-        if (!nftService.currentUserOwnsNft(parsedProductId) && !userService.isAdmin())
-            throw new UserNoPermissionException();
 
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
         boolean updated = sellOrderService.update(nft.getSellOrder(), form.getCategory(), form.getPrice());
@@ -163,13 +159,10 @@ public class FrontController {
     @RequestMapping(value = "/sell/delete/{productId}", method = RequestMethod.POST)
     public ModelAndView deleteSellOrder(@PathVariable String productId) {
         int parsedProductId = parseInt(productId);
-        if (!nftService.currentUserOwnsNft(parsedProductId) && !userService.isAdmin())
-            throw new UserNoPermissionException();
-
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
 
         sellOrderService.delete(nft.getSellOrder());
-        return new ModelAndView("redirect:/product/" + nft.getId());
+        return new ModelAndView("redirect:/product/" + parsedProductId);
     }
 
     /* Product Detail */
@@ -228,8 +221,6 @@ public class FrontController {
         int parsedBuyerId = parseInt(buyerId);
         int parsedSeller = parseInt(seller);
         int parsedProductId = parseInt(productId);
-        if (!nftService.currentUserOwnsNft(parsedProductId))
-            throw new UserIsNotNftOwnerException();
         buyOrderService.confirmBuyOrder(parsedSellOrderId, parsedBuyerId, parsedSeller, parsedProductId, price);
 
         return new ModelAndView("redirect:/product/" + productId);
@@ -237,11 +228,8 @@ public class FrontController {
 
     @RequestMapping(value="/buyorder/delete", method = RequestMethod.POST)
     public ModelAndView deleteBuyOrder(@RequestParam(value = "sellOrder") String sellOrderId, @RequestParam(value = "idBuyer") String buyerId, @RequestParam(value = "idNft") String productId) {
-        int parsedProductId = parseInt(productId);
         int parsedSellOrderId = parseInt(sellOrderId);
         int parsedBuyerId = parseInt(buyerId);
-        if(!nftService.currentUserOwnsSellOrder(parsedProductId))
-            throw new UserIsNotNftOwnerException();
         buyOrderService.deleteBuyOrder(parsedSellOrderId, parsedBuyerId);
 
         return new ModelAndView("redirect:/product/" + productId);
@@ -265,8 +253,6 @@ public class FrontController {
         SellOrder sellOrder = sellOrderService.getOrderById(nft.getSellOrder()).orElseThrow(SellOrderNotFoundException::new);
         User currentUser = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
 
-        if(currentUser.getId() == nft.getIdOwner())
-            throw new UserNoPermissionException();
         buyOrderService.create(sellOrder.getId(), form.getPrice(), currentUser.getId());
 
         ModelAndView mav = product(form, productId, offerPage, request);
@@ -277,8 +263,7 @@ public class FrontController {
     @RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
     public ModelAndView deleteNft(@PathVariable String productId) {
         int parsedProductId = parseInt(productId);
-        if (!nftService.currentUserOwnsNft(parsedProductId))
-            throw new UserIsNotNftOwnerException();
+
         nftService.delete(parsedProductId);
 
         return new ModelAndView("redirect:/explore");
@@ -330,8 +315,13 @@ public class FrontController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ModelAndView publishNft(@Valid @ModelAttribute("createNftForm") final CreateNftForm form, final BindingResult errors) {
-        if(errors.hasErrors())
+        if(errors.hasErrors()) {
+            errors.getAllErrors().forEach(error -> {
+                if(error.getCode().equals("typeMismatch"))
+                    throw new InvalidInputTypeException();
+            });
             return createNft(form);
+        }
         User user = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
         final Optional<Nft> nft = nftService.create(form.getNftId(), form.getContractAddr(), form.getName(), form.getChain(), form.getImage(), user.getId(), form.getCollection(), form.getDescription(), form.getProperties());
         if(!nft.isPresent()) {
@@ -472,13 +462,9 @@ public class FrontController {
         return s;
     }
     
-    private int parseInt(String number) {
+    private int parseInt(String number) throws NumberFormatException {
         int parsedNumber;
-        try {
-            parsedNumber = Integer.parseInt(number);
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("Invalid number: " + number);
-        }
+        parsedNumber = Integer.parseInt(number);
         return parsedNumber;
     }
 

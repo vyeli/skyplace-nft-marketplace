@@ -72,4 +72,14 @@ public class UserJdbcDao implements UserDao{
         return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ id }, ROW_MAPPER).stream().findFirst();
     }
 
+    @Override
+    public boolean userOwnsNft(int productId, User user) {
+        return jdbcTemplate.query("SELECT * FROM users JOIN nfts ON (users.id=nfts.id_owner) WHERE users.id=? AND nfts.nft_id=?", new Object[]{user.getId(), productId}, (rs, rn) -> rs.getString("username")).size() > 0;
+    }
+
+    @Override
+    public boolean userOwnsSellOrder(int productId, User user) {
+        return jdbcTemplate.query("SELECT * FROM users JOIN nfts ON (users.id=nfts.id_owner) JOIN sellorders ON (nfts.id=sellorders.id_nft) WHERE users.id=? AND sellorders.id=?", new Object[]{user.getId(), productId}, (rs, rn) -> rs.getString("username")).size() > 0;
+    }
+
 }

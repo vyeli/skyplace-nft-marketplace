@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.exceptions.UserAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.UserNotLoggedInException;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,28 @@ public class UserServiceImpl implements UserService{
         if(principal instanceof UserDetails)
             return getUserByEmail(((UserDetails) principal).getUsername());
         return Optional.empty();
+    }
+
+    @Override
+    public boolean userOwnsNft(int productId, User user) {
+        return userDao.userOwnsNft(productId, user);
+    }
+
+    @Override
+    public boolean currentUserOwnsNft(int productId) {
+        User currentUser = getCurrentUser().orElseThrow(UserNotLoggedInException::new);
+        return userOwnsNft(productId, currentUser);
+    }
+
+    @Override
+    public boolean userOwnsSellOrder(int productId, User user) {
+        return userDao.userOwnsSellOrder(productId, user);
+    }
+
+    @Override
+    public boolean currentUserOwnsSellOrder(int productId) {
+        User currentUser = getCurrentUser().orElseThrow(UserNotLoggedInException::new);
+        return userOwnsSellOrder(productId, currentUser);
     }
 
     @Override

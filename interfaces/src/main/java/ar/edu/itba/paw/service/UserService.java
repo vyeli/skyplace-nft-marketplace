@@ -13,5 +13,13 @@ public interface UserService {
 
     Optional<User> getCurrentUser();
 
+    boolean userOwnsNft(int productId, User user);
+
+    boolean currentUserOwnsNft(int productId);
+
+    boolean userOwnsSellOrder(int productId, User user);
+
+    boolean currentUserOwnsSellOrder(int productId);
+
     boolean isAdmin();
 }

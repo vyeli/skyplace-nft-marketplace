@@ -32,7 +32,7 @@ public class ExceptionController {
         return new ModelAndView("frontcontroller/login");
     }
 
-    @ExceptionHandler({CreateSellOrderException.class, InvalidChainException.class, InvalidCategoryException.class, CreateImageException.class, CreateUserException.class})
+    @ExceptionHandler({CreateSellOrderException.class, InvalidChainException.class, InvalidCategoryException.class, CreateImageException.class, CreateUserException.class, InvalidInputTypeException.class})
     public ModelAndView internalError(Exception e) {
         LOGGER.error("{} redirecting to 500", e.getMessage());
         return new ModelAndView("error/500");
