@@ -64,3 +64,7 @@ ALTER TABLE purchases DROP CONSTRAINT purchases_id_buyer_fkey;
 ALTER TABLE purchases DROP CONSTRAINT purchases_id_seller_fkey;
 ALTER TABLE purchases ADD FOREIGN KEY (id_buyer) REFERENCES users(id) ON DELETE CASCADE;
 ALTER TABLE purchases ADD FOREIGN KEY (id_seller) REFERENCES users(id) ON DELETE CASCADE;
+
+-- Unique nft id + contract + chain and not null name
+ALTER TABLE nfts ADD CONSTRAINT nfts_unique UNIQUE(nft_id, contract_addr, chain);
+ALTER TABLE nfts ALTER COLUMN nft_name SET NOT NULL;
