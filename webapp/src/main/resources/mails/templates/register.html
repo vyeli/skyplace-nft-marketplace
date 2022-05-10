@@ -38,9 +38,10 @@
             </div>
         </div>
         <hr style="color: #E5E7EB;">
-        <div style="text-align:center; display: inline">
-            <a th:href="${loginUrl}" th:text="#{email.register.signin}" style="text-decoration-line: underline; text-decoration-color: dodgerblue "></a>
-            <span th:text="#{email.register.toAccount}"></span>
+        <div style="display: inline;">
+            <span th:text="#{email.register.goTo}"></span>
+            <a th:href="${exploreUrl}" th:text="#{email.register.explorePage}" style="text-decoration-line: underline; text-decoration-color: dodgerblue "></a>
+            <span th:text="#{email.register.toStartBrowsing}"></span>
         </div>
     </div>
 </body>

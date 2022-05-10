@@ -87,7 +87,8 @@ public class FrontController {
             return mav;
         }
 
-        return new ModelAndView("redirect:/login" );
+        securityService.autologin(user.get().getEmail(), form.getPassword());
+        return new ModelAndView("redirect:/");
     }
 
     @RequestMapping("/explore")

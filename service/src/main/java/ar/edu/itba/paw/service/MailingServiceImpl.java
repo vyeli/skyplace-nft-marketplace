@@ -36,7 +36,7 @@ public class MailingServiceImpl implements MailingService{
     private static final String EMAIL_ENCODING = "UTF-8";
     private static final String IMG_PNG_FORMAT = "image/png";
 
-    private static final String LOGIN_URL = "http://pawserver.it.itba.edu.ar/paw-2022a-09/login";
+    private static final String EXPLORE_URL = "http://pawserver.it.itba.edu.ar/paw-2022a-09/explore";
     private static final String PRODUCT_BASE_URL = "http://pawserver.it.itba.edu.ar/paw-2022a-09/product/";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MailingServiceImpl.class);
@@ -75,7 +75,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("sellResourceName", "sell");
 
             context.setVariable("username", username);
-            context.setVariable("loginUrl", LOGIN_URL);
+            context.setVariable("exploreUrl", EXPLORE_URL);
             String html = templateEngine.process("register", context);
             helper.setText(html, true);
 

@@ -1,12 +1,12 @@
 function copyToClipboard(){
     // Copy text
     const walletAddress = document.getElementById("walletId").textContent;
+    const tooltipCopyMessage = document.getElementById("message-copy");
+    const tooltipCopiedMessage = document.getElementById("message-copied");
     if (navigator.clipboard && window.isSecureContext) {
         // navigator clipboard api method'
         navigator.clipboard.writeText(walletAddress);
-        const tooltipText = document.getElementById("tooltip-dark");
-        tooltipText.firstChild.data = "Copied to clipboard!";
-        setTimeout(() => tooltipText.firstChild.data = 'Copy', 1000);
+        toggleTextOnClipboard(tooltipCopyMessage, tooltipCopiedMessage);
     } else {
         // text area method
         let textArea = document.createElement("textarea");
@@ -21,10 +21,17 @@ function copyToClipboard(){
         new Promise((res, rej) => {
             // here the magic happens
             document.execCommand('copy') ? res() : rej();
-            const tooltipText = document.getElementById("tooltip-dark");
-            tooltipText.firstChild.data = "Copied to clipboard!";
-            setTimeout(() => tooltipText.firstChild.data = 'Copy', 1000);
-            textArea.remove();
+            toggleTextOnClipboard(tooltipCopyMessage, tooltipCopiedMessage);
         });
     }
+}
+
+function toggleTextOnClipboard(tooltipCopyMessage, tooltipCopiedMessage){
+    const hideClass = "hidden";
+    tooltipCopyMessage.classList.add(hideClass);
+    tooltipCopiedMessage.classList.remove(hideClass);
+    setTimeout(() => {
+        tooltipCopiedMessage.classList.add(hideClass);
+        tooltipCopyMessage.classList.remove(hideClass);
+    }, 1000);
 }

@@ -20,7 +20,7 @@
             <div class="flex flex-row items-center justify-between">
                 <div class="flex flex-row">
                     <span class="text-4xl font-semibold"><c:out value="${user.username}" /></span>
-                    <button class="flex flex-row items-center ml-5 lg:ml-10 px-2 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-dark" data-tooltip-placement="bottom" type="button" id="walletButton">
+                    <button class="flex flex-row items-center ml-5 lg:ml-10 px-2 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-copy" data-tooltip-placement="bottom" type="button" id="walletButton">
                         <img class="w-6 h-6" src="<c:url value='/resources/utility_icon.svg' />" alt="wallet_icon" />
                         <!--
                         <svg class="fill-cyan-700 rounded-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -30,8 +30,13 @@
                         -->
                         <span class="text-xl ml-1 text-gray-400 font-semibold truncate w-28 lg:w-40 hover:text-gray-600" id="walletId">${user.wallet}</span>
                     </button>
-                    <div id="tooltip-dark" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
-                        <spring:message code="profile.copy"/>
+                    <div id="tooltip-copy" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
+                        <div id="message-copy">
+                            <spring:message code="profile.copy"/>
+                        </div>
+                        <div id="message-copied" class="hidden">
+                            <spring:message code="profile.copied"/>
+                        </div>
                         <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
                 </div>
@@ -163,7 +168,7 @@
                 <form:hidden path="sort" value="${sortValue}"/>
                 <c:choose>
                     <c:when test="${currentPage > 1}">
-                        <form:button type="submit" path="page" name="page" value="${currentPage-1}" class="text-cyan-400 cursor-pointer mr-2" >Previous</form:button>
+                        <form:button type="submit" path="page" name="page" value="${currentPage-1}" class="text-cyan-400 cursor-pointer mr-2" ><spring:message code="profile.previous"/></form:button>
                     </c:when>
                     <c:otherwise>
                         <span class="text-gray-400 mr-2 cursor-default"><spring:message code="profile.previous"/></span>
@@ -182,7 +187,7 @@
                 <form:hidden path="sort" value="${sortValue}"/>
                 <c:choose>
                     <c:when test="${currentPage < pages}">
-                        <form:button type="submit" path="page" name="page" value="${currentPage+1}" class="text-cyan-400 cursor-pointer ml-2" >Next</form:button>
+                        <form:button type="submit" path="page" name="page" value="${currentPage+1}" class="text-cyan-400 cursor-pointer ml-2" ><spring:message code="profile.next"/></form:button>
                     </c:when>
                     <c:otherwise>
                         <span class="text-gray-400 ml-2 cursor-default"><spring:message code="profile.next"/></span>

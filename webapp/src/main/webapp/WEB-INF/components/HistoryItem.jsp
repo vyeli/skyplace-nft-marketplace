@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!-- History item -->
 <a href="<c:url value="/product/${param.nftId}" />" class="border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-4 transition-shadow hover:shadow-lg">
@@ -11,17 +12,20 @@
         <h3 class="font-display text-jacarta-700 mb-1 text-base font-semibold">
             ${param.nftName}
         </h3>
-        <span class="text-jacarta-500 mb-3 block text-sm">
+        <p class="text-jacarta-500 mb-3 block text-sm">
             <c:choose>
                 <c:when test="${param.sold}">
-                    sold to <span class="text-cyan-700">@${param.buyerUsername}</span>
+                    <spring:message code="history.soldTo"/>
+                    <span class="text-cyan-700">@${param.buyerUsername}</span>
                 </c:when>
                 <c:otherwise>
-                    bought from <span class="text-cyan-700">@${param.sellerUsername}</span>
+                    <spring:message code="history.boughtFrom"/>
+                    <span class="text-cyan-700">@${param.sellerUsername}</span>
                 </c:otherwise>
             </c:choose>
-            for ${param.price} ETH
-        </span>
+            <spring:message code="history.for"/>
+            <span>${param.price} ETH</span>
+        </p>
         <span class="text-jacarta-300 block text-xs">${param.date}</span>
     </div>
 
