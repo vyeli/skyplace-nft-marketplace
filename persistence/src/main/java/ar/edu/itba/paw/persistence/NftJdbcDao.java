@@ -5,6 +5,8 @@ import ar.edu.itba.paw.model.Publication;
 import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.exceptions.InvalidChainException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,6 +24,8 @@ import java.util.*;
 
 @Repository
 public class NftJdbcDao implements NftDao{
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(NftJdbcDao.class);
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertNft;
@@ -100,7 +104,10 @@ public class NftJdbcDao implements NftDao{
         if(!chains.contains(chain))
             throw new InvalidChainException();
 
+        int idImage = imageDao.createImage(image);
+
         final Map<String, Object> nftData = new HashMap<>();
+        nftData.put("id_image", idImage);
         nftData.put("nft_id", nftId);
         nftData.put("contract_addr",contractAddr);
         nftData.put("nft_name", nftName);
@@ -109,10 +116,13 @@ public class NftJdbcDao implements NftDao{
         nftData.put("collection", collection);
         nftData.put("description", description);
 
-        int idImage = imageDao.createImage(image);
-
-        nftData.put("id_image", idImage);
-        int id = jdbcInsertNft.executeAndReturnKey(nftData).intValue();
+        int id;
+        try {
+            id = jdbcInsertNft.executeAndReturnKey(nftData).intValue();
+        } catch (Exception e) {
+            LOGGER.error("NFT creation error: " + e.getMessage());
+            return Optional.empty();
+        }
 
         return Optional.of(new Nft(id, nftId, contractAddr, nftName, chain, idImage, idOwner, collection, description, properties, null));
     }

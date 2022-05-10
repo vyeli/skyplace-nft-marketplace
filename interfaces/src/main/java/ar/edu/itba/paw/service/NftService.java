@@ -18,7 +18,7 @@ public interface NftService {
 
     List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search);
 
-    List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale, String sort);
+    List<Publication> getAllPublicationsByUser(int page, User user, String publicationType, String sort);
 
     int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search);
 

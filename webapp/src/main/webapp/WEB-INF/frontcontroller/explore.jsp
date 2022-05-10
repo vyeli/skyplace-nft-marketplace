@@ -236,7 +236,7 @@
 <script>
     const params = new URLSearchParams(window.location.search)
 
-    if(params.get("category") != null) {
+    if(params.get("category") != null && params.get("category") !== "") {
         document.querySelector("input[value='onSale']").checked = true
     }
 

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,8 +52,23 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public List<Publication> getAllPublicationsByUser(int page, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale, String sort) {
-        return nftDao.getAllPublicationsByUser(page, pageSize, user, currentUser, onlyFaved, onlyOnSale, sort);
+    public List<Publication> getAllPublicationsByUser(int page, User user, String publicationType, String sort) {
+        User currentUser = userService.getCurrentUser().orElse(null);
+
+        if (publicationType.equals("favorited") && (currentUser == null || currentUser.getId() != user.getId())) {
+            return new ArrayList<>();
+        }
+
+        switch (publicationType) {
+            case "favorited":
+                return nftDao.getAllPublicationsByUser(page, pageSize, user, currentUser, true, false, sort);
+            case "selling":
+                return nftDao.getAllPublicationsByUser(page, pageSize, user, currentUser, false, true, sort);
+            case "inventory":
+                return nftDao.getAllPublicationsByUser(page, pageSize, user, currentUser, false, false, sort);
+            default:
+                return new ArrayList<>();
+        }
     }
 
     @Override

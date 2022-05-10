@@ -63,7 +63,7 @@
             <c:set var="activeClasses" value="border-b-2 border-cyan-600 text-cyan-600 active"/>
             <c:set var="inactiveClasses" value="border-transparent hover:text-gray-600"/>
             <c:choose>
-                <c:when test="${showInventory != null}">
+                <c:when test="${tabName == 'inventory'}">
                     <c:set var="inventoryClasses" value="${activeClasses}"/>
                 </c:when>
                 <c:otherwise>
@@ -71,7 +71,7 @@
                 </c:otherwise>
             </c:choose>
             <c:choose>
-                <c:when test="${showSelling != null}">
+                <c:when test="${tabName == 'selling'}">
                     <c:set var="sellingClasses" value="${activeClasses}"/>
                 </c:when>
                 <c:otherwise>
@@ -79,7 +79,7 @@
                 </c:otherwise>
             </c:choose>
             <c:choose>
-                <c:when test="${showFavorited != null}">
+                <c:when test="${tabName == 'favorited'}">
                     <c:set var="favoritedClasses" value="${activeClasses}"/>
                 </c:when>
                 <c:otherwise>
@@ -87,7 +87,7 @@
                 </c:otherwise>
             </c:choose>
             <c:choose>
-                <c:when test="${showHistory != null}">
+                <c:when test="${tabName == 'history'}">
                     <c:set var="historyClasses" value="${activeClasses}"/>
                 </c:when>
                 <c:otherwise>
@@ -193,7 +193,7 @@
         </div>
 
         <!-- Dropdown menu -->
-        <c:if test="${showHistory == null}">
+        <c:if test="${tabName != 'history'}">
             <div class="flex flex-row text-2xl">
                 <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button">
                     <c:out value="${sortName}" />
@@ -223,7 +223,7 @@
 
     <!-- NFTs -->
     <c:choose>
-        <c:when test="${showHistory == null}">
+        <c:when test="${tabName != 'history'}">
             <div class="flex flex-wrap justify-center gap-8">
                 <c:forEach items="${publications}" var="publication">
                     <c:if test="${publication.nft.sellOrder != null}">
