@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.exceptions.UserIsNotNftOwnerException;
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Publication;
 import ar.edu.itba.paw.model.User;
@@ -65,23 +66,10 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public boolean userOwnsNft(int productId, User user) {
-        return getNFTById(productId).filter(value -> value.getIdOwner() == user.getId()).isPresent();
-    }
-
-    @Override
-    public boolean currentUserOwnsNft(int productId) {
-        User currentUser = userService.getCurrentUser().orElseThrow(RuntimeException::new); // UserNotLoggedInException
-        return userOwnsNft(productId, currentUser);
-    }
-
-    @Override
-    public boolean currentUserOwnsSellOrder(int productId) {
-        return currentUserOwnsNft(sellOrderService.getNftWithOrder(productId));
-    }
-
-    @Override
     public void delete(int productId) {
+        if (!userService.currentUserOwnsNft(productId) && !userService.isAdmin())
+            throw new UserIsNotNftOwnerException();
+
         nftDao.delete(productId);
     }
 

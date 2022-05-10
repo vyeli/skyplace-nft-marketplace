@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.Image;
+import ar.edu.itba.paw.exceptions.CreateImageException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,7 +18,10 @@ public class ImageJdbcDao implements ImageDao{
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertImage;
 
-    private static final RowMapper<byte[]> ROW_MAPPER = (rs, rowNum) -> rs.getBytes("image");
+    private static final RowMapper<Image> ROW_MAPPER = (rs, rowNum) ->  {
+        byte[] bytes = rs.getBytes("image");
+        return new Image(bytes);
+    };
 
     @Autowired
     public ImageJdbcDao(final DataSource ds) {
@@ -28,19 +32,18 @@ public class ImageJdbcDao implements ImageDao{
     }
 
     @Override
-    public Optional<Integer> createImage(MultipartFile image) {
+    public int createImage(MultipartFile image) {
         try {
             byte[] bytes = image.getBytes();
             final Map<String, Object> imageData = new HashMap<>();
             imageData.put("image", bytes);
-            return Optional.of(jdbcInsertImage.executeAndReturnKey(imageData).intValue());
+            return jdbcInsertImage.executeAndReturnKey(imageData).intValue();
         } catch(Exception e) {
-            return Optional.empty();
+            throw new CreateImageException();
         }
     }
 
-    public Image getImage(int id) {
-        List<byte[]> result = jdbcTemplate.query("SELECT image FROM images WHERE id_image = ?", new Object[]{id}, ROW_MAPPER);
-        return result.size() > 0 ? new Image(result.get(0)): null;
+    public Optional<Image> getImage(int id) {
+        return jdbcTemplate.query("SELECT image FROM images WHERE id_image = ?", new Object[]{id}, ROW_MAPPER).stream().findFirst();
     }
 }

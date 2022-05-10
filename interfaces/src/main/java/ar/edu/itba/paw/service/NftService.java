@@ -24,11 +24,5 @@ public interface NftService {
 
     int getAmountPublicationPagesByUser(User user, User currentUser, boolean onlyFaved, boolean onlyOnSale);
 
-    boolean userOwnsNft(int productId, User user);
-
-    boolean currentUserOwnsNft(int productId);
-
-    boolean currentUserOwnsSellOrder(int productId);
-
     void delete(int productId);
 }

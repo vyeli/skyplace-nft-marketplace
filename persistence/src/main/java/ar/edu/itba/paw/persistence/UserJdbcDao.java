@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.exceptions.UserAlreadyExistsException;
 import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.exceptions.CreateUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +51,14 @@ public class UserJdbcDao implements UserDao{
             final int userId = jdbcInsertSellOrder.executeAndReturnKey(userData).intValue();
             return Optional.of(new User(userId, email, username, wallet, walletChain, password, "User"));
         } catch (DuplicateKeyException e) {
-            LOGGER.error("User already exists", e);
-            return Optional.empty();
+            LOGGER.error("User already exists {}", e.getMessage());
+            throw new UserAlreadyExistsException();
         } catch (DataIntegrityViolationException e) {
-            LOGGER.error("Invalid user data", e);
-            return Optional.empty();
+            LOGGER.error("Invalid user data {}", e.getMessage());
+            throw new CreateUserException();
+        } catch (Exception e) {
+            LOGGER.error("Can not create user {}", e.getMessage());
+            throw new CreateUserException();
         }
     }
 
@@ -65,6 +70,16 @@ public class UserJdbcDao implements UserDao{
     @Override
     public Optional<User> getUserById(final int id) {
         return jdbcTemplate.query("SELECT * FROM users WHERE id = ?", new Object[]{ id }, ROW_MAPPER).stream().findFirst();
+    }
+
+    @Override
+    public boolean userOwnsNft(int productId, User user) {
+        return jdbcTemplate.query("SELECT * FROM users JOIN nfts ON (users.id=nfts.id_owner) WHERE users.id=? AND nfts.nft_id=?", new Object[]{user.getId(), productId}, (rs, rn) -> rs.getString("username")).size() > 0;
+    }
+
+    @Override
+    public boolean userOwnsSellOrder(int productId, User user) {
+        return jdbcTemplate.query("SELECT * FROM users JOIN nfts ON (users.id=nfts.id_owner) JOIN sellorders ON (nfts.id=sellorders.id_nft) WHERE users.id=? AND sellorders.id=?", new Object[]{user.getId(), productId}, (rs, rn) -> rs.getString("username")).size() > 0;
     }
 
 }

@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.Optional;
+
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -53,9 +55,10 @@ public class ImageJdbcDaoTest {
     public void testGetImageById() {
         int imageId = imageJdbcInsert.executeAndReturnKey(Collections.singletonMap("image", new byte[1])).intValue();
 
-        Image image = imageJdbcDao.getImage(imageId);
+        Optional<Image> image = imageJdbcDao.getImage(imageId);
 
-        assertEquals(1,image.getImage().length);
-        assertEquals(0,image.getImage()[0]);
+        assertTrue(image.isPresent());
+        assertEquals(1,image.get().getImage().length);
+        assertEquals(0,image.get().getImage()[0]);
     }
 }

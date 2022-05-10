@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.exceptions.NftNotFoundException;
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.SellOrder;
+import ar.edu.itba.paw.exceptions.InvalidCategoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -37,11 +39,11 @@ public class SellOrderJdbcDao implements SellOrderDao {
     public Optional<SellOrder> create(BigDecimal price, int idNft, String category) {
         List<String> categories = categoryDao.getCategories();
         if (!categories.contains(category))
-            return Optional.empty();
+            throw new InvalidCategoryException();
 
         Optional<Nft> nft = nftDao.getNFTById(idNft);
         if (!nft.isPresent())
-            return Optional.empty();
+            throw new NftNotFoundException();
 
         Map<String, Object> sellOrderData = new HashMap<>();
         sellOrderData.put("price", price);
@@ -61,12 +63,13 @@ public class SellOrderJdbcDao implements SellOrderDao {
     @Override
     public boolean update(int id, String category, BigDecimal price) {
         String updateQuery = "UPDATE sellorders SET category = ?, price = ? WHERE id = ?";
-            // returns the number of affected rows
         return jdbcTemplate.update(updateQuery, category, price, id) == 1;
     }
 
     @Override
     public boolean delete(int id) {
+
+
         String updateQuery = "DELETE FROM sellorders WHERE id = ?";
         return jdbcTemplate.update(updateQuery, id) == 1;
     }

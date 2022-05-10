@@ -1,10 +1,14 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.exceptions.NftNotFoundException;
+import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.model.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
@@ -53,15 +57,13 @@ public class FavoriteJdbcDaoTest {
 
     @Test
     public void testAddNftFavoriteInvalidNft() {
-        favoriteJdbcDao.addNftFavorite(30, new User(USER_ID, ""));
-
+        assertThrows(NftNotFoundException.class, () -> favoriteJdbcDao.addNftFavorite(30, new User(USER_ID, "")));
         assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, FAVORITE_TABLE));
     }
 
     @Test
     public void testAddNftFavoriteInvalidUser() {
-        favoriteJdbcDao.addNftFavorite(NFT_ID, new User(40, ""));
-
+        assertThrows(DataIntegrityViolationException.class, () -> favoriteJdbcDao.addNftFavorite(NFT_ID, new User(40, "")));
         assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, FAVORITE_TABLE));
     }
 
@@ -72,7 +74,7 @@ public class FavoriteJdbcDaoTest {
         favoritedData.put("id_nft", NFT_ID);
         favoriteJdbcInsert.execute(favoritedData);
 
-        favoriteJdbcDao.addNftFavorite(NFT_ID, new User(USER_ID, ""));
+        assertThrows(DuplicateKeyException.class,() -> favoriteJdbcDao.addNftFavorite(NFT_ID, new User(USER_ID, "")));
 
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, FAVORITE_TABLE));
     }
@@ -96,7 +98,7 @@ public class FavoriteJdbcDaoTest {
         favoritedData.put("id_nft", NFT_ID);
         favoriteJdbcInsert.execute(favoritedData);
 
-        favoriteJdbcDao.removeNftFavorite(30, new User(USER_ID, ""));
+        assertThrows(NftNotFoundException.class, () -> favoriteJdbcDao.removeNftFavorite(30, new User(USER_ID, "")));
 
         assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, FAVORITE_TABLE));
     }

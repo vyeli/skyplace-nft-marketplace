@@ -11,6 +11,4 @@ public class SellNftForm extends PriceForm {
         this.category = category;
     }
 
-    public String getPublish(){return "";}
-
 }
