@@ -33,7 +33,7 @@
 
                     <c:url value="/explore" var="explorePath"/>
                     <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
-                        <form:hidden path="page" value="${currentPage}" />
+                        <form:hidden path="page" value="1" />
                         <form:hidden path="sort" value="${sortValue}" />
                         <form:hidden path="search" value="${searchValue}"/>
                         <form:hidden path="searchFor" value="${searchForValue}"/>
@@ -186,7 +186,7 @@
                     <!-- Dropdown menu -->
                     <div id="sortDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44">
                         <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
-                            <form:hidden path="page" value="${currentPage}" />
+                            <form:hidden path="page" value="1" />
                             <form:hidden path="search" value="${searchValue}"/>
                             <form:hidden path="searchFor" value="${searchForValue}"/>
                             <form:hidden path="minPrice" value="${minPriceValue}"/>
