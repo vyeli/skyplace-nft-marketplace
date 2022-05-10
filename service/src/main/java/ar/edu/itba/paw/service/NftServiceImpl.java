@@ -77,8 +77,17 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public int getAmountPublicationPagesByUser(User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
-        return nftDao.getAmountPublicationPagesByUser(pageSize, user, currentUser, onlyFaved, onlyOnSale);
+    public int getAmountPublicationPagesByUser(User user, User currentUser, String publicationType) {
+        switch (publicationType) {
+            case "favorited":
+                return nftDao.getAmountPublicationPagesByUser(pageSize, user, currentUser, true, false);
+            case "selling":
+                return nftDao.getAmountPublicationPagesByUser(pageSize, user, currentUser, false, true);
+            case "inventory":
+                return nftDao.getAmountPublicationPagesByUser(pageSize, user, currentUser, false, false);
+            default:
+                return 1;
+        }
     }
 
     @Override

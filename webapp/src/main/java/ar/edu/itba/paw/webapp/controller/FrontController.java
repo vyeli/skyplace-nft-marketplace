@@ -365,7 +365,7 @@ public class FrontController {
             mav.addObject("pages", purchaseService.getAmountPagesByUserId(parsedUserId));
         } else {
             List<Publication> publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, tabName, profileFilter.getSort());
-            int publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, false, true);
+            int publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, tabName);
             mav.addObject("publications", publications);
             mav.addObject("publicationsSize", publications.size());
             mav.addObject("pages", publicationPages);

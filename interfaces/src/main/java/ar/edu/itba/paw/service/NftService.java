@@ -22,7 +22,7 @@ public interface NftService {
 
     int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search);
 
-    int getAmountPublicationPagesByUser(User user, User currentUser, boolean onlyFaved, boolean onlyOnSale);
+    int getAmountPublicationPagesByUser(User user, User currentUser, String publicationType);
 
     void delete(int productId);
 }
