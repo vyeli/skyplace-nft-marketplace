@@ -4,6 +4,7 @@ import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +46,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
             User seller = userService.getUserById(nft.getIdOwner()).orElseThrow(UserNotFoundException::new);
             User bidder = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
             Image image = imageDao.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
-            mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), buyOrder.getAmount(), image.getImage());
+            mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), buyOrder.getAmount(), image.getImage(), LocaleContextHolder.getLocale());
             return true;
         }
         return false;

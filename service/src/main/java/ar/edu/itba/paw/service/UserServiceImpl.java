@@ -5,6 +5,7 @@ import ar.edu.itba.paw.exceptions.UserNotLoggedInException;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService{
             throw new UserAlreadyExistsException();
         Optional<User> user = userDao.create(email, username, wallet, walletChain, passwordEncoder.encode(password));
         if(user.isPresent())
-            mailingService.sendRegisterMail(email, username);
+            mailingService.sendRegisterMail(email, username, LocaleContextHolder.getLocale());
         return user;
     }
 
