@@ -54,7 +54,7 @@
         </form:label>
         <input
           type="submit"
-          value="Publish"
+          value="<spring:message code="sell.button"/>"
           class="px-1 py-4 col-start-2 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
         />
       </form:form>

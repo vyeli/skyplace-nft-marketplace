@@ -62,7 +62,7 @@
         </form:label>
         <input
           type="submit"
-          value="Update"
+          value="<spring:message code="updateSellOrder.update"/>"
           class="p-1 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
         />
       </form:form>
