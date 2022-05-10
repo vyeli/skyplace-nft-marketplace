@@ -38,10 +38,10 @@
             </div>
         </div>
         <hr style="color: #E5E7EB;">
-        <div style="text-align:center">
-            <a href="http://pawserver.it.itba.edu.ar/paw-2022a-09/login" th:text="#{email.register.signin}" style="text-decoration-line: underline; text-decoration-color: dodgerblue "></a>
+        <div style="text-align:center; display: inline">
+            <a th:href="${loginUrl}" th:text="#{email.register.signin}" style="text-decoration-line: underline; text-decoration-color: dodgerblue "></a>
+            <span th:text="#{email.register.toAccount}"></span>
         </div>
-        <p th:text="#{email.register.toAccount}" style="text-align: center"></p>
     </div>
 </body>
 </html>

@@ -10,8 +10,22 @@
             <img src="cid:logo" th:src="|cid:${logoResourceName}|" alt="skyplace_logo"/>
             <h2 style="font-size: 1.875rem; line-height: 2.25rem; margin-top: 0.125rem;">Skyplace</h2>
         </div>
-        <p th:text="#{email.bid.hello}"> <span th:text="${sellerMail}"></span>,</p>
-        <p th:text="#{email.bid.weWant}"> <span th:text="${bidderMail}"> </span> <span th:text="#{email.bid.hasJust}"></span> <span th:text="${nftBidEthPrice}"></span> <span th:text="#{email.bid.ethFor}"></span> <span th:text="${nftName}"></span>#<span th:text="${nftId}"></span>.</p>
+        <div style="display: inline-block;">
+            <span th:text="#{email.bid.hello}"></span>
+            <span th:text="${sellerMail}"></span>
+            <span> ,</span>
+        </div>
+        <br>
+        <div style="display: inline;">
+            <span th:text="#{email.bid.weWant}"></span>
+            <span th:text="${bidderMail}"></span>
+            <span th:text="#{email.bid.hasJust}"></span>
+            <span th:text="${nftBidEthPrice}"></span>
+            <span th:text="#{email.bid.ethFor}"></span>
+            <span th:text="${nftName}"></span>
+            #<span th:text="${nftId}"></span>
+            <span>.</span>
+        </div>
         <hr style="color: #E5E7EB;">
         <div style="display: flex; margin: 0 auto;">
             <img style="height: 14rem; margin: auto 0; display: block; border: 1px solid black; border-radius: 0.375rem;" src="cid:nftImage" th:src="|cid:${nftImageResourceName}|" alt="skyplace_logo"/>
