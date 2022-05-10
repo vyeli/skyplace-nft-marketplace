@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.exceptions.NftNotFoundException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.model.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,9 +16,8 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 
+import static ar.edu.itba.paw.persistence.Utils.*;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,10 +25,10 @@ import static org.junit.Assert.*;
 @Transactional
 public class FavoriteJdbcDaoTest {
 
-    private static final String FAVORITE_TABLE = "favorited";
     private final int NFT_ID = 1;
     private final int USER_ID = 1;
     private final int USER2_ID = 2;
+    private final int IMAGE_ID = 1;
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert favoriteJdbcInsert;
@@ -46,6 +44,18 @@ public class FavoriteJdbcDaoTest {
         jdbcTemplate = new JdbcTemplate(ds);
         favoriteJdbcInsert = new SimpleJdbcInsert(ds)
                 .withTableName(FAVORITE_TABLE);
+        SimpleJdbcInsert nftJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(NFT_TABLE);
+        SimpleJdbcInsert userJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(USER_TABLE);
+        SimpleJdbcInsert imageJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(IMAGE_TABLE);
+
+        imageJdbcInsert.execute(Utils.createImageData(IMAGE_ID));
+        userJdbcInsert.execute(Utils.createUserData(USER_ID));
+        userJdbcInsert.execute(Utils.createUserData(USER2_ID));
+        nftJdbcInsert.execute(Utils.createNftData(NFT_ID, IMAGE_ID, USER_ID));
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, FAVORITE_TABLE);
     }
 
     @Test
@@ -69,10 +79,7 @@ public class FavoriteJdbcDaoTest {
 
     @Test
     public void testAddNftFavoriteTwice() {
-        Map<String, Object> favoritedData = new HashMap<>();
-        favoritedData.put("user_id", USER_ID);
-        favoritedData.put("id_nft", NFT_ID);
-        favoriteJdbcInsert.execute(favoritedData);
+        favoriteJdbcInsert.execute(Utils.createFavoritedData(USER_ID, NFT_ID));
 
         assertThrows(DuplicateKeyException.class,() -> favoriteJdbcDao.addNftFavorite(NFT_ID, new User(USER_ID, "")));
 
@@ -81,10 +88,7 @@ public class FavoriteJdbcDaoTest {
 
     @Test
     public void testRemoveNftFavorite() {
-        Map<String, Object> favoritedData = new HashMap<>();
-        favoritedData.put("user_id", USER_ID);
-        favoritedData.put("id_nft", NFT_ID);
-        favoriteJdbcInsert.execute(favoritedData);
+        favoriteJdbcInsert.execute(Utils.createFavoritedData(USER_ID, NFT_ID));
 
         favoriteJdbcDao.removeNftFavorite(NFT_ID, new User(USER_ID, ""));
 
@@ -93,10 +97,7 @@ public class FavoriteJdbcDaoTest {
 
     @Test
     public void testRemoveNftFavoriteInvalidNft() {
-        Map<String, Object> favoritedData = new HashMap<>();
-        favoritedData.put("user_id", USER_ID);
-        favoritedData.put("id_nft", NFT_ID);
-        favoriteJdbcInsert.execute(favoritedData);
+        favoriteJdbcInsert.execute(Utils.createFavoritedData(USER_ID, NFT_ID));
 
         assertThrows(NftNotFoundException.class, () -> favoriteJdbcDao.removeNftFavorite(30, new User(USER_ID, "")));
 
@@ -105,10 +106,7 @@ public class FavoriteJdbcDaoTest {
 
     @Test
     public void testRemoveNftFavoriteInvalidUser() {
-        Map<String, Object> favoritedData = new HashMap<>();
-        favoritedData.put("user_id", USER_ID);
-        favoritedData.put("id_nft", NFT_ID);
-        favoriteJdbcInsert.execute(favoritedData);
+        favoriteJdbcInsert.execute(Utils.createFavoritedData(USER_ID, NFT_ID));
 
         favoriteJdbcDao.removeNftFavorite(NFT_ID, new User(40, ""));
 
@@ -117,10 +115,7 @@ public class FavoriteJdbcDaoTest {
 
     @Test
     public void testUserFavedNft() {
-        Map<String, Object> favoritedData = new HashMap<>();
-        favoritedData.put("user_id", USER_ID);
-        favoritedData.put("id_nft", NFT_ID);
-        favoriteJdbcInsert.execute(favoritedData);
+        favoriteJdbcInsert.execute(Utils.createFavoritedData(USER_ID, NFT_ID));
 
         boolean userFavedNft = favoriteJdbcDao.userFavedNft(USER_ID, NFT_ID);
 
@@ -129,10 +124,7 @@ public class FavoriteJdbcDaoTest {
 
     @Test
     public void testUserNotFavedNft() {
-        Map<String, Object> favoritedData = new HashMap<>();
-        favoritedData.put("user_id", USER_ID);
-        favoritedData.put("id_nft", NFT_ID);
-        favoriteJdbcInsert.execute(favoritedData);
+        favoriteJdbcInsert.execute(Utils.createFavoritedData(USER_ID, NFT_ID));
 
         boolean userFavedNft = favoriteJdbcDao.userFavedNft(15, NFT_ID);
 
@@ -141,13 +133,8 @@ public class FavoriteJdbcDaoTest {
 
     @Test
     public void testGetNftFavorites() {
-        Map<String, Object> favoritedData = new HashMap<>();
-        favoritedData.put("user_id", USER_ID);
-        favoritedData.put("id_nft", NFT_ID);
-        favoriteJdbcInsert.execute(favoritedData);
-        favoritedData.put("user_id", USER2_ID);
-        favoritedData.put("id_nft", NFT_ID);
-        favoriteJdbcInsert.execute(favoritedData);
+        favoriteJdbcInsert.execute(Utils.createFavoritedData(USER_ID, NFT_ID));
+        favoriteJdbcInsert.execute(Utils.createFavoritedData(USER2_ID, NFT_ID));
 
 
         int amountFavorites = favoriteJdbcDao.getNftFavorites(NFT_ID);

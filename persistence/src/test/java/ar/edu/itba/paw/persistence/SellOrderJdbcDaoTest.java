@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.exceptions.InvalidCategoryException;
+import ar.edu.itba.paw.exceptions.NftNotFoundException;
 import ar.edu.itba.paw.model.SellOrder;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static ar.edu.itba.paw.persistence.Utils.*;
 import static org.junit.Assert.*;
 
 
@@ -26,9 +29,10 @@ import static org.junit.Assert.*;
 @Transactional
 public class SellOrderJdbcDaoTest {
 
-    private static final String SELLORDER_TABLE = "sellorders";
     private final BigDecimal PRICE = new BigDecimal(5);
     private final int NFT_ID = 1;
+    private final int USER_ID = 1;
+    private final int IMAGE_ID = 1;
     private final int NFT2_ID = 2;
     private final String CATEGORY = "Other";
 
@@ -46,31 +50,39 @@ public class SellOrderJdbcDaoTest {
         sellOrderJdbcInsert = new SimpleJdbcInsert(ds)
                 .withTableName(SELLORDER_TABLE)
                 .usingGeneratedKeyColumns("id");
+        SimpleJdbcInsert nftJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(NFT_TABLE);
+        SimpleJdbcInsert userJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(USER_TABLE);
+        SimpleJdbcInsert imageJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(IMAGE_TABLE);
+
+        imageJdbcInsert.execute(Utils.createImageData(IMAGE_ID));
+        userJdbcInsert.execute(Utils.createUserData(USER_ID));
+        nftJdbcInsert.execute(Utils.createNftData(NFT_ID, IMAGE_ID, USER_ID));
+        nftJdbcInsert.execute(Utils.createNftData(NFT2_ID, IMAGE_ID, USER_ID));
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, SELLORDER_TABLE);
     }
 
     @Test
     public void testCreateSellOrder(){
-        Optional<SellOrder> sellOrder = sellOrderJdbcDao.create(PRICE, NFT2_ID, CATEGORY);
+        Optional<SellOrder> sellOrder = sellOrderJdbcDao.create(PRICE, NFT_ID, CATEGORY);
 
         assertTrue(sellOrder.isPresent());
-        assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
         assertEquals(PRICE, sellOrder.get().getPrice());
     }
 
     @Test
     public void testCreateSellOrderInvalidCategory() {
-        Optional<SellOrder> sellOrder = sellOrderJdbcDao.create(PRICE, NFT2_ID, "category");
-
-        assertFalse(sellOrder.isPresent());
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
+        assertThrows(InvalidCategoryException.class, () -> sellOrderJdbcDao.create(PRICE, NFT_ID, "category"));
+        assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
     }
 
     @Test
     public void testCreateSellOrderInvalidNft() {
-        Optional<SellOrder> sellOrder = sellOrderJdbcDao.create(PRICE, 15, CATEGORY);
-
-        assertFalse(sellOrder.isPresent());
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
+        assertThrows(NftNotFoundException.class, () -> sellOrderJdbcDao.create(PRICE, 15, CATEGORY));
+        assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
     }
 
     @Test
@@ -99,7 +111,7 @@ public class SellOrderJdbcDaoTest {
 
         assertTrue(sellOrder);
         assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, SELLORDER_TABLE, "category='Art' AND price=15"));
-        assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
     }
 
     @Test
@@ -113,7 +125,7 @@ public class SellOrderJdbcDaoTest {
         boolean sellOrder = sellOrderJdbcDao.delete(sellOrderId);
 
         assertTrue(sellOrder);
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
+        assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
     }
 
     @Test
@@ -127,7 +139,7 @@ public class SellOrderJdbcDaoTest {
         boolean sellOrder = sellOrderJdbcDao.delete(sellOrderId+1);
 
         assertFalse(sellOrder);
-        assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, SELLORDER_TABLE));
     }
 
     @Test

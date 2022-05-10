@@ -14,12 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import static ar.edu.itba.paw.persistence.Utils.*;
 import static org.junit.Assert.*;
 
 
@@ -28,11 +25,12 @@ import static org.junit.Assert.*;
 @Transactional
 public class PurchaseJdbcDaoTest {
 
-    private static final String PURCHASE_TABLE = "purchases";
+
     private static final BigDecimal PRICE = new BigDecimal(5);
     private final int USER_ID = 1;
     private final int USER2_ID = 2;
     private final int ID_NFT = 1;
+    private final int IMAGE_ID = 1;
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert purchaseJdbcInsert;
@@ -48,6 +46,18 @@ public class PurchaseJdbcDaoTest {
         purchaseJdbcInsert = new SimpleJdbcInsert(ds)
                 .withTableName(PURCHASE_TABLE)
                 .usingGeneratedKeyColumns("id");
+        SimpleJdbcInsert nftJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(NFT_TABLE);
+        SimpleJdbcInsert userJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(USER_TABLE);
+        SimpleJdbcInsert imageJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(IMAGE_TABLE);
+
+        imageJdbcInsert.execute(Utils.createImageData(IMAGE_ID));
+        userJdbcInsert.execute(Utils.createUserData(USER_ID));
+        userJdbcInsert.execute(Utils.createUserData(USER2_ID));
+        nftJdbcInsert.execute(Utils.createNftData(ID_NFT, IMAGE_ID, USER_ID));
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, PURCHASE_TABLE);
     }
 
     @Test
@@ -60,16 +70,8 @@ public class PurchaseJdbcDaoTest {
 
     @Test
     public void testGetUserPurchases() {
-        Map<String, Object> purchasesData = new HashMap<>();
-        purchasesData.put("id_nft", ID_NFT);
-        purchasesData.put("id_buyer", USER_ID);
-        purchasesData.put("price", PRICE);
-        purchasesData.put("id_seller", USER2_ID);
-        purchasesData.put("buy_date", new Timestamp(LocalTime.now().getNano()));
-        purchaseJdbcInsert.execute(purchasesData);
-        purchasesData.put("id_buyer", USER2_ID);
-        purchasesData.put("id_seller", USER_ID);
-        purchaseJdbcInsert.execute(purchasesData);
+        purchaseJdbcInsert.execute(Utils.createPurchaseData(ID_NFT, USER_ID, USER2_ID));
+        purchaseJdbcInsert.execute(Utils.createPurchaseData(ID_NFT, USER2_ID, USER_ID));
 
         List<Purchase> purchases = purchaseJdbcDao.getUserPurchases(USER_ID);
 
@@ -80,16 +82,8 @@ public class PurchaseJdbcDaoTest {
 
     @Test
     public void testGetAllTransactions() {
-        Map<String, Object> purchasesData = new HashMap<>();
-        purchasesData.put("id_nft", ID_NFT);
-        purchasesData.put("id_buyer", USER_ID);
-        purchasesData.put("price", PRICE);
-        purchasesData.put("id_seller", USER2_ID);
-        purchasesData.put("buy_date", new Timestamp(LocalTime.now().getNano()));
-        purchaseJdbcInsert.execute(purchasesData);
-        purchasesData.put("id_buyer", USER2_ID);
-        purchasesData.put("id_seller", USER_ID);
-        purchaseJdbcInsert.execute(purchasesData);
+        purchaseJdbcInsert.execute(Utils.createPurchaseData(ID_NFT, USER_ID, USER2_ID));
+        purchaseJdbcInsert.execute(Utils.createPurchaseData(ID_NFT, USER2_ID, USER_ID));
 
         List<Purchase> purchases = purchaseJdbcDao.getAllTransactions(USER_ID, 1, 12);
 
