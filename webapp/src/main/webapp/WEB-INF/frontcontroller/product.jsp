@@ -227,7 +227,7 @@
                     <div class="mb-3 flex">
                         <!-- Collection -->
                         <div class="flex items-center">
-                            <span class="text-accent mr-2 underline decoration-cyan-700 font-bold">Collection: <c:out value="${nft.collection}" /></span>
+                            <span class="text-accent mr-2 underline decoration-cyan-700 font-bold"><spring:message code="product.collection"/> <c:out value="${nft.collection}" /></span>
                             <span class=" bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                                   data-tippy-content="Verified Collection">
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
@@ -267,7 +267,7 @@
                                     </button>
                                 </form>
                             </div>
-                            <c:if test="${currentUser.id == owner.id || (not empty pageContext.request.userPrincipal ? pageContext.request.isUserInRole('ADMIN') : false )}">
+                            <c:if test="${currentUser.id == owner.id || isAdmin}">
                                 <button id="productButton" data-dropdown-toggle="productMenu" type="button" class="flex items-center space-x-1 rounded-r-xl border bg-white py-2 px-2">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
                                 </button>
@@ -394,7 +394,7 @@
 <spring:message code="product.deleteNftConfirm" var="deleteNftConfirm"/>
 
 
-<c:if test="${currentUser.id == owner.id}">
+<c:if test="${currentUser.id == owner.id || isAdmin}">
     <c:choose>
         <c:when test="${sellOrder != null}">
             <jsp:include page="../components/DeleteModal.jsp">
@@ -412,22 +412,23 @@
         </c:otherwise>
     </c:choose>
 </c:if>
+<c:if test="${sellOrder != null}">
+    <script type="module" defer>
+        const coingeckoApiEndpoint = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
 
-<script type="module" defer>
-    const coingeckoApiEndpoint = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+        const response = await fetch(coingeckoApiEndpoint).catch(e => console.log(e))
+        const prices = await response.json()
+        const usdPrice = ${sellOrder.price} * prices.ethereum.usd
+        document.getElementById("priceTag").innerText = "~ " + usdPrice.toFixed(0) + " USD"
 
-    const response = await fetch(coingeckoApiEndpoint).catch(e => console.log(e))
-    const prices = await response.json()
-    const usdPrice = ${sellOrder.price} * prices.ethereum.usd
-    document.getElementById("priceTag").innerText = "~ " + usdPrice.toFixed(0) + " USD"
+        const offerInput = document.getElementById("offerInput")
+        const offerDisplay = document.getElementById("offerDisplay")
 
-    const offerInput = document.getElementById("offerInput")
-    const offerDisplay = document.getElementById("offerDisplay")
-
-    offerInput.addEventListener("keyup", e => {
-        const _usdPrice = e.target.value * prices.ethereum.usd
-        offerDisplay.innerText = "~ " + _usdPrice.toFixed(0) + " USD"
-    })
-</script>
+        offerInput.addEventListener("keyup", e => {
+            const _usdPrice = e.target.value * prices.ethereum.usd
+            offerDisplay.innerText = "~ " + _usdPrice.toFixed(0) + " USD"
+        })
+    </script>
+</c:if>
 </body>
 </html>

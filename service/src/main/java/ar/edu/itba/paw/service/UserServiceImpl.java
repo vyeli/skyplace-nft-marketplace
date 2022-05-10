@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.exceptions.UserAlreadyExistsException;
+import ar.edu.itba.paw.exceptions.UserNotLoggedInException;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +33,7 @@ public class UserServiceImpl implements UserService{
             throw new UserAlreadyExistsException();
         Optional<User> user = userDao.create(email, username, wallet, walletChain, passwordEncoder.encode(password));
         if(user.isPresent())
-            mailingService.sendRegisterMail(email, username);
+            mailingService.sendRegisterMail(email, username, LocaleContextHolder.getLocale());
         return user;
     }
 
@@ -51,6 +53,28 @@ public class UserServiceImpl implements UserService{
         if(principal instanceof UserDetails)
             return getUserByEmail(((UserDetails) principal).getUsername());
         return Optional.empty();
+    }
+
+    @Override
+    public boolean userOwnsNft(int productId, User user) {
+        return userDao.userOwnsNft(productId, user);
+    }
+
+    @Override
+    public boolean currentUserOwnsNft(int productId) {
+        User currentUser = getCurrentUser().orElseThrow(UserNotLoggedInException::new);
+        return userOwnsNft(productId, currentUser);
+    }
+
+    @Override
+    public boolean userOwnsSellOrder(int productId, User user) {
+        return userDao.userOwnsSellOrder(productId, user);
+    }
+
+    @Override
+    public boolean currentUserOwnsSellOrder(int productId) {
+        User currentUser = getCurrentUser().orElseThrow(UserNotLoggedInException::new);
+        return userOwnsSellOrder(productId, currentUser);
     }
 
     @Override

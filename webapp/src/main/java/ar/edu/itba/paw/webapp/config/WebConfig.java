@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -18,9 +20,14 @@ import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.Properties;
 
 @ComponentScan({
         "ar.edu.itba.paw.webapp.controller",
@@ -36,6 +43,13 @@ public class WebConfig extends WebMvcConfigurationSupport {
     public static final String DB_URL_PARAMETER = "DB_URL";
     public static final String DB_USERNAME_PARAMETER = "DB_USERNAME";
     public static final String DB_PASSWORD_PARAMETER = "DB_PASSWORD";
+
+    private final static String MAIL_USERNAME_PARAMETER = "MAIL_USERNAME";
+    private final static String MAIL_PASSWORD_PARAMETER = "MAIL_PASSWORD";
+    private final static String MAIL_HOST_PARAMETER = "MAIL_HOST";
+    private final static String MAIL_PORT_PARAMETER = "MAIL_PORT";
+    private final static String MAIL_AUTH_PARAMETER = "MAIL_HAS_AUTH";
+    private final static String MAIL_STARTTLS_PARAMETER = "MAIL_STARTTLS_ENABLE";
 
     @Bean
     public ViewResolver viewResolver() {
@@ -98,6 +112,47 @@ public class WebConfig extends WebMvcConfigurationSupport {
         messageSource.setCacheSeconds(5);
         return messageSource;
     }
+
+    @Bean
+    public SpringResourceTemplateResolver templateResolver(){
+        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        templateResolver.setPrefix("classpath:mails/templates/");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        templateResolver.setCacheable(false);
+        return templateResolver;
+    }
+
+    @Bean
+    public SpringTemplateEngine templateEngine(){
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver());
+        return templateEngine;
+    }
+
+    @Bean
+    public JavaMailSender emailSender(){
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+        final Dotenv env = Dotenv.load();
+
+
+        // Basic mail sender configuration
+        mailSender.setHost(env.get(MAIL_HOST_PARAMETER));
+        mailSender.setPort(Integer.parseInt(Objects.requireNonNull(env.get(MAIL_PORT_PARAMETER))));
+        mailSender.setUsername(env.get(MAIL_USERNAME_PARAMETER));
+        mailSender.setPassword(env.get(MAIL_PASSWORD_PARAMETER));
+
+        Properties javaMailProps = new Properties();
+        javaMailProps.setProperty("mail.smtp.auth", env.get(MAIL_AUTH_PARAMETER));
+        javaMailProps.setProperty("mail.smtp.starttls.enable", env.get(MAIL_STARTTLS_PARAMETER));
+        mailSender.setJavaMailProperties(javaMailProps);
+
+        return mailSender;
+    }
+
+
 
     //FIXME: CHANGE LANGUAGE NOT WORKING
 //    @Bean

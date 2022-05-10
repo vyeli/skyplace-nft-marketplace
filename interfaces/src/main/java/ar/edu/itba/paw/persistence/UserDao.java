@@ -12,4 +12,8 @@ public interface UserDao {
 
     Optional<User> getUserById(int id);
 
+    boolean userOwnsNft(int productId, User user);
+
+    boolean userOwnsSellOrder(int productId, User user);
+
 }

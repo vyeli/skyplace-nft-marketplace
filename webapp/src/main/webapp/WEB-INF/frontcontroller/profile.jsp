@@ -167,7 +167,7 @@
                         <form:button type="submit" path="page" name="page" value="${currentPage-1}" class="text-cyan-400 cursor-pointer mr-2" >Previous</form:button>
                     </c:when>
                     <c:otherwise>
-                        <span class="text-gray-400 mr-2 cursor-default">Previous</span>
+                        <span class="text-gray-400 mr-2 cursor-default"><spring:message code="profile.previous"/></span>
                     </c:otherwise>
                 </c:choose>
             </form:form>
@@ -176,7 +176,7 @@
                 <form:hidden path="sort" value="${sortValue}"/>
                 <form:input path="page" type="number" min="1" max="${pages}" value="${currentPage}"
                             class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 py-0.5" />
-                <span> of ${pages}</span>
+                <span> <spring:message code="profile.of"/> ${pages}</span>
             </form:form>
             <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
                 <form:hidden path="tab" value="${tabName}"/>
@@ -186,7 +186,7 @@
                         <form:button type="submit" path="page" name="page" value="${currentPage+1}" class="text-cyan-400 cursor-pointer ml-2" >Next</form:button>
                     </c:when>
                     <c:otherwise>
-                        <span class="text-gray-400 ml-2 cursor-default">Next</span>
+                        <span class="text-gray-400 ml-2 cursor-default"><spring:message code="profile.next"/></span>
                     </c:otherwise>
                 </c:choose>
             </form:form>

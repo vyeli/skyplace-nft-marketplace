@@ -68,6 +68,8 @@ public class SellOrderJdbcDao implements SellOrderDao {
 
     @Override
     public boolean delete(int id) {
+
+
         String updateQuery = "DELETE FROM sellorders WHERE id = ?";
         return jdbcTemplate.update(updateQuery, id) == 1;
     }
