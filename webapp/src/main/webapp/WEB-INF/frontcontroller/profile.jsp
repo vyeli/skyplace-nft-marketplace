@@ -20,7 +20,7 @@
             <div class="flex flex-row items-center justify-between">
                 <div class="flex flex-row">
                     <span class="text-4xl font-semibold"><c:out value="${user.username}" /></span>
-                    <button class="flex flex-row items-center ml-5 lg:ml-10 px-2 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-copy" data-tooltip-placement="bottom" type="button" id="walletButton">
+                    <button id="wallet-address-button" class="flex flex-row items-center ml-5 lg:ml-10 px-2 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-copy" data-tooltip-placement="bottom" type="button" id="walletButton">
                         <img class="w-6 h-6" src="<c:url value='/resources/utility_icon.svg' />" alt="wallet_icon" />
                         <!--
                         <svg class="fill-cyan-700 rounded-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -31,12 +31,12 @@
                         <span class="text-xl ml-1 text-gray-400 font-semibold truncate w-28 lg:w-40 hover:text-gray-600" id="walletId">${user.wallet}</span>
                     </button>
                     <div id="tooltip-copy" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
-                        <div id="message-copy">
+                        <span id="message-copy">
                             <spring:message code="profile.copy"/>
-                        </div>
-                        <div id="message-copied" class="hidden">
+                        </span>
+                        <span id="message-copied" class="hidden">
                             <spring:message code="profile.copied"/>
-                        </div>
+                        </span>
                         <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
                 </div>
@@ -205,9 +205,9 @@
                     </svg>
                 </button>
                 <div id="sortDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-48">
-                    <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                    <form:form class="mb-0" modelAttribute="profileFilter" action="${profilePath}" method="get">
                         <form:hidden path="tab" value="${tabName}"/>
-                        <form:hidden path="page" value="${currentPage}" />
+                        <form:hidden path="page" value="1" />
                         <ul class="py-1 text-sm text-gray-700" aria-labelledby="sortDropdownDefault">
                             <li>
                                 <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Name</form:button>

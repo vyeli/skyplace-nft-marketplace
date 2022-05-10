@@ -185,7 +185,7 @@
                     <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button"><c:out value="${sortName}" /><svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     <!-- Dropdown menu -->
                     <div id="sortDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44">
-                        <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
+                        <form:form class="mb-0" modelAttribute="exploreFilter" action="${explorePath}" method="get">
                             <form:hidden path="page" value="1" />
                             <form:hidden path="search" value="${searchValue}"/>
                             <form:hidden path="searchFor" value="${searchForValue}"/>

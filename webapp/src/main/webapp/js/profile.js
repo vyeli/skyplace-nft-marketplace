@@ -6,9 +6,10 @@ function copyToClipboard(){
     if (navigator.clipboard && window.isSecureContext) {
         // navigator clipboard api method'
         navigator.clipboard.writeText(walletAddress);
-        toggleTextOnClipboard(tooltipCopyMessage, tooltipCopiedMessage);
+        toggleTextOnTooltip(tooltipCopyMessage, tooltipCopiedMessage);
     } else {
         // text area method
+        const walletAddressButton = document.getElementById("wallet-address-button");
         let textArea = document.createElement("textarea");
         textArea.value = walletAddress;
         // make the textarea out of viewport
@@ -21,12 +22,13 @@ function copyToClipboard(){
         new Promise((res, rej) => {
             // here the magic happens
             document.execCommand('copy') ? res() : rej();
-            toggleTextOnClipboard(tooltipCopyMessage, tooltipCopiedMessage);
+            walletAddressButton.focus();
+            toggleTextOnTooltip(tooltipCopyMessage, tooltipCopiedMessage);
         });
     }
 }
 
-function toggleTextOnClipboard(tooltipCopyMessage, tooltipCopiedMessage){
+function toggleTextOnTooltip(tooltipCopyMessage, tooltipCopiedMessage){
     const hideClass = "hidden";
     tooltipCopyMessage.classList.add(hideClass);
     tooltipCopiedMessage.classList.remove(hideClass);
