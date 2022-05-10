@@ -105,7 +105,7 @@
                         <spring:message code="profile.inventory"/>
                     </form:button>
                     <form:hidden path="sort" value="${sortValue}"/>
-                    <form:hidden path="page" value="${currentPage}"/>
+                    <form:hidden path="page" value="1"/>
                 </form:form>
             </li>
             <!-- Selling -->
@@ -121,7 +121,7 @@
                         <spring:message code="profile.selling"/>
                     </form:button>
                     <form:hidden path="sort" value="${sortValue}"/>
-                    <form:hidden path="page" value="${currentPage}"/>
+                    <form:hidden path="page" value="1"/>
                 </form:form>
             </li>
             <!-- Favorited -->
@@ -135,7 +135,7 @@
                             <spring:message code="profile.favorited"/>
                         </form:button>
                         <form:hidden path="sort" value="${sortValue}"/>
-                        <form:hidden path="page" value="${currentPage}"/>
+                        <form:hidden path="page" value="1"/>
                     </form:form>
                 </li>
                 <li class="${historyClasses}">
@@ -147,11 +147,10 @@
                             <spring:message code="profile.history"/>
                         </form:button>
                         <form:hidden path="sort" value="${sortValue}"/>
-                        <form:hidden path="page" value="${currentPage}"/>
+                        <form:hidden path="page" value="1"/>
                     </form:form>
                 </li>
             </c:if>
-
         </ul>
     </div>
 

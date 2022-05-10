@@ -141,7 +141,7 @@
                                 <form:button type="submit" path="page" name="page" value="${currentPage-1}" class="text-cyan-400 cursor-pointer mr-2" ><spring:message code="explore.previous"/></form:button>
                             </c:when>
                             <c:otherwise>
-                                <span class=" text-gray-400 cursor-pointer mr-2"><spring:message code="explore.previous"/></span>
+                                <span class=" text-gray-400 cursor-default mr-2"><spring:message code="explore.previous"/></span>
                             </c:otherwise>
                         </c:choose>
                     </form:form>
@@ -172,7 +172,7 @@
                                 <form:button type="submit" path="page" name="page" value="${currentPage+1}" class="text-cyan-400 cursor-pointer ml-2" ><spring:message code="explore.next"/></form:button>
                             </c:when>
                             <c:otherwise>
-                                <span class=" text-gray-400 cursor-pointer ml-2"><spring:message code="explore.next"/></span>
+                                <span class=" text-gray-400 cursor-default ml-2"><spring:message code="explore.next"/></span>
                             </c:otherwise>
                         </c:choose>
                     </form:form>

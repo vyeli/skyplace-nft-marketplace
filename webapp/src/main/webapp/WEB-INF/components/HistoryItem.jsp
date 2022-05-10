@@ -4,7 +4,7 @@
 <!-- History item -->
 <a href="<c:url value="/product/${param.nftId}" />" class="border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-4 transition-shadow hover:shadow-lg">
     <figure class="mr-5 self-start">
-        <img src="<c:url value="/images/${param.nftImg}" />" class="w-[6rem] h-[6rem] rounded-lg aspect-square object-cover" alt="avatar 2" loading="lazy">
+        <img src="<c:url value="/images/${param.nftImg}" />" class="w-[6rem] h-[6rem] rounded-lg aspect-square object-cover border border-gray-300" alt="avatar 2" loading="lazy">
     </figure>
 
     <div>
