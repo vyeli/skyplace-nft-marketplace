@@ -151,7 +151,7 @@ public class NftJdbcDao implements NftDao{
         return new Pair<>(sb, args);
     }
 
-    protected Pair<StringBuilder, List<Object>> buildFilterQuery(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search) {
+    protected Pair<StringBuilder, List<Object>> buildFilterQuery(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
         StringBuilder sb = new StringBuilder();
         List<Object> args = new ArrayList<>();
         sb.append(" WHERE true ");
@@ -192,18 +192,24 @@ public class NftJdbcDao implements NftDao{
         }
 
         if(search != null && !search.equals("")) {
-            sb.append(" AND nfts.nft_name LIKE '%'||?||'%' ");
+            if(searchFor.equals("collection"))
+                sb.append(" AND nfts.collection LIKE ? ");
+            else
+                sb.append(" AND nfts.nft_name LIKE '%'||?||'%' ");
             args.add(search);
         }
 
         switch (sort) {
             case "priceAsc":
-                sb.append(" ORDER BY price");
+                sb.append(" ORDER BY price ");
                 break;
             case "priceDsc":
-                sb.append(" ORDER BY price DESC");
+                sb.append(" ORDER BY price DESC ");
                 break;
             case "noSort":
+                break;
+            case "collection":
+                sb.append(" ORDER BY nfts.collection ");
                 break;
             default:
                 sb.append(" ORDER BY nftName ");
@@ -213,12 +219,12 @@ public class NftJdbcDao implements NftDao{
         return new Pair<>(sb, args);
     }
 
-    protected Pair<StringBuilder, List<Object>> buildQueryPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, User currentUser, String search) {
+    protected Pair<StringBuilder, List<Object>> buildQueryPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, User currentUser, String search, String searchFor) {
         StringBuilder sb = new StringBuilder(SELECT_PUBLICATION_QUERY);
         List<Object> args = new ArrayList<>();
         args.add(currentUser != null ? currentUser.getId():0);
 
-        Pair<StringBuilder, List<Object>> filterResults = buildFilterQuery(status, category, chain, minPrice, maxPrice, sort, search);
+        Pair<StringBuilder, List<Object>> filterResults = buildFilterQuery(status, category, chain, minPrice, maxPrice, sort, search, searchFor);
         sb.append(filterResults.getLeft());
         args.addAll(filterResults.getRight());
 
@@ -226,8 +232,8 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public List<Publication> getAllPublications(int page, int pageSize, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser) {
-        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, sort, currentUser, search);
+    public List<Publication> getAllPublications(int page, int pageSize, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, User currentUser, String searchFor) {
+        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, sort, currentUser, search, searchFor);
         StringBuilder sb = queryBuilder.getLeft();
         List<Object> args = queryBuilder.getRight();
 
@@ -283,8 +289,8 @@ public class NftJdbcDao implements NftDao{
     }
 
     @Override
-    public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
-        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, "noSort", null, search);
+    public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search, String searchFor) {
+        Pair<StringBuilder,List<Object>> queryBuilder = buildQueryPublications(status, category, chain, minPrice, maxPrice, "noSort", null, search, searchFor);
         StringBuilder sb = queryBuilder.getLeft();
         List<Object> args = queryBuilder.getRight();
 

@@ -9,6 +9,8 @@ public class ExploreFilter {
 
     private String search;
 
+    private String searchFor = "nft";
+
     private String category;
 
     private String chain;
@@ -87,6 +89,14 @@ public class ExploreFilter {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSearchFor() {
+        return searchFor;
+    }
+
+    public void setSearchFor(String searchFor) {
+        this.searchFor = searchFor;
     }
 
 }

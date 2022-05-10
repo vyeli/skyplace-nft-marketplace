@@ -227,7 +227,12 @@
                     <div class="mb-3 flex">
                         <!-- Collection -->
                         <div class="flex items-center">
-                            <span class="text-accent mr-2 underline decoration-cyan-700 font-bold"><spring:message code="product.collection"/> <c:out value="${nft.collection}" /></span>
+                            <c:url value="/explore" var="exploreUrl" />
+                            <form action="${exploreUrl}" method="get" class="mb-0">
+                                <input type="hidden" name="search" value="${nft.collection}" />
+                                <input type="hidden" name="searchFor" value="collection" />
+                                <button type="submit" class="text-accent mr-2 underline decoration-cyan-700 font-bold"><spring:message code="product.collection"/> <c:out value="${nft.collection}" /></button>
+                            </form>
                             <span class=" bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                                   data-tippy-content="Verified Collection">
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"

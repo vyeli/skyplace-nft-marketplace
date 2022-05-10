@@ -16,11 +16,11 @@ public interface NftService {
 
     int getPageSize();
 
-    List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search);
+    List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor);
 
     List<Publication> getAllPublicationsByUser(int page, User user, String publicationType, String sort);
 
-    int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search);
+    int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search, String searchFor);
 
     int getAmountPublicationPagesByUser(User user, User currentUser, String publicationType);
 

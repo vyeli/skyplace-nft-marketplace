@@ -91,15 +91,16 @@ public class FrontController {
     }
 
     @RequestMapping("/explore")
-    public ModelAndView explore(@ModelAttribute("exploreFilter") @Valid ExploreFilter exploreFilter) {
+    public ModelAndView explore(@ModelAttribute("exploreFilter") @Valid ExploreFilter exploreFilter, HttpServletRequest request) {
+        setEncodingToUTF(request);
         List<String> categories = categoryService.getCategories();
         List<String> chains = chainService.getChains();
 
         final ModelAndView mav = new ModelAndView("frontcontroller/explore");
 
         final int parsedPage = parseInt(exploreFilter.getPage());
-        final List<Publication> publications = nftService.getAllPublications(parsedPage, exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch());
-        int publicationsAmount = nftService.getAmountPublications(exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSearch());
+        final List<Publication> publications = nftService.getAllPublications(parsedPage, exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), exploreFilter.getSearchFor());
+        int publicationsAmount = nftService.getAmountPublications(exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSearch(), exploreFilter.getSearchFor());
 
         String categoryFormat = "All";
         if(exploreFilter.getCategory() != null && !exploreFilter.getCategory().equals(""))
@@ -127,6 +128,7 @@ public class FrontController {
         mav.addObject("chainValue", exploreFilter.getChain());
         mav.addObject("minPriceValue", exploreFilter.getMinPrice());
         mav.addObject("maxPriceValue", exploreFilter.getMaxPrice());
+        mav.addObject("searchForValue", exploreFilter.getSearchFor());
         return mav;
     }
 
@@ -200,13 +202,8 @@ public class FrontController {
     }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) throws UnsupportedEncodingException {
-        try {
-            request.setCharacterEncoding("utf-8");
-        }
-        catch(UnsupportedEncodingException e) {
-            LOGGER.error(e.getMessage());
-        }
+    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) {
+        setEncodingToUTF(request);
 
         int parsedProductId = parseInt(productId);
         int parsedOfferPage = offerPage == null ? 1 : parseInt(offerPage);
@@ -248,13 +245,8 @@ public class FrontController {
     }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) throws UnsupportedEncodingException {
-        try {
-            request.setCharacterEncoding("utf-8");
-        }
-        catch(UnsupportedEncodingException e) {
-            LOGGER.error(String.valueOf(e));
-        }
+    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) {
+        setEncodingToUTF(request);
 
         if (errors.hasErrors()) {
             return product(form, productId, offerPage, request);
@@ -416,6 +408,15 @@ public class FrontController {
             return s.substring(0,1).toUpperCase().concat(s.substring(1));
         return s;
     }
+
+    private void setEncodingToUTF(HttpServletRequest request) {
+        try {
+            request.setCharacterEncoding("utf-8");
+        }
+        catch(UnsupportedEncodingException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
     
     private int parseInt(String number) throws NumberFormatException {
         int parsedNumber;
@@ -431,6 +432,8 @@ public class FrontController {
                     return "Price Ascending";
                 case "priceDsc":
                     return "Price Descending";
+                case "collection":
+                    return "Collection";
                 default:
                     return "Name";
             }
@@ -440,6 +443,8 @@ public class FrontController {
                 return "Precio ascendente";
             case "priceDsc":
                 return "Precio descendente";
+            case "collection":
+                return "Colección";
             default:
                 return "Nombre";
         }

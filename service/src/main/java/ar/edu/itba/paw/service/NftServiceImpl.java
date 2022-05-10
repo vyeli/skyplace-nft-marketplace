@@ -46,9 +46,9 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search) {
+    public List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
         User currentUser = userService.getCurrentUser().orElse(null);
-        return nftDao.getAllPublications(page, pageSize, status, category, chain, minPrice, maxPrice, sort, search, currentUser);
+        return nftDao.getAllPublications(page, pageSize, status, category, chain, minPrice, maxPrice, sort, search, currentUser, searchFor);
     }
 
     @Override
@@ -72,8 +72,8 @@ public class NftServiceImpl implements NftService{
     }
 
     @Override
-    public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search) {
-        return nftDao.getAmountPublications(status, category, chain, minPrice, maxPrice, search);
+    public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search, String searchFor) {
+        return nftDao.getAmountPublications(status, category, chain, minPrice, maxPrice, search, searchFor);
     }
 
     @Override

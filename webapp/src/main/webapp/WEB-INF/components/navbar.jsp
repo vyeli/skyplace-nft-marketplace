@@ -10,12 +10,26 @@
         <h1 class="font-semibold text-xl md:text-2xl">Skyplace</h1>
     </div>
     </a>
-    <div class="w-2/5 relative flex flex-row flex-start p-2 rounded border border-gray-300 text-cyan-800">
+    <div class="w-2/5 relative flex flex-row flex-start rounded border border-gray-300 text-cyan-800">
         <c:url value="/explore" var="explorePath"/>
-        <form action="${explorePath}" method="get" class="w-full flex m-0">
-            <img src="<c:url value='/resources/icsearch.svg' />" alt="icsearch" class="w-5" />
-        <input name="search" class="pl-2 outline-none w-full border-none p-0 focus:border-none focus:ring-0" type="text"
-            placeholder="<spring:message code="navbar.search"/>" value="${param.search}" />
+        <form action="${explorePath}" method="get" class="w-full flex m-0 focus-within:shadow-[0px_3px_20px_4px_rgba(0,0,0,0.05)]">
+            <select name="searchFor" class="border-0 border-r-[1px] pl-2 pr-7 border-gray-300 rounded-l cursor-pointer outline-none focus:outline-none">
+                <c:choose>
+                    <c:when test="${param.searchFor != null && param.searchFor == 'collection'}">
+                        <option value="nft" class="text-slate-500">Nft</option>
+                        <option value="collection" class="text-slate-500" selected>Collection</option>
+                    </c:when>
+                    <c:otherwise>
+                        <option value="nft" class="text-slate-500" selected>Nft</option>
+                        <option value="collection" class="text-slate-500">Collection</option>
+                    </c:otherwise>
+                </c:choose>
+            </select>
+            <input name="search" class="pl-2 outline-none w-full border-none p-0 focus:border-none focus:ring-0" type="text"
+                    placeholder="<spring:message code="navbar.search"/>" value="${param.search}" />
+            <button type="submit" class="border-l cursor-pointer border-gray-300 px-2 flex items-center">
+                <img src="<c:url value="/resources/icsearch.svg" />" alt="icsearch" class="w-8">
+            </button>
         </form>
         <!-- Search icon -->
     </div>

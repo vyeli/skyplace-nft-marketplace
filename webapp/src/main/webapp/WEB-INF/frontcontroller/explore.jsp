@@ -36,6 +36,7 @@
                         <form:hidden path="page" value="${currentPage}" />
                         <form:hidden path="sort" value="${sortValue}" />
                         <form:hidden path="search" value="${searchValue}"/>
+                        <form:hidden path="searchFor" value="${searchForValue}"/>
                         <div id="accordionStatus" data-accordion="open" data-active-classes="text-black bg-white">
                             <h2 id="accordionStatusHeader">
                                 <button type="button" class="flex justify-between items-center p-5 w-full font-medium text-left border border-x-0 border-gray-200" data-accordion-target="#accordionStatusBody" aria-expanded="true" aria-controls="accordionStatusBody" >
@@ -130,6 +131,7 @@
                 <div class="flex text-xl items-start pt-4">
                     <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
                         <form:hidden path="search" value="${searchValue}"/>
+                        <form:hidden path="searchFor" value="${searchForValue}"/>
                         <form:hidden path="sort" value="${sortValue}"/>
                         <form:hidden path="minPrice" value="${minPriceValue}"/>
                         <form:hidden path="maxPrice" value="${maxPriceValue}"/>
@@ -147,6 +149,7 @@
                     </form:form>
                     <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
                         <form:hidden path="search" value="${searchValue}"/>
+                        <form:hidden path="searchFor" value="${searchForValue}"/>
                         <form:hidden path="sort" value="${sortValue}"/>
                         <form:hidden path="minPrice" value="${minPriceValue}"/>
                         <form:hidden path="maxPrice" value="${maxPriceValue}"/>
@@ -161,6 +164,7 @@
                     </form:form>
                     <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
                         <form:hidden path="search" value="${searchValue}"/>
+                        <form:hidden path="searchFor" value="${searchForValue}"/>
                         <form:hidden path="sort" value="${sortValue}"/>
                         <form:hidden path="minPrice" value="${minPriceValue}"/>
                         <form:hidden path="maxPrice" value="${maxPriceValue}"/>
@@ -184,6 +188,7 @@
                         <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
                             <form:hidden path="page" value="${currentPage}" />
                             <form:hidden path="search" value="${searchValue}"/>
+                            <form:hidden path="searchFor" value="${searchForValue}"/>
                             <form:hidden path="minPrice" value="${minPriceValue}"/>
                             <form:hidden path="maxPrice" value="${maxPriceValue}"/>
                             <form:hidden path="category" value="${categoryValue}"/>
@@ -199,6 +204,9 @@
                                 <li>
                                     <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.PriceDe"/></form:button>
                                 </li>
+                                <li>
+                                    <form:button type="submit" path="sort" name="sort" value="collection" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.collection"/></form:button>
+                                </li>
                             </ul>
                         </form:form>
                     </div>
@@ -207,7 +215,7 @@
 
             <div class="px-8 pb-8 flex flex-wrap gap-8 overflow-y-scroll justify-center">
                 <c:if test="${publicationsAmount == 0}">
-                    <span class="text-4xl"><spring:message code="explore.noNfts"/></span>
+                    <span class="pt-4 text-2xl"><spring:message code="explore.noNfts"/></span>
                 </c:if>
                 <c:forEach items="${publications}" var="publication">
                     <c:if test="${publication.nft.sellOrder != null}">
