@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static ar.edu.itba.paw.persistence.Utils.IMAGE_TABLE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -27,7 +28,6 @@ public class ImageJdbcDaoTest {
 
     private final MultipartFile image = new MockMultipartFile("image", new byte[1]);
 
-    private static final String IMAGE_TABLE = "images";
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert imageJdbcInsert;
     private ImageJdbcDao imageJdbcDao;
@@ -42,13 +42,15 @@ public class ImageJdbcDaoTest {
         imageJdbcInsert = new SimpleJdbcInsert(ds)
                 .withTableName(IMAGE_TABLE)
                 .usingGeneratedKeyColumns("id_image");
+
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGE_TABLE);
     }
 
     @Test
     public void testCreateImage() {
         imageJdbcDao.createImage(image);
 
-        assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, IMAGE_TABLE));
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, IMAGE_TABLE));
     }
 
     @Test
