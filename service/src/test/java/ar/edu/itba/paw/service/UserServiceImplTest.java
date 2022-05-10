@@ -1,22 +1,16 @@
 package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.exceptions.UserAlreadyExistsException;
-import ar.edu.itba.paw.exceptions.UserNotLoggedInException;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.UserDao;
-import netscape.security.Principal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import static org.junit.Assert.*;

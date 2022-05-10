@@ -1,11 +1,7 @@
 package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.exceptions.UserIsNotNftOwnerException;
-import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.NftDao;
-import ar.edu.itba.paw.persistence.UserDao;
-import com.sun.mail.imap.protocol.ID;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,8 +9,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.math.BigDecimal;
-import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NftServiceImplTest {
