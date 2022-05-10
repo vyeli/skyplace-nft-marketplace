@@ -63,7 +63,7 @@
         <input
           type="submit"
           value="Update"
-          class="p-1 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
+          class="px-8 py-4 col-start-2 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
         />
       </form:form>
     </div>

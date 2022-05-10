@@ -12,7 +12,7 @@
         <spring:message code="sell.sell"/>
       </h1>
       <c:url value="/sell/${productId}" var="postPath"/>
-      <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
+      <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 items-end gap-8 pt-16" enctype="multipart/form-data">
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">
             <span class="font-bold">NFT id: </span>
@@ -39,7 +39,10 @@
           <form:errors path="category" element="p" cssStyle="color: tomato" />
         </form:label>
         <form:label path="price" class="flex flex-col gap-1">
-          <span class="text-slate-600 flex"><spring:message code="sell.price"/><img class="w-8" src="<c:url value="/resources/eth_logo.svg" />" alt="ETH_logo"/> </span>
+          <span class="text-slate-600 flex items-center">
+            <spring:message code="sell.price"/>
+            <img class="w-8" src="<c:url value="/resources/eth_logo.svg" />" alt="ETH_logo"/>
+          </span>
           <form:input
             type="number"
             path="price"
