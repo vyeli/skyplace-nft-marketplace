@@ -68,3 +68,7 @@ ALTER TABLE purchases ADD FOREIGN KEY (id_seller) REFERENCES users(id) ON DELETE
 -- Unique nft id + contract + chain and not null name
 ALTER TABLE nfts ADD CONSTRAINT nfts_unique UNIQUE(nft_id, contract_addr, chain);
 ALTER TABLE nfts ALTER COLUMN nft_name SET NOT NULL;
+
+-- Make favorited FK on delete cascade
+ALTER TABLE favorited DROP CONSTRAINT favorited_id_nft_fkey;
+ALTER TABLE favorited ADD FOREIGN KEY(id_nft) REFERENCES nfts(id) ON DELETE CASCADE;

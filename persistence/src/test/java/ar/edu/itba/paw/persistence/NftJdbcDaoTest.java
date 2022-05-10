@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.exceptions.CreateImageException;
+import ar.edu.itba.paw.exceptions.InvalidChainException;
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Publication;
 import ar.edu.itba.paw.model.User;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static ar.edu.itba.paw.persistence.Utils.USER_TABLE;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,19 +39,18 @@ import static org.junit.Assert.*;
 @Transactional
 public class NftJdbcDaoTest {
 
-    // Information from https://etherscan.io/address/0x29714cafe792ef8b8c649451d13c89e21a0d7f5b
-    private final int NFT_ID = 1547;
-    private final String NFT_CONTRACT_ADDRESS = "0x29714cafe792ef8b8c649451d13c89e21a0d7f5b";
-    private final String NFT_NAME = "CryptoApe";
-    private final String CHAIN = "Ethereum";
-    private final int ID_IMAGE = 1;
-    private final MultipartFile MOCK_IMAGE = new MockMultipartFile("image", new byte[1]);
-    private final int ID_OWNER = 1;
-    private final String COLLECTION = "Crypto Apes Official";
-    private final String DESCRIPTION = "CryptoApes strive to unite the BAYC and CryptoPunk communities, with randomly generated and unique artwork. We are not affiliated with Yuga Labs or Larva Labs.";
-    private final String[] PROPERTIES = null;
-    private final String NFT_TABLE = "nfts";
-    private final String IMAGE_TABLE = "images";
+    private final static int NFT_ID = 1547;
+    private final static String NFT_CONTRACT_ADDRESS = "0x29714cafe792ef8b8c649451d13c89e21a0d7f5b";
+    private final static String NFT_NAME = "CryptoApe";
+    private final static String CHAIN = "Ethereum";
+    private final static int ID_IMAGE = 1;
+    private final static MultipartFile MOCK_IMAGE = new MockMultipartFile("image", new byte[1]);
+    private final static int ID_OWNER = 1;
+    private final static String COLLECTION = "Crypto Apes Official";
+    private final static String DESCRIPTION = "CryptoApes strive to unite the BAYC and CryptoPunk communities, with randomly generated and unique artwork. We are not affiliated with Yuga Labs or Larva Labs.";
+    private final static String[] PROPERTIES = null;
+    private final static String NFT_TABLE = "nfts";
+    private final static String IMAGE_TABLE = "images";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsertNft;
@@ -65,59 +67,61 @@ public class NftJdbcDaoTest {
                 .withTableName("nfts")
                 .usingGeneratedKeyColumns("id");
         MockitoAnnotations.initMocks(this);
+        SimpleJdbcInsert userJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(USER_TABLE);
+        SimpleJdbcInsert imageJdbcInsert = new SimpleJdbcInsert(ds)
+                .withTableName(IMAGE_TABLE);
+        userJdbcInsert.execute(Utils.createUserData(ID_OWNER));
+        userJdbcInsert.execute(Utils.createUserData(ID_OWNER+1));
+        imageJdbcInsert.execute(Utils.createImageData(ID_IMAGE));
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, NFT_TABLE);
     }
 
     @Test
     public void testCreateNft() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGE_TABLE);
+
         Optional<Nft> nft = nftJdbcDao.create(NFT_ID, NFT_CONTRACT_ADDRESS, NFT_NAME, CHAIN, MOCK_IMAGE, ID_OWNER, COLLECTION, DESCRIPTION, PROPERTIES);
 
         assertTrue(nft.isPresent());
         assertEquals(NFT_CONTRACT_ADDRESS, nft.get().getContractAddr());
-        assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, IMAGE_TABLE));
-        assertEquals(3, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, IMAGE_TABLE));
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
     }
 
     @Test
     public void testCreateNftWithoutChain() {
-        Optional<Nft> nft = nftJdbcDao.create(NFT_ID, NFT_CONTRACT_ADDRESS, NFT_NAME, "CHAIN", MOCK_IMAGE, ID_OWNER, COLLECTION, DESCRIPTION, PROPERTIES);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGE_TABLE);
 
-        assertFalse(nft.isPresent());
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, IMAGE_TABLE));
-        assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
+        assertThrows(InvalidChainException.class, () -> nftJdbcDao.create(NFT_ID, NFT_CONTRACT_ADDRESS, NFT_NAME, "CHAIN", MOCK_IMAGE, ID_OWNER, COLLECTION, DESCRIPTION, PROPERTIES));
+        assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, IMAGE_TABLE));
+        assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
     }
 
     @Test
     public void testCreateNftWithInvalidImage() {
-        Optional<Nft> nft = nftJdbcDao.create(NFT_ID, NFT_CONTRACT_ADDRESS, NFT_NAME, CHAIN, null, ID_OWNER, COLLECTION, DESCRIPTION, PROPERTIES);
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGE_TABLE);
 
-        assertFalse(nft.isPresent());
-        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, IMAGE_TABLE));
-        assertEquals(2, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
+        assertThrows(CreateImageException.class, () -> nftJdbcDao.create(NFT_ID, NFT_CONTRACT_ADDRESS, NFT_NAME, CHAIN, null, ID_OWNER, COLLECTION, DESCRIPTION, PROPERTIES));
+        assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, IMAGE_TABLE));
+        assertEquals(0, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
     }
 
     @Test
     public void testGetNftById() {
-        Map<String, Object> nftData = new HashMap<>();
-        nftData.put("nft_id", NFT_ID);
-        nftData.put("contract_addr", NFT_CONTRACT_ADDRESS);
-        nftData.put("nft_name", NFT_NAME);
-        nftData.put("chain", CHAIN);
-        nftData.put("id_image", ID_IMAGE);
-        nftData.put("id_owner", ID_OWNER);
-        nftData.put("collection", COLLECTION);
-        nftData.put("description", DESCRIPTION);
-        nftData.put("properties", PROPERTIES);
-        int nftId = jdbcInsertNft.executeAndReturnKey(nftData).intValue();
+        int nftId = jdbcInsertNft.executeAndReturnKey(Utils.createNftData(NFT_ID, ID_IMAGE, ID_OWNER)).intValue();
 
         Optional<Nft> nft = nftJdbcDao.getNFTById(nftId);
 
         assertTrue(nft.isPresent());
         assertEquals(NFT_ID, nft.get().getNftId());
-        assertEquals(3, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
+        assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
     }
 
     @Test
     public void testGetNftNotExists() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, IMAGE_TABLE);
+
         Optional<Nft> nft = nftJdbcDao.getNFTById(5);
 
         assertFalse(nft.isPresent());
@@ -125,19 +129,8 @@ public class NftJdbcDaoTest {
 
     @Test
     public void testGetAllPublications() {
-        Map<String, Object> nftData = new HashMap<>();
-        nftData.put("contract_addr", NFT_CONTRACT_ADDRESS);
-        nftData.put("nft_name", NFT_NAME);
-        nftData.put("chain", CHAIN);
-        nftData.put("id_image", ID_IMAGE);
-        nftData.put("id_owner", ID_OWNER);
-        nftData.put("collection", COLLECTION);
-        nftData.put("description", DESCRIPTION);
-        nftData.put("properties", PROPERTIES);
-        for(int i = 1; i < 5; i++) {
-            nftData.put("nft_id", i);
-            jdbcInsertNft.execute(nftData);
-        }
+        for(int i = 0; i < 5; i++)
+            jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
 
         List<Publication> publications = nftJdbcDao.getAllPublications(1, 12, "notSale", null, "Ethereum", null, null, "priceAsc", null, null);
 
@@ -146,40 +139,19 @@ public class NftJdbcDaoTest {
 
     @Test
     public void testGetAllPublicationsPages() {
-        Map<String, Object> nftData = new HashMap<>();
-        nftData.put("contract_addr", NFT_CONTRACT_ADDRESS);
-        nftData.put("nft_name", NFT_NAME);
-        nftData.put("chain", CHAIN);
-        nftData.put("id_image", ID_IMAGE);
-        nftData.put("id_owner", ID_OWNER);
-        nftData.put("collection", COLLECTION);
-        nftData.put("description", DESCRIPTION);
-        nftData.put("properties", PROPERTIES);
-        for(int i = 1; i < 30; i++) {
-            nftData.put("nft_id", i);
-            jdbcInsertNft.execute(nftData);
-        }
+        int pageSize = 12;
+        for(int i = 0; i < pageSize*3; i++)
+            jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
 
-        List<Publication> publications = nftJdbcDao.getAllPublications(1, 12, "onSale,notSale", null, "Ethereum", null, null, "priceDsc", null, null);
+        List<Publication> publications = nftJdbcDao.getAllPublications(1, pageSize, "onSale,notSale", null, "Ethereum", null, null, "priceDsc", null, null);
 
-        assertEquals(12, publications.size());
+        assertEquals(pageSize, publications.size());
     }
 
     @Test
     public void testGetAllOnSalePublications() {
-        Map<String, Object> nftData = new HashMap<>();
-        nftData.put("contract_addr", NFT_CONTRACT_ADDRESS);
-        nftData.put("nft_name", NFT_NAME);
-        nftData.put("chain", CHAIN);
-        nftData.put("id_image", ID_IMAGE);
-        nftData.put("id_owner", ID_OWNER);
-        nftData.put("collection", COLLECTION);
-        nftData.put("description", DESCRIPTION);
-        nftData.put("properties", PROPERTIES);
-        for(int i = 1; i < 5; i++) {
-            nftData.put("nft_id", i);
-            jdbcInsertNft.execute(nftData);
-        }
+        for(int i = 0; i < 5; i++)
+            jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
 
         List<Publication> publications = nftJdbcDao.getAllPublications(1, 12, "onSale", "Other,Art", "Ethereum", new BigDecimal(1), new BigDecimal(2), "name", "abc", new User(0, ""));
 
@@ -188,19 +160,8 @@ public class NftJdbcDaoTest {
 
     @Test
     public void testGetAllPublicationsByUser() {
-        Map<String, Object> nftData = new HashMap<>();
-        nftData.put("contract_addr", NFT_CONTRACT_ADDRESS);
-        nftData.put("nft_name", NFT_NAME);
-        nftData.put("chain", CHAIN);
-        nftData.put("id_image", ID_IMAGE);
-        nftData.put("id_owner", ID_OWNER);
-        nftData.put("collection", COLLECTION);
-        nftData.put("description", DESCRIPTION);
-        nftData.put("properties", PROPERTIES);
-        for(int i = 1; i < 5; i++) {
-            nftData.put("nft_id", i);
-            jdbcInsertNft.execute(nftData);
-        }
+        for(int i = 0; i < 5; i++)
+            jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
         User user = new User(ID_OWNER, "");
 
         List<Publication> publications = nftJdbcDao.getAllPublicationsByUser(1, 12, user, null, false, false, "noSort");
@@ -210,69 +171,34 @@ public class NftJdbcDaoTest {
 
     @Test
     public void testGetAmountPublications() {
-        Map<String, Object> nftData = new HashMap<>();
-        nftData.put("contract_addr", NFT_CONTRACT_ADDRESS);
-        nftData.put("nft_name", NFT_NAME);
-        nftData.put("chain", CHAIN);
-        nftData.put("id_image", ID_IMAGE);
-        nftData.put("id_owner", ID_OWNER);
-        nftData.put("collection", COLLECTION);
-        nftData.put("description", DESCRIPTION);
-        nftData.put("properties", PROPERTIES);
-        for(int i = 1; i < 30; i++) {
-            nftData.put("nft_id", i);
-            jdbcInsertNft.execute(nftData);
-        }
+        for(int i = 0; i < 30; i++)
+            jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
 
         int amountPublications = nftJdbcDao.getAmountPublications( "onSale,notSale", null, "Ethereum", null, null, null);
 
-        assertEquals(31, amountPublications);
+        assertEquals(30, amountPublications);
     }
 
     @Test
     public void testChangeNftOwner() {
-        Map<String, Object> nftData = new HashMap<>();
-        nftData.put("nft_id", NFT_ID);
-        nftData.put("contract_addr", NFT_CONTRACT_ADDRESS);
-        nftData.put("nft_name", NFT_NAME);
-        nftData.put("chain", CHAIN);
-        nftData.put("id_image", ID_IMAGE);
-        nftData.put("id_owner", ID_OWNER);
-        nftData.put("collection", COLLECTION);
-        nftData.put("description", DESCRIPTION);
-        nftData.put("properties", PROPERTIES);
-        int nftId = jdbcInsertNft.executeAndReturnKey(nftData).intValue();
+        int nftId = jdbcInsertNft.executeAndReturnKey(Utils.createNftData(NFT_ID, ID_IMAGE, ID_OWNER)).intValue();
 
         nftJdbcDao.updateOwner(nftId, ID_OWNER+1);
 
-        JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, NFT_TABLE, "id_owner = "+ID_OWNER+1);
-
-        assertEquals(2, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, NFT_TABLE, "id_owner="+(ID_OWNER+1)));
-        assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, NFT_TABLE, "id_owner="+ID_OWNER));
+        assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, NFT_TABLE, "id_owner="+(ID_OWNER+1)));
+        assertEquals(0, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, NFT_TABLE, "id_owner="+ID_OWNER));
     }
 
     @Test
     public void testDeleteNft() {
-        Map<String, Object> nftData = new HashMap<>();
-        nftData.put("nft_id", NFT_ID);
-        nftData.put("contract_addr", NFT_CONTRACT_ADDRESS);
-        nftData.put("nft_name", NFT_NAME);
-        nftData.put("chain", CHAIN);
-        nftData.put("id_image", ID_IMAGE);
-        nftData.put("id_owner", ID_OWNER);
-        nftData.put("collection", COLLECTION);
-        nftData.put("description", DESCRIPTION);
-        nftData.put("properties", PROPERTIES);
-        int nftId = jdbcInsertNft.executeAndReturnKey(nftData).intValue();
+        int nftId = jdbcInsertNft.executeAndReturnKey(Utils.createNftData(NFT_ID, ID_IMAGE, ID_OWNER)).intValue();
         for(int i = 0; i < 3; i++) {
-            nftData.put("nft_id", NFT_ID+1+i);
-            jdbcInsertNft.execute(nftData);
+            jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
         }
 
         nftJdbcDao.delete(nftId);
 
-
-        assertEquals(5, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
+        assertEquals(3, JdbcTestUtils.countRowsInTable(jdbcTemplate, NFT_TABLE));
     }
 
     @Mock
