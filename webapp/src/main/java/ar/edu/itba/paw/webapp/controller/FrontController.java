@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.model.*;
+import ar.edu.itba.paw.security.SecurityService;
 import ar.edu.itba.paw.webapp.exceptions.*;
 import ar.edu.itba.paw.webapp.form.*;
 import ar.edu.itba.paw.service.*;
@@ -36,9 +37,10 @@ public class FrontController {
     private final BuyOrderService buyOrderService;
     private final FavoriteService favoriteService;
     private final PurchaseService purchaseService;
+    private final SecurityService securityService;
 
     @Autowired
-    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService) {
+    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService, SecurityService securityService) {
         this.sellOrderService = sellOrderService;
         this.categoryService = categoryService;
         this.chainService = chainService;
@@ -48,6 +50,7 @@ public class FrontController {
         this.buyOrderService = buyOrderService;
         this.favoriteService = favoriteService;
         this.purchaseService = purchaseService;
+        this.securityService = securityService;
     }
 
     @RequestMapping(value="/")
@@ -305,7 +308,10 @@ public class FrontController {
             return mav;
         }
 
-        return new ModelAndView("redirect:/login" );
+        String originalPassword = form.getPassword();
+        securityService.autologin(user.get().getEmail(), originalPassword);
+
+        return new ModelAndView("redirect:/" );
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
