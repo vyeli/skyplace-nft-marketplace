@@ -8,24 +8,24 @@
         <img src="<c:url value="/images/${param.nftImg}" />" class="w-[6rem] h-[6rem] rounded-lg aspect-square object-cover border border-gray-300" alt="avatar 2" loading="lazy">
     </figure>
 
-    <div>
-        <h3 class="font-display text-jacarta-700 mb-1 text-base font-semibold">
+    <div class="max-w-[34rem]">
+        <h3 class="font-display text-jacarta-700 mb-1 text-base font-semibold truncate">
             ${param.nftName}
         </h3>
-        <p class="text-jacarta-500 mb-3 block text-sm">
+        <div class="text-jacarta-500 mb-3 block text-sm">
             <c:choose>
                 <c:when test="${param.sold}">
                     <spring:message code="history.soldTo"/>
-                    <span class="text-cyan-700">@${param.buyerUsername}</span>
+                    <span class="text-cyan-700">${param.buyerUsername}</span>
                 </c:when>
                 <c:otherwise>
                     <spring:message code="history.boughtFrom"/>
-                    <span class="text-cyan-700">@${param.sellerUsername}</span>
+                    <span class="text-cyan-700">${param.sellerUsername}</span>
                 </c:otherwise>
             </c:choose>
             <spring:message code="history.for"/>
             <span>${param.price} ETH</span>
-        </p>
+        </div>
         <span class="text-jacarta-300 block text-xs">${param.date}</span>
     </div>
 

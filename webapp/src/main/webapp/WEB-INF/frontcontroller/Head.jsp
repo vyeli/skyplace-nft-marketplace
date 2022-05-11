@@ -68,7 +68,8 @@
                         'auto-fit': 'repeat(auto-fit, minmax(280px, 384px))'
                     },
                     lineClamp: {
-                        9: '9'
+                        4: '4',
+                        18: '18'
                     }
                 }
             }
