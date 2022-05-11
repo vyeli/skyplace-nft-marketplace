@@ -17,11 +17,11 @@
                 <c:choose>
                     <c:when test="${param.searchFor != null && param.searchFor == 'collection'}">
                         <option value="nft" class="text-slate-500">Nft</option>
-                        <option value="collection" class="text-slate-500" selected>Collection</option>
+                        <option value="collection" class="text-slate-500" selected><spring:message code="navbar.collection"/></option>
                     </c:when>
                     <c:otherwise>
                         <option value="nft" class="text-slate-500" selected>Nft</option>
-                        <option value="collection" class="text-slate-500">Collection</option>
+                        <option value="collection" class="text-slate-500"><spring:message code="navbar.collection"/></option>
                     </c:otherwise>
                 </c:choose>
             </select>
