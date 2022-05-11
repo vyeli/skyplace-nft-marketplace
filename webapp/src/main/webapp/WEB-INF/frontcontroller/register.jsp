@@ -61,6 +61,12 @@
                            class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm"/>
                     <form:errors path="password" element="p" cssStyle="color: tomato"/>
                 </div>
+                <div class="pt-4">
+                    <form:label path="passwordRepeat"><spring:message code="register.passwordRepeat"/></form:label>
+                    <form:input path="passwordRepeat" type="password" autocomplete="current-password" required="true"
+                                class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 focus:z-10 sm:text-sm"/>
+                    <form:errors element="p" cssStyle="color: tomato"/>
+                </div>
             </div>
 
             <div>

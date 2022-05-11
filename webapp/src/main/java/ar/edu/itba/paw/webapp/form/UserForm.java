@@ -1,12 +1,14 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.validators.interfaces.PasswordsEqualConstraint;
+import kotlin.jvm.Transient;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-
+@PasswordsEqualConstraint(message = "passwords are not equal")
 public class UserForm {
 
     @NotBlank
@@ -28,6 +30,11 @@ public class UserForm {
     @NotBlank
     @Size(min = 6, max = 100)
     private String password;
+
+    @NotBlank
+    @Size(min = 6, max = 100)
+    @Transient
+    private String passwordRepeat;
 
     public String getEmail() {
         return email;
@@ -67,5 +74,13 @@ public class UserForm {
 
     public void setWalletChain(String walletChain) {
         this.walletChain = walletChain;
+    }
+
+    public String getPasswordRepeat() {
+        return passwordRepeat;
+    }
+
+    public void setPasswordRepeat(String passwordRepeat) {
+        this.passwordRepeat = passwordRepeat;
     }
 }
