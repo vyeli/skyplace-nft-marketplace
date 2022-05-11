@@ -38,6 +38,7 @@
                     type="number"
                     path="nftId"
                     min="0"
+                    max="2147483647"
                     required="true"
                     autoComplete="off"
                     placeholder="Nft id"
