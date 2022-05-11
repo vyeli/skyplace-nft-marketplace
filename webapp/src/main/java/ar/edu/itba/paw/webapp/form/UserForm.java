@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.interfaces.PasswordsEqualConstraint;
-import kotlin.jvm.Transient;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -33,7 +32,6 @@ public class UserForm {
 
     @NotBlank
     @Size(min = 6, max = 100)
-    @Transient
     private String passwordRepeat;
 
     public String getEmail() {
