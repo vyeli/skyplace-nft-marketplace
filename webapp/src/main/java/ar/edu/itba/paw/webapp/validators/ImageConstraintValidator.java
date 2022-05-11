@@ -8,27 +8,18 @@ import javax.validation.ConstraintValidatorContext;
 
 public class ImageConstraintValidator implements ConstraintValidator<ImageConstraint, MultipartFile> {
 
-    private int maxSize;
+    private double maxSizeMB;
 
     @Override
     public void initialize(ImageConstraint imageConstraint) {
-        this.maxSize = imageConstraint.maxSize();
+        this.maxSizeMB = imageConstraint.maxSizeMB();
     }
 
     @Override
     public boolean isValid(MultipartFile multipartFile, ConstraintValidatorContext constraintValidatorContext) {
         if(multipartFile.isEmpty() || !multipartFile.getContentType().startsWith("image/")) {
-            constraintValidatorContext
-                    .buildConstraintViolationWithTemplate("File must be an image")
-                    .addConstraintViolation();
             return false;
         }
-        if(multipartFile.getSize() > maxSize){
-            constraintValidatorContext
-                    .buildConstraintViolationWithTemplate("Image size must not exceed " + maxSize/1048576 + "MB")
-                    .addConstraintViolation();
-            return false;
-        }
-        return true;
+        return multipartFile.getSize() <= maxSizeMB * 1048576;
     }
 }
