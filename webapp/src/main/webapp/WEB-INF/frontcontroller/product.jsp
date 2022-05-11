@@ -121,7 +121,7 @@
                                                         <span>#${offerCount+5*(offerPage-1)}</span>
                                                     </p>
                                                 </div>
-                                                <p class="text-sm">
+                                                <p class="text-sm break-words line-clamp-3 w-80">
                                                     <spring:message code="product.by"/>
                                                     <a href="<c:url value="/profile/${offer.buyer.id}" />" class="text-cyan-600">
                                                         ${offer.buyer.email}
@@ -234,7 +234,7 @@
                             <form action="${exploreUrl}" method="get" class="mb-0">
                                 <input type="hidden" name="search" value="${nft.collection}" />
                                 <input type="hidden" name="searchFor" value="collection" />
-                                <button type="submit" class="text-accent mr-2 underline decoration-cyan-700 font-bold"><spring:message code="product.collection"/> <c:out value="${nft.collection}" /></button>
+                                <button type="submit" class="text-accent mr-2 underline decoration-cyan-700 font-bold max-w-[24rem] truncate"><spring:message code="product.collection"/> <c:out value="${nft.collection}" /></button>
                             </form>
                             <span class=" bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                                   data-tippy-content="Verified Collection">
@@ -320,10 +320,12 @@
                     </div>
 
                     <!--Name and ID-->
-                    <h1 class="font-display text-jacarta-700 mb-2 text-4xl font-semibold"><c:out value="${nft.nftName}" /><span>#<c:out value="${nft.nftId}" /></span></h1>
+                    <h1 class="font-display text-jacarta-700 mb-2 text-4xl font-semibold break-words line-clamp-3"><c:out value="${nft.nftName}" /><span>#<c:out value="${nft.nftId}" /></span></h1>
                     <!-- Owner -->
-                    <div class="flex pt-2 pb-4">
-                        <span class="text-jacarta-400 block text-sm"><spring:message code="product.own"/> </span>
+                    <div class="flex pt-2 pb-4 truncate">
+                        <span class="text-jacarta-400 block text-sm">
+                            <spring:message code="product.own"/>
+                        </span>
                         <a href="<c:url value="/profile/${owner.id}" />" class="text-accent block">
                             <span class="text-sm font-bold pl-2 text-cyan-600"><c:out value="${owner.email}" /></span>
                         </a>
@@ -358,7 +360,7 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
                             <span class="pl-2 font-semibold"><spring:message code="product.description"/></span>
                         </div>
-                        <p class="mb-4 px-4 pt-4">
+                        <p class="mb-4 px-4 pt-4 break-words line-clamp-18">
                             <c:out value="${nft.description}" />
                         </p>
                     </div>

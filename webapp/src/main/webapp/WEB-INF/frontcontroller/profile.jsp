@@ -18,9 +18,9 @@
         <div class="flex flex-col mt-5 md:ml-5 md:mt-0 items-start justify-center gap-3">
             <!-- Profile name, wallet and more options (aligned) -->
             <div class="flex flex-row items-center justify-between">
-                <div class="flex flex-row">
-                    <span class="text-4xl font-semibold"><c:out value="${user.username}" /></span>
-                    <button id="wallet-address-button" class="flex flex-row items-center ml-5 lg:ml-10 px-2 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-copy" data-tooltip-placement="bottom" type="button" id="walletButton">
+                <div class="flex flex-row items-center">
+                    <span class="text-4xl font-semibold truncate max-w-[18rem] lg:max-w-[28rem] xl:max-w-[36rem] 2xl:max-w-[44rem]"><c:out value="${user.username}" /></span>
+                    <button id="wallet-address-button" class="flex flex-row items-center ml-5 lg:ml-10 px-2 py-1 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-copy" data-tooltip-placement="bottom" type="button" id="walletButton">
                         <img class="w-6 h-6" src="<c:url value='/resources/utility_icon.svg' />" alt="wallet_icon" />
                         <!--
                         <svg class="fill-cyan-700 rounded-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -46,7 +46,7 @@
                 </button>
                 -->
             </div>
-            <span class="text-lg font-light text-gray-400"><c:out value="${user.email}" /></span>
+            <span class="text-lg font-light text-gray-400 break-words w-96 lg:w-[36rem] xl:w-[44rem] 2xl:w-[52rem]"><c:out value="${user.email}" /></span>
             <!-- Rating -->
             <!--
             <div class="flex flex-row items-center mt-3">
