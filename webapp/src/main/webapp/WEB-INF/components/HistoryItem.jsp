@@ -10,7 +10,7 @@
 
     <div class="max-w-[34rem]">
         <h3 class="font-display text-jacarta-700 mb-1 text-base font-semibold truncate">
-            ${param.nftName}
+            <c:out value="${param.nftName}" />
         </h3>
         <div class="text-jacarta-500 mb-3 block text-sm">
             <c:choose>

@@ -13,7 +13,7 @@
     <c:url value='/profile/${userId}' var="profilePath"/>
     <!-- Profile -->
     <div class="flex flex-col flex-grow md:flex-row items-center mt-10">
-        <img class="rounded-full h-40 w-40" src="<c:url value='/resources/profile_picture.png' />" alt="profile_icon"/>
+        <img class="rounded-full h-40 w-40" src="<c:url value='/resources/profile_picture.png' />" alt="<spring:message code="profile.profileIcon"/>"/>
         <!-- Profile info -->
         <div class="flex flex-col mt-5 md:ml-5 md:mt-0 items-start justify-center gap-3">
             <!-- Profile name, wallet and more options (aligned) -->
@@ -21,14 +21,14 @@
                 <div class="flex flex-row items-center">
                     <span class="text-4xl font-semibold truncate max-w-[18rem] lg:max-w-[28rem] xl:max-w-[36rem] 2xl:max-w-[44rem]"><c:out value="${user.username}" /></span>
                     <button id="wallet-address-button" class="flex flex-row items-center ml-5 lg:ml-10 px-2 py-1 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-copy" data-tooltip-placement="bottom" type="button" id="walletButton">
-                        <img class="w-6 h-6" src="<c:url value='/resources/utility_icon.svg' />" alt="wallet_icon" />
+                        <img class="w-6 h-6" src="<c:url value='/resources/utility_icon.svg' />" alt="<spring:message code="profile.walletIcon"/>" />
                         <!--
                         <svg class="fill-cyan-700 rounded-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                             <path fill="none" d="M0 0h24v24H0z"/>
                             <path d="M22 7h1v10h-1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v3zm-2 10h-6a5 5 0 0 1 0-10h6V5H4v14h16v-2zm1-2V9h-7a3 3 0 0 0 0 6h7zm-7-4h3v2h-3v-2z"/>
                         </svg>
                         -->
-                        <span class="text-xl ml-1 text-gray-400 font-semibold truncate w-28 lg:w-40 hover:text-gray-600" id="walletId">${user.wallet}</span>
+                        <span class="text-xl ml-1 text-gray-400 font-semibold truncate w-28 lg:w-40 hover:text-gray-600" id="walletId"><c:out value="${user.wallet}"/></span>
                     </button>
                     <div id="tooltip-copy" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
                         <span id="message-copy">
@@ -180,7 +180,7 @@
                 <form:hidden path="sort" value="${sortValue}"/>
                 <form:input path="page" type="number" min="1" max="${pages}" value="${currentPage}"
                             class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 py-0.5" />
-                <span> <spring:message code="profile.of"/> ${pages}</span>
+                <span><spring:message code="profile.of" arguments="${pages}"/></span>
             </form:form>
             <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
                 <form:hidden path="tab" value="${tabName}"/>

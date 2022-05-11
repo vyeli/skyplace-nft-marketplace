@@ -6,8 +6,8 @@
 <!-- Modal -->
 <dialog class="relative p-4 rounded-lg text-center max-w-md" id="delete-modal">
     <button class="absolute top-4 right-6 font-bold text-slate-600" id="close-delete-modal">X</button>
-    <h2 class="font-bold text-xl text-red-500">${param.title}</h2>
-    <p class="py-6 text-slate-600">${param.description}</p>
+    <h2 class="font-bold text-xl text-red-500"><c:out value="${param.title}"/></h2>
+    <p class="py-6 text-slate-600"><c:out value="${param.description}"/></p>
 
     <c:url value="${param.deletePath}" var="deletePath"/>
     <form class="mb-0" action="${deletePath}" method="post">

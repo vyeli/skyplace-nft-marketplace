@@ -28,7 +28,7 @@
             <input name="search" class="pl-2 outline-none w-full border-none p-0 focus:border-none focus:ring-0" type="text"
                     placeholder="<spring:message code="navbar.search"/>" value="${param.search}" />
             <button type="submit" class="border-l cursor-pointer border-gray-300 px-2 flex items-center">
-                <img src="<c:url value="/resources/icsearch.svg" />" alt="icsearch" class="w-8">
+                <img src="<c:url value="/resources/icsearch.svg" />" alt="<spring:message code="navbar.searchAlt"/>" class="w-8">
             </button>
         </form>
         <!-- Search icon -->

@@ -37,7 +37,7 @@
         <div class="absolute -top-4 -left-8 w-80 h-80 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-75 animate-blob z-0"></div>
         <div class="absolute -top-4 -right-8 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-75 animate-blob delay-2000 z-0"></div>
         <div class="absolute top-8 w-80 h-80 bg-red-300 rounded-full mix-blend-multiply filter blur-xl opacity-75 animate-blob delay-4000 z-0"></div>
-        <img class="z-10 h-80 w-68" src="<c:url value="/resources/nft_index.jpg" />" alt="Nft image"/>
+        <img class="z-10 h-80 w-68" src="<c:url value="/resources/nft_index.jpg" />" alt="<spring:message code="index.imageNft"/>"/>
     </div>
 </div>
 </body>

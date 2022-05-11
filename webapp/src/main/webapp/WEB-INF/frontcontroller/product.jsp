@@ -118,13 +118,13 @@
                                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                                                     <p class="font-semibold">
                                                         <spring:message code="product.offer"/>
-                                                        <span>#${offerCount+5*(offerPage-1)}</span>
+                                                        <span>#<c:out value="${offerCount+5*(offerPage-1)}"/></span>
                                                     </p>
                                                 </div>
                                                 <p class="text-sm break-words line-clamp-3 w-80">
                                                     <spring:message code="product.by"/>
                                                     <a href="<c:url value="/profile/${offer.buyer.id}" />" class="text-cyan-600">
-                                                        ${offer.buyer.email}
+                                                        <c:out value="${offer.buyer.email}"/>
                                                     </a>
                                                 </p>
                                             </div>
@@ -138,7 +138,7 @@
                                                         <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
                                                     </svg>
                                                     <span class="text-slate-700">
-                                                        ${offer.buyOrder.amount}
+                                                        <c:out value="${offer.buyOrder.amount}"/>
                                                     </span>
                                                 </div>
                                                 <c:if test="${sellOrder != null && owner.id == currentUser.id}">
@@ -180,13 +180,13 @@
                                             </form>
                                         </c:if>
                                         <c:if test="${offerPage == 1}">
-                                            <span class="text-slate-400 text-lg pr-2">Previous</span>
+                                            <span class="text-slate-400 text-lg pr-2"><spring:message code="prodcut.previous"/></span>
                                         </c:if>
                                         <c:if test="${offerPage-1 > 1}">
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" >
                                                 <input type="hidden" name="offerPage" value="${offerPage-1}" />
                                                 <button type="submit" class="text-cyan-700 text-lg px-2">
-                                                    ...${offerPage-1}
+                                                    ...<c:out value="${offerPage-1}"/>
                                                 </button>
                                             </form>
                                         </c:if>
@@ -195,7 +195,7 @@
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get">
                                                 <input type="hidden" name="offerPage" value="${offerPage+1}" />
                                                 <button type="submit" class="text-cyan-700 text-lg px-2">
-                                                    ${offerPage+1}...
+                                                    <c:out value="${offerPage+1}"/>...
                                                 </button>
                                             </form>
                                         </c:if>
@@ -203,7 +203,7 @@
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get">
                                                 <input type="hidden" name="offerPage" value="${amountOfferPages}" />
                                                 <button type="submit" class="text-cyan-700 text-lg px-2">
-                                                        ${amountOfferPages}
+                                                    <c:out value="${amountOfferPages}"/>
                                                 </button>
                                             </form>
                                             <form action="<c:url value="/product/${productId}#tabs-tab" />" method="get" class="px-2">
@@ -214,7 +214,7 @@
                                             </form>
                                         </c:if>
                                         <c:if test="${offerPage == amountOfferPages}">
-                                            <span class="text-slate-400 text-lg px-2">Next</span>
+                                            <span class="text-slate-400 text-lg px-2"><spring:message code="product.next"/></span>
                                         </c:if>
                                     </div>
                                     </c:if>

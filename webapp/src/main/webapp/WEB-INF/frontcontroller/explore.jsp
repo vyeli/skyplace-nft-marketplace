@@ -19,7 +19,7 @@
         </div>
         <div class="flex flex-col w-72 min-w-[250px] items-center" id="filterBar">
             <span class="text-4xl"><c:out value="${category}"/></span>
-            <span><c:out value="${publicationsAmount}" /> <spring:message code="explore.results"/></span>
+            <span><spring:message code="explore.results" arguments="${publicationsAmount}"/></span>
 
             <div class="grow w-full overflow-y-scroll mt-2">
                 <div class="py-4 flex flex-col w-full">
@@ -113,11 +113,7 @@
                                 </div>
                             </div>
                         </div>
-
-
-                        <input type="submit" value="Apply" class="rounded-lg flex px-4 py-1 mx-auto mt-4 cursor-pointer text-white bg-cyan-600 hover:bg-cyan-700" />
-
-
+                        <input type="submit" value="<spring:message code="explore.apply"/>" class="rounded-lg flex px-4 py-1 mx-auto mt-4 cursor-pointer text-white bg-cyan-600 hover:bg-cyan-700" />
                     </form:form>
                 </div>
             </div>
@@ -182,7 +178,9 @@
                     </form:form>
                 </div>
                 <div class="flex text-2xl pt-4">
-                    <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button"><c:out value="${sortName}" /><svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+                    <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button">
+                        <c:out value="${sortName}" />
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     <!-- Dropdown menu -->
                     <div id="sortDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44">
                         <form:form class="mb-0" modelAttribute="exploreFilter" action="${explorePath}" method="get">

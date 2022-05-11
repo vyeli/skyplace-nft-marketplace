@@ -291,12 +291,6 @@ public class FrontController {
         return new ModelAndView("redirect:/product/" + productId);
     }
 
-    @RequestMapping(value="/emailSent")
-    public ModelAndView emailSent(@RequestParam(value="emailSent", required = false) String emailSent) {
-        final ModelAndView mav = new ModelAndView("frontcontroller/emailSent");
-        mav.addObject("emailSent", emailSent);
-        return mav;
-    }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public ModelAndView createNft(@ModelAttribute("createNftForm") final CreateNftForm form) {
@@ -451,5 +445,6 @@ public class FrontController {
                 return "Nombre";
         }
     }
+
 
 }

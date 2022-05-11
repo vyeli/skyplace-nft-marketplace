@@ -13,8 +13,8 @@
         <spring:message code="create.create"/>
     </h1>
 
-    <c:set var="nftName"><spring:message code="create.nftName"/></c:set>
-    <c:set var="nftDescription"><spring:message code="create.nftDescription"/></c:set>
+    <spring:message code="create.nftName" var="nftName"/>
+    <spring:message code="create.nftDescription" var="nftDescription"/>
 
 
 
@@ -63,8 +63,7 @@
             <form:select
                     path="chain"
                     required="true"
-                    class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
-            >
+                    class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm">
                 <c:forEach var="chain" items="${chains}">
                     <form:option value="${chain}"><c:out value="${chain}" /></form:option>
                 </c:forEach>

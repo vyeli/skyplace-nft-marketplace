@@ -40,8 +40,7 @@
                     <form:select
                             path="walletChain"
                             required="true"
-                            class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm"
-                    >
+                            class="pl-3 sm:text-sm rounded-lg border-slate-300 focus:ring-cyan-800 focus:border-cyan-800 text-cyan-700 placeholder:text-slate-400 shadow-sm">
                         <option disabled selected><spring:message code="register.blockchain"/></option>
                         <c:forEach var="chain" items="${chains}">
                             <form:option value="${chain}"><c:out value="${chain}" /></form:option>

@@ -28,8 +28,7 @@
             </div>
             <c:if test="${param.error != null}">
             <div>
-                <p class="text-red-600"><spring:message code="login.error"/>
-                </p>
+                <p class="text-red-600"><spring:message code="login.error"/></p>
             </div>
             </c:if>
             <div class="flex items-center justify-between">

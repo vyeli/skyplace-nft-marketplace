@@ -15,14 +15,14 @@
       <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">
-            <span class="font-bold">NFT id: </span> 
-            ${nft.nftId}
+            <span class="font-bold"><spring:message code="updateSellOrder.nftId"/></span>
+            <c:out value="${nft.nftId}"/>
           </p>
         </div>
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">
-            <span class="font-bold"><spring:message code="updateSellOrder.contract"/> </span>
-            ${nft.contractAddr}
+            <span class="font-bold"><spring:message code="updateSellOrder.contract"/></span>
+            <c:out value="${nft.contractAddr}"/>
           </p>
         </div>
         <form:label path="category" class="flex flex-col gap-1">
