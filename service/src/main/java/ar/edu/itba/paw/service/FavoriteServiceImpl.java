@@ -1,13 +1,10 @@
 package ar.edu.itba.paw.service;
 
-import ar.edu.itba.paw.model.Publication;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.FavoriteDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FavoriteServiceImpl implements FavoriteService{

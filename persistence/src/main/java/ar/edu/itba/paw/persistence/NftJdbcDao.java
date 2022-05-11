@@ -192,7 +192,7 @@ public class NftJdbcDao implements NftDao{
         }
 
         if(search != null && !search.equals("")) {
-            if(searchFor.equals("collection"))
+            if(searchFor != null && searchFor.equals("collection"))
                 sb.append(" AND nfts.collection ILIKE ? ");
             else
                 sb.append(" AND nfts.nft_name ILIKE '%'||?||'%' ");

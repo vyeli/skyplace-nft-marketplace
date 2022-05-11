@@ -26,9 +26,7 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static ar.edu.itba.paw.persistence.Utils.USER_TABLE;
