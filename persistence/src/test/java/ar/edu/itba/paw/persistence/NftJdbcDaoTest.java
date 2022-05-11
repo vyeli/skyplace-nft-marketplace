@@ -49,6 +49,7 @@ public class NftJdbcDaoTest {
     private final static String[] PROPERTIES = null;
     private final static String NFT_TABLE = "nfts";
     private final static String IMAGE_TABLE = "images";
+    private final static int PAGE_SIZE = 12;
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert jdbcInsertNft;
@@ -130,20 +131,19 @@ public class NftJdbcDaoTest {
         for(int i = 0; i < 5; i++)
             jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
 
-        List<Publication> publications = nftJdbcDao.getAllPublications(1, 12, "notSale", null, "Ethereum", null, null, "priceAsc", null, null, null);
+        List<Publication> publications = nftJdbcDao.getAllPublications(1, PAGE_SIZE, "notSale", null, "Ethereum", null, null, "priceAsc", null, null, null);
 
         assertEquals(5, publications.size());
     }
 
     @Test
     public void testGetAllPublicationsPages() {
-        int pageSize = 12;
-        for(int i = 0; i < pageSize*3; i++)
+        for(int i = 0; i < PAGE_SIZE*3; i++)
             jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
 
-        List<Publication> publications = nftJdbcDao.getAllPublications(1, pageSize, "onSale,notSale", null, "Ethereum", null, null, "priceDsc", null, null, null);
+        List<Publication> publications = nftJdbcDao.getAllPublications(1, PAGE_SIZE, "onSale,notSale", null, "Ethereum", null, null, "priceDsc", null, null, null);
 
-        assertEquals(pageSize, publications.size());
+        assertEquals(PAGE_SIZE, publications.size());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class NftJdbcDaoTest {
         for(int i = 0; i < 5; i++)
             jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
 
-        List<Publication> publications = nftJdbcDao.getAllPublications(1, 12, "onSale", "Other,Art", "Ethereum", new BigDecimal(1), new BigDecimal(2), "name", "abc", new User(0, ""), null);
+        List<Publication> publications = nftJdbcDao.getAllPublications(1, PAGE_SIZE, "onSale", "Other,Art", "Ethereum", new BigDecimal(1), new BigDecimal(2), "name", "abc", new User(0, ""), null);
 
         assertEquals(0, publications.size());
     }
@@ -162,7 +162,7 @@ public class NftJdbcDaoTest {
             jdbcInsertNft.execute(Utils.createNftData(i, ID_IMAGE, ID_OWNER));
         User user = new User(ID_OWNER, "");
 
-        List<Publication> publications = nftJdbcDao.getAllPublicationsByUser(1, 12, user, null, false, false, "noSort");
+        List<Publication> publications = nftJdbcDao.getAllPublicationsByUser(1, PAGE_SIZE, user, null, false, false, "noSort");
 
         assertEquals(5, publications.size());
     }
