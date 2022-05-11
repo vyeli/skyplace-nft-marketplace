@@ -210,13 +210,13 @@
                         <form:hidden path="page" value="1" />
                         <ul class="py-1 text-sm text-gray-700" aria-labelledby="sortDropdownDefault">
                             <li>
-                                <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Name</form:button>
+                                <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.name"/></form:button>
                             </li>
                             <li>
-                                <form:button type="submit" path="sort" name="sort" value="priceAsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Price Ascending</form:button>
+                                <form:button type="submit" path="sort" name="sort" value="priceAsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.PriceAs"/></form:button>
                             </li>
                             <li>
-                                <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" >Price Descending</form:button>
+                                <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.PriceDe"/></form:button>
                             </li>
                         </ul>
                     </form:form>

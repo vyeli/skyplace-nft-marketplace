@@ -103,10 +103,11 @@ public class FrontController {
         final List<Publication> publications = nftService.getAllPublications(parsedPage, exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), exploreFilter.getSearchFor());
         int publicationsAmount = nftService.getAmountPublications(exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSearch(), exploreFilter.getSearchFor());
 
-        String categoryFormat = "All";
+        String lang = LocaleContextHolder.getLocale().getLanguage();
+        String categoryFormat = lang.equals("es") ? "Todos" : "All";
         if(exploreFilter.getCategory() != null && !exploreFilter.getCategory().equals(""))
             if(exploreFilter.getCategory().contains(","))
-                categoryFormat = "Various";
+                categoryFormat = lang.equals("es") ? "Varios" : "Various";
             else
                 categoryFormat = capitalizeString(exploreFilter.getCategory());
 

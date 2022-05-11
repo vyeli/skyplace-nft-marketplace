@@ -142,9 +142,9 @@ public class NftJdbcDao implements NftDao{
         for (int i = 0; i < filterArray.length; i++) {
             String aux = filterArray[i].substring(0, 1).toUpperCase() + filterArray[i].substring(1);
             if (i == 0)
-                sb.append(String.format(" %s LIKE ? ", columnName));
+                sb.append(String.format(" %s ILIKE ? ", columnName));
             else
-                sb.append(String.format(" OR %s LIKE ? ", columnName));
+                sb.append(String.format(" OR %s ILIKE ? ", columnName));
             args.add(aux);
         }
         sb.append(") ");
@@ -193,9 +193,9 @@ public class NftJdbcDao implements NftDao{
 
         if(search != null && !search.equals("")) {
             if(searchFor.equals("collection"))
-                sb.append(" AND nfts.collection LIKE ? ");
+                sb.append(" AND nfts.collection ILIKE ? ");
             else
-                sb.append(" AND nfts.nft_name LIKE '%'||?||'%' ");
+                sb.append(" AND nfts.nft_name ILIKE '%'||?||'%' ");
             args.add(search);
         }
 
