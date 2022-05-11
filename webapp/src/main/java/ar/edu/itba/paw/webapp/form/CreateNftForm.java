@@ -4,10 +4,7 @@ import ar.edu.itba.paw.webapp.validators.interfaces.ImageConstraint;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 
 public class CreateNftForm {
     @Digits(integer = 15, fraction = 0)
@@ -20,7 +17,8 @@ public class CreateNftForm {
     private String contractAddr;
 
     @NotBlank
-    @Pattern(regexp = "[a-zA-Z0-9]+")
+    @Size(min = 1, max = 30)
+    @Pattern(regexp = "[a-zA-Z0-9 ]+")
     private String name;
 
     @NotBlank
@@ -30,7 +28,8 @@ public class CreateNftForm {
     private MultipartFile image;
 
     @NotBlank
-    @Pattern(regexp = "[a-zA-Z0-9]+")
+    @Size(min = 1, max = 30)
+    @Pattern(regexp = "[a-zA-Z0-9 ]+")
     private String collection;
 
     private String description;

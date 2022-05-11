@@ -21,7 +21,7 @@ public class UserForm {
     private String walletChain;
 
     @NotBlank
-    @Size(min = 6, max = 100)
+    @Size(min = 6, max = 20)
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*")
     private String username;
 
