@@ -127,7 +127,7 @@ public class BuyOrderServiceImplTest {
     @Test
     public void testGetBuyOffersForUnexistentSellOrderId(){
         List<BuyOrder> buyOrders = new ArrayList<>();
-        Mockito.when(buyOrderDao.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER)).thenReturn(buyOrders);
+        Mockito.when(buyOrderDao.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER, buyOrderService.getPageSize())).thenReturn(buyOrders);
 
         int buyOfferAmount = buyOrderService.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER).size();
 
@@ -145,7 +145,7 @@ public class BuyOrderServiceImplTest {
         BuyOffer buyOffer2 = new BuyOffer(buyOrder2, user2);
         buyOrders.add(buyOrder1);
         buyOrders.add(buyOrder2);
-        Mockito.when(buyOrderDao.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER)).thenReturn(buyOrders);
+        Mockito.when(buyOrderDao.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER, buyOrderService.getPageSize())).thenReturn(buyOrders);
         Mockito.when(userService.getUserById(ID_USER1)).thenReturn(Optional.of(user1));
         Mockito.when(userService.getUserById(ID_USER2)).thenReturn(Optional.of(user2));
 

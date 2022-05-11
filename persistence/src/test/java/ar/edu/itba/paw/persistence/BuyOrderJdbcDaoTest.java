@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 public class BuyOrderJdbcDaoTest {
     private JdbcTemplate jdbcTemplate;
     private BuyOrderJdbcDao buyOrderJdbcDao;
+    private final int pageSize = 5;
 
     private static final int SELLORDER_ID = 1;
     private static final int NFT_ID = 1;
@@ -88,7 +89,7 @@ public class BuyOrderJdbcDaoTest {
 
     @Test
     public void testGetOrdersBySellOrderId() {
-        List<BuyOrder> buyOrders = buyOrderJdbcDao.getOrdersBySellOrderId(1, SELLORDER_ID);
+        List<BuyOrder> buyOrders = buyOrderJdbcDao.getOrdersBySellOrderId(1, SELLORDER_ID ,pageSize);
 
         assertEquals(2, buyOrders.size());
         assertEquals(SELLORDER_ID, buyOrders.get(0).getIdSellOrder());
@@ -96,7 +97,7 @@ public class BuyOrderJdbcDaoTest {
 
     @Test
     public void testGetAmountPagesBySellOrderId() {
-        int amountPages = buyOrderJdbcDao.getAmountPagesBySellOrderId(SELLORDER_ID);
+        int amountPages = buyOrderJdbcDao.getAmountPagesBySellOrderId(SELLORDER_ID, pageSize);
 
         assertEquals(1, amountPages);
     }

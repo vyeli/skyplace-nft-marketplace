@@ -14,7 +14,6 @@ import java.util.*;
 public class BuyOrderJdbcDao implements BuyOrderDao{
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsertBuyOrder;
-    private final int PAGE_SIZE = 5;
 
     @Autowired
     public BuyOrderJdbcDao(DataSource ds) {
@@ -41,8 +40,8 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
     }
 
     @Override
-    public List<BuyOrder> getOrdersBySellOrderId(int offerPage, int idSellOrder) {
-        return jdbcTemplate.query("SELECT amount, id_buyer FROM buyorders WHERE id_sellorder = ? ORDER BY amount DESC LIMIT ? OFFSET ?", new Object[]{idSellOrder, PAGE_SIZE, (offerPage-1)*PAGE_SIZE}, (rs, rowNum) -> {
+    public List<BuyOrder> getOrdersBySellOrderId(int offerPage, int idSellOrder, int pageSize) {
+        return jdbcTemplate.query("SELECT amount, id_buyer FROM buyorders WHERE id_sellorder = ? ORDER BY amount DESC LIMIT ? OFFSET ?", new Object[]{idSellOrder, pageSize, (offerPage-1)*pageSize}, (rs, rowNum) -> {
            BigDecimal amount = rs.getBigDecimal("amount");
            int idBuyer = rs.getInt("id_buyer");
            return new BuyOrder(idSellOrder, amount, idBuyer);
@@ -50,8 +49,8 @@ public class BuyOrderJdbcDao implements BuyOrderDao{
     }
 
     @Override
-    public int getAmountPagesBySellOrderId(int id_sellorder) {
-        Optional<Integer> res = jdbcTemplate.query("SELECT (count(*)-1)/"+PAGE_SIZE+"+1 AS count FROM buyorders WHERE id_sellorder = ?", new Object[]{id_sellorder}, (rs , rowNum) -> rs.getInt("count")).stream().findFirst();
+    public int getAmountPagesBySellOrderId(int id_sellorder, int pageSize) {
+        Optional<Integer> res = jdbcTemplate.query("SELECT (count(*)-1)/"+pageSize+"+1 AS count FROM buyorders WHERE id_sellorder = ?", new Object[]{id_sellorder}, (rs , rowNum) -> rs.getInt("count")).stream().findFirst();
         return res.orElse(0);
     }
 

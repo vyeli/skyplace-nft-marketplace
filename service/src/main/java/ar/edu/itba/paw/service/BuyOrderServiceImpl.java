@@ -23,6 +23,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     private final MailingService mailingService;
     private final PurchaseService purchaseService;
 
+    private final int pageSize = 5;
+
     @Autowired
     public BuyOrderServiceImpl(BuyOrderDao  buyOrderDao, UserService userService, SellOrderDao sellOrderDao, NftDao nftDao, ImageDao imageDao, MailingService mailingService, PurchaseService purchaseService) {
         this.buyOrderDao = buyOrderDao;
@@ -54,7 +56,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
 
     @Override
     public List<BuyOffer> getOrdersBySellOrderId(int offerPage, int idSellOrder) {
-        List<BuyOrder> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder);
+        List<BuyOrder> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder, pageSize);
         List<BuyOffer> buyOffers = new ArrayList<>();
         buyOrders.forEach(buyOrder -> {
             Optional<User> user = userService.getUserById(buyOrder.getIdBuyer());
@@ -65,7 +67,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
 
     @Override
     public int getAmountPagesBySellOrderId(int idSellOrder) {
-        return buyOrderDao.getAmountPagesBySellOrderId(idSellOrder);
+        return buyOrderDao.getAmountPagesBySellOrderId(idSellOrder, pageSize);
     }
 
     @Transactional
@@ -88,5 +90,9 @@ public class BuyOrderServiceImpl implements BuyOrderService {
             throw new UserIsNotNftOwnerException();
 
         buyOrderDao.deleteBuyOrder(sellOrderId, buyerId);
+    }
+
+    public int getPageSize() {
+        return pageSize;
     }
 }
