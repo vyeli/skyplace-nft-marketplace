@@ -3,8 +3,12 @@ package ar.edu.itba.paw.webapp.auth;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +21,9 @@ import java.util.Collection;
 public class SkyplaceUserDetailsService implements UserDetailsService {
 
     private final UserService us;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     public SkyplaceUserDetailsService(final UserService us) {
@@ -36,4 +43,16 @@ public class SkyplaceUserDetailsService implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), roles);
     }
+
+    public void autologin(String username, String password) {
+        UserDetails userDetails = loadUserByUsername(username);
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+
+        Authentication auth = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+
+        if (auth.isAuthenticated()) {
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+    }
+
 }

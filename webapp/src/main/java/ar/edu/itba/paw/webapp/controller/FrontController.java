@@ -2,7 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.model.*;
-import ar.edu.itba.paw.security.SecurityService;
+import ar.edu.itba.paw.webapp.auth.SkyplaceUserDetailsService;
 import ar.edu.itba.paw.webapp.exceptions.*;
 import ar.edu.itba.paw.webapp.form.*;
 import ar.edu.itba.paw.service.*;
@@ -38,10 +38,10 @@ public class FrontController {
     private final BuyOrderService buyOrderService;
     private final FavoriteService favoriteService;
     private final PurchaseService purchaseService;
-    private final SecurityService securityService;
+    private final SkyplaceUserDetailsService userDetailsService;
 
     @Autowired
-    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService, SecurityService securityService) {
+    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService, SkyplaceUserDetailsService userDetailsService) {
         this.sellOrderService = sellOrderService;
         this.categoryService = categoryService;
         this.chainService = chainService;
@@ -51,7 +51,7 @@ public class FrontController {
         this.buyOrderService = buyOrderService;
         this.favoriteService = favoriteService;
         this.purchaseService = purchaseService;
-        this.securityService = securityService;
+        this.userDetailsService = userDetailsService;
     }
 
     @RequestMapping(value="/")
@@ -87,7 +87,7 @@ public class FrontController {
             return mav;
         }
 
-        securityService.autologin(user.get().getEmail(), form.getPassword());
+        userDetailsService.autologin(user.get().getEmail(), form.getPassword());
         return new ModelAndView("redirect:/");
     }
 
