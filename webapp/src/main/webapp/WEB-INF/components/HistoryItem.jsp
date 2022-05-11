@@ -23,8 +23,7 @@
                     <span class="text-cyan-700">${param.sellerUsername}</span>
                 </c:otherwise>
             </c:choose>
-            <spring:message code="history.for"/>
-            <span>${param.price} ETH</span>
+            <spring:message code="history.for" arguments="${param.price}"/>
         </div>
         <span class="text-jacarta-300 block text-xs">${param.date}</span>
     </div>
