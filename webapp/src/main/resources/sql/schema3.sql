@@ -72,3 +72,9 @@ ALTER TABLE nfts ALTER COLUMN nft_name SET NOT NULL;
 -- Make favorited FK on delete cascade
 ALTER TABLE favorited DROP CONSTRAINT favorited_id_nft_fkey;
 ALTER TABLE favorited ADD FOREIGN KEY(id_nft) REFERENCES nfts(id) ON DELETE CASCADE;
+
+-- Fix nft deletion exception
+ALTER TABLE purchases
+    DROP CONSTRAINT purchases_id_nft_fkey,
+    ADD CONSTRAINT purchases_id_nft_fkey
+    FOREIGN KEY (id_nft) REFERENCES nfts(id) ON DELETE CASCADE;

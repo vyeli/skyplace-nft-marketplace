@@ -12,7 +12,7 @@
     <section class="flex justify-around">
         <div class="container">
             <div class="flex flex-row ">
-                <!-- Image and tabs (first div)-->
+                <!-- Image and tabs -->
                 <div class="flex-col max-w-[50%]">
                     <!--Image-->
                     <figure class="mb-8 flex justify-center">
@@ -48,19 +48,6 @@
                                     <span class="font-display text-base font-medium"><spring:message code="product.details"/></span>
                                 </button>
                             </li>
-                            <!-- Properties -->
-<%--                            <li class="nav-item" role="presentation">--%>
-<%--                                <button class="nav-link hover:text-cyan-700 text-jacarta-400 relative flex items-center whitespace-nowrap py-3 px-6"--%>
-<%--                                        id="tabs-profile-tab" data-bs-target="#tabs-profile" data-bs-toggle="tab"--%>
-<%--                                        type="button" role="tab" aria-controls="tabs-profile" aria-selected="false">--%>
-<%--                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"--%>
-<%--                                         class="mr-1 h-5 w-5 fill-current">--%>
-<%--                                        <path fill="none" d="M0 0h24v24H0z"></path>--%>
-<%--                                        <path d="M6.17 18a3.001 3.001 0 0 1 5.66 0H22v2H11.83a3.001 3.001 0 0 1-5.66 0H2v-2h4.17zm6-7a3.001 3.001 0 0 1 5.66 0H22v2h-4.17a3.001 3.001 0 0 1-5.66 0H2v-2h10.17zm-6-7a3.001 3.001 0 0 1 5.66 0H22v2H11.83a3.001 3.001 0 0 1-5.66 0H2V4h4.17z"></path>--%>
-<%--                                    </svg>--%>
-<%--                                    <span class="font-display text-base font-medium"><spring:message code="product.properties"/></span>--%>
-<%--                                </button>--%>
-<%--                            </li>--%>
 
                             <!-- Offers -->
                             <li class="nav-item" role="presentation">
@@ -224,7 +211,7 @@
                     </div>
                 </div>
 
-                <!-- Description (second div) -->
+                <!-- Description -->
                 <div class="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
                     <!-- Collection / Likes -->
                     <div class="mb-3 flex">

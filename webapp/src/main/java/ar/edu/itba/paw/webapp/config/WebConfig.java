@@ -1,13 +1,18 @@
 package ar.edu.itba.paw.webapp.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -40,6 +45,8 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class WebConfig extends WebMvcConfigurationSupport {
 
+    @Value("classpath:sql/schema.sql")
+    private Resource schemaSql;
     public static final String DB_URL_PARAMETER = "DB_URL";
     public static final String DB_USERNAME_PARAMETER = "DB_USERNAME";
     public static final String DB_PASSWORD_PARAMETER = "DB_PASSWORD";
@@ -137,8 +144,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
 
         final Dotenv env = Dotenv.load();
 
-
-        // Basic mail sender configuration
         mailSender.setHost(env.get(MAIL_HOST_PARAMETER));
         mailSender.setPort(Integer.parseInt(Objects.requireNonNull(env.get(MAIL_PORT_PARAMETER))));
         mailSender.setUsername(env.get(MAIL_USERNAME_PARAMETER));
@@ -152,26 +157,21 @@ public class WebConfig extends WebMvcConfigurationSupport {
         return mailSender;
     }
 
+    @Bean
+    public DatabasePopulator databasePopulator() {
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(schemaSql);
 
+        return populator;
+    }
 
-    //FIXME: CHANGE LANGUAGE NOT WORKING
-//    @Bean
-//    public LocaleResolver localeResolver() {
-//        CookieLocaleResolver slr = new CookieLocaleResolver();
-//        return slr;
-//    }
-//
-//    @Bean
-//    public LocaleChangeInterceptor localeChangeInterceptor() {
-//        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-//        lci.setParamName("lang");
-//        return lci;
-//    }
-//
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(localeChangeInterceptor());
-//    }
+    @Bean
+    public DataSourceInitializer dataSourceInitializer() {
+        DataSourceInitializer dsi = new DataSourceInitializer();
+        dsi.setDataSource(dataSource());
+        dsi.setDatabasePopulator(databasePopulator());
 
+        return dsi;
+    }
 
 }

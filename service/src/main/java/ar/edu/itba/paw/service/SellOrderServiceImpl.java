@@ -4,6 +4,8 @@ import ar.edu.itba.paw.exceptions.UserIsNotNftOwnerException;
 import ar.edu.itba.paw.exceptions.UserNoPermissionException;
 import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.persistence.SellOrderDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ public class SellOrderServiceImpl implements SellOrderService {
 
     private final SellOrderDao sellOrderDao;
     private final UserService userService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SellOrderServiceImpl.class);
 
     @Autowired
     public SellOrderServiceImpl(SellOrderDao sellOrderDao, UserService userService) {
@@ -36,7 +40,7 @@ public class SellOrderServiceImpl implements SellOrderService {
 
     @Override
     public boolean update(int id, String category, BigDecimal price) {
-        if (!userService.currentUserOwnsNft(id))
+        if (!userService.currentUserOwnsSellOrder(id))
             throw new UserNoPermissionException();
 
         return sellOrderDao.update(id, category, price);

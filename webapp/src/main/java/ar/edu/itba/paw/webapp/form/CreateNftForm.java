@@ -24,7 +24,7 @@ public class CreateNftForm {
     @NotBlank
     private String chain;
 
-    @ImageConstraint(maxSizeMB = 5)     // 5MB
+    @ImageConstraint(maxSizeMB = 5)
     private MultipartFile image;
 
     @NotBlank

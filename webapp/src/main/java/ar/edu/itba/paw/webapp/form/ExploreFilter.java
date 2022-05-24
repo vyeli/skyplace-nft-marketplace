@@ -20,11 +20,11 @@ public class ExploreFilter {
     private String status = "";
 
     @DecimalMin(value="0")
-    @Digits(integer=8, fraction=8)
+    @Digits(integer=18, fraction=18)
     private BigDecimal minPrice = new BigDecimal(0);
 
     @DecimalMin(value="0")
-    @Digits(integer=8, fraction=8)
+    @Digits(integer=18, fraction=18)
     private BigDecimal maxPrice = new BigDecimal(0);
 
     public String getPage() {

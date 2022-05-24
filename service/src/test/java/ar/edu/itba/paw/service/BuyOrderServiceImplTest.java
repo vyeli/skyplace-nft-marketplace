@@ -78,42 +78,30 @@ public class BuyOrderServiceImplTest {
 
     @Test(expected = UserNoPermissionException.class)
     public void testCreateBuyOrderOnOwnedSellOrder() {
-        // 1. Precondiciones
         Mockito.when(userService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(true);
-
-        // 2. Ejercitar
         buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
-
-        // 3. Postcondiciones
     }
 
     @Test
     public void testCreateBuyOrderWithExistentBuyOrderData() {
-        // 1. Precondiciones
         Mockito.when(userService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
         Mockito.when(buyOrderDao.create(ID_SELLORDER, testPrice, ID_USER1)).thenReturn(false);
 
-        // 2. Ejercitar
         boolean createResult = buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
-
-        // 3. Postcondiciones
         assertFalse(createResult);
     }
 
     @Test(expected = SellOrderNotFoundException.class)
     public void testCreateBuyOrderWithUnexistentSellOrderData() {
-        // 1. Precondiciones
         Mockito.when(userService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
         Mockito.when(buyOrderDao.create(ID_SELLORDER, testPrice, ID_USER1)).thenReturn(true);
         Mockito.when(sellOrderDao.getOrderById(ID_SELLORDER)).thenReturn(Optional.empty());
 
-        // 2. Ejercitar
         buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
     }
 
     @Test(expected = NftNotFoundException.class)
     public void testCreateBuyOrderWithUnexistentNftData() {
-        // 1. Precondiciones
         SellOrder sellOrder = new SellOrder(ID_SELLORDER, testPrice, ID_NFT, CATEGORY);
         Mockito.when(userService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
         Mockito.when(buyOrderDao.create(ID_SELLORDER, testPrice, ID_USER1)).thenReturn(true);
@@ -121,7 +109,6 @@ public class BuyOrderServiceImplTest {
         Mockito.when(nftDao.getNFTById(ID_NFT)).thenReturn(Optional.empty());
 
         buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
-
     }
 
     @Test
@@ -130,7 +117,6 @@ public class BuyOrderServiceImplTest {
         Mockito.when(buyOrderDao.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER, buyOrderService.getPageSize())).thenReturn(buyOrders);
 
         int buyOfferAmount = buyOrderService.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER).size();
-
         assertEquals(0, buyOfferAmount);
     }
 
@@ -160,7 +146,6 @@ public class BuyOrderServiceImplTest {
     @Test(expected = UserIsNotNftOwnerException.class)
     public void testConfirmBuyOrderOnUnownedNft(){
         Mockito.when(userService.currentUserOwnsNft(ID_SELLORDER)).thenReturn(false);
-
         buyOrderService.confirmBuyOrder(ID_SELLORDER, ID_BUYER, ID_SELLER, ID_NFT, testPrice);
     }
 
@@ -189,21 +174,19 @@ public class BuyOrderServiceImplTest {
         Mockito.when(userService.currentUserOwnsNft(ID_SELLORDER)).thenReturn(true);
         Mockito.when(sellOrderDao.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
         Mockito.when(userService.getUserById(ID_BUYER)).thenReturn(Optional.of(buyerUser));
-
+        
         buyOrderService.confirmBuyOrder(ID_SELLORDER, ID_BUYER, ID_SELLER, ID_NFT, testPrice);
     }
 
     @Test(expected = UserIsNotNftOwnerException.class)
     public void testDeleteBuyOrderOnUnownedSellOrder(){
         Mockito.when(userService.currentUserOwnsSellOrder(ID_NFT)).thenReturn(false);
-
         buyOrderService.deleteBuyOrder(ID_SELLORDER, ID_BUYER);
     }
 
     @Test
     public void testDeleteBuyOrderOnOwnedSellOrder() {
         Mockito.when(userService.currentUserOwnsSellOrder(ID_NFT)).thenReturn(true);
-
         buyOrderService.deleteBuyOrder(ID_SELLORDER, ID_BUYER);
     }
 }

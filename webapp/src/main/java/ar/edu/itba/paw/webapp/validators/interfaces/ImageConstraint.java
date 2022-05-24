@@ -14,8 +14,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ImageConstraint {
     String message() default "";
-
-    // Follow spring standards
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

@@ -51,14 +51,14 @@ public class SellOrderServiceImplTest {
 
     @Test(expected = UserNoPermissionException.class)
     public void testUpdateSellOrderOnUnownedNft(){
-        Mockito.when(userService.currentUserOwnsNft(ID_NFT)).thenReturn(false);
+        Mockito.when(userService.currentUserOwnsSellOrder(ID_NFT)).thenReturn(false);
 
         sellOrderService.update(ID_NFT, CATEGORY, price);
     }
 
     @Test
     public void testUpdateSellOrderOnOwnedNft(){
-        Mockito.when(userService.currentUserOwnsNft(ID_NFT)).thenReturn(true);
+        Mockito.when(userService.currentUserOwnsSellOrder(ID_NFT)).thenReturn(true);
 
         sellOrderService.update(ID_NFT, CATEGORY, price);
     }

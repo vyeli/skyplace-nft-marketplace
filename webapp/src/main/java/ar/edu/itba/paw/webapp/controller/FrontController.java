@@ -118,11 +118,8 @@ public class FrontController {
         mav.addObject("categories", categories);
         mav.addObject("chains", chains);
         String sortFormat = getSortStringFormat(exploreFilter.getSort());
-
         mav.addObject("sortName", sortFormat);
         mav.addObject("currentPage", exploreFilter.getPage());
-
-        // For connecting all different forms
         mav.addObject("searchValue", exploreFilter.getSearch());
         mav.addObject("sortValue", exploreFilter.getSort());
         mav.addObject("statusValue", exploreFilter.getStatus());
@@ -391,12 +388,6 @@ public class FrontController {
         int parseId = parseInt(id);
         Image image = imageService.getImage(parseId).orElseThrow(ImageNotFoundException::new);
         return image.getImage();
-    }
-
-    /* 404 */
-    @RequestMapping("/**")
-    public ModelAndView notFound() {
-        return new ModelAndView("error/404");
     }
 
     private String capitalizeString(String s) {

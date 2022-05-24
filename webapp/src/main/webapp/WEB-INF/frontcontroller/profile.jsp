@@ -22,12 +22,6 @@
                     <span class="text-4xl font-semibold truncate max-w-[18rem] lg:max-w-[28rem] xl:max-w-[36rem] 2xl:max-w-[44rem]"><c:out value="${user.username}" /></span>
                     <button id="wallet-address-button" class="flex flex-row items-center ml-5 lg:ml-10 px-2 py-1 border rounded-2xl" onclick="copyToClipboard()" data-tooltip-target="tooltip-copy" data-tooltip-placement="bottom" type="button" id="walletButton">
                         <img class="w-6 h-6" src="<c:url value='/resources/utility_icon.svg' />" alt="<spring:message code="profile.walletIcon"/>" />
-                        <!--
-                        <svg class="fill-cyan-700 rounded-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                            <path fill="none" d="M0 0h24v24H0z"/>
-                            <path d="M22 7h1v10h-1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v3zm-2 10h-6a5 5 0 0 1 0-10h6V5H4v14h16v-2zm1-2V9h-7a3 3 0 0 0 0 6h7zm-7-4h3v2h-3v-2z"/>
-                        </svg>
-                        -->
                         <span class="text-xl ml-1 text-gray-400 font-semibold truncate w-28 lg:w-40 hover:text-gray-600" id="walletId"><c:out value="${user.wallet}"/></span>
                     </button>
                     <div id="tooltip-copy" role="tooltip" class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip">
@@ -40,24 +34,8 @@
                         <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
                 </div>
-                <!--
-                <button class="border border-gray-200 rounded-lg p-0.5 text-gray-400">
-                    <img class="w-9 h-9" src="<c:url value='/resources/more_options.svg' />" alt="options_icon"/>
-                </button>
-                -->
             </div>
             <span class="text-lg font-light text-gray-400 break-words w-96 lg:w-[36rem] xl:w-[44rem] 2xl:w-[52rem]"><c:out value="${user.email}" /></span>
-            <!-- Rating -->
-            <!--
-            <div class="flex flex-row items-center mt-3">
-                <svg class="w-9 h-9 text-yellow-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <p class="text-xl font-bold text-gray-900 ml-1">4.95</p>
-                <span class="w-1.5 h-1.5 mx-2 bg-gray-500 rounded-full dark:bg-gray-400"></span>
-                <a href="#" class="text-xl font-medium text-cyan-600 underline hover:no-underline">17 Reviews</a>
-            </div>
-            -->
         </div>
     </div>
 

@@ -102,14 +102,14 @@
                                     <form:label path="minPrice" class="font-mono font-bold w-1/3 text-[11px] text-gray-300 bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
                                         Min
                                     </form:label>
-                                    <form:input type="number" min="0" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="minPrice"/>
+                                    <form:input type="number" min="0" step=".000000000000000001" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="minPrice"/>
                                 </div>
                                 <span class="pb-1"><spring:message code="explore.to"/></span>
                                 <div class="relative z-0  px-2 w-full group">
                                     <form:label path="maxPrice" class="font-mono font-bold w-1/3 text-[11px]  text-gray-300  bg-white relative px-1  top-2 left-3 w-auto group-focus-within:text-black ">
                                         Max
                                     </form:label>
-                                    <form:input type="number" min="0" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="maxPrice"/>
+                                    <form:input type="number" min="0" step=".000000000000000001" class="h-8 text-10  bg-gray-50 border py-55-rem border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Min"  path="maxPrice"/>
                                 </div>
                             </div>
                         </div>

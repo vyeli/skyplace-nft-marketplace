@@ -2,7 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-
 <!DOCTYPE html>
 <html>
 <%@ include file="../frontcontroller/Head.jsp" %>
