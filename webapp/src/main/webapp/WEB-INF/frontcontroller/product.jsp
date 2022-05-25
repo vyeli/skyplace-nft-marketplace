@@ -236,10 +236,10 @@
                         <div class="ml-auto flex">
                             <c:choose>
                                 <c:when test="${isFaved}">
-                                    <c:url value="/favorite/remove/${nft.id}" var="favPath" />
+                                    <c:url value="/favorite/${nft.id}/remove" var="favPath" />
                                 </c:when>
                                 <c:otherwise>
-                                    <c:url value="/favorite/add/${nft.id}" var="favPath" />
+                                    <c:url value="/favorite/${nft.id}/add" var="favPath" />
                                 </c:otherwise>
                             </c:choose>
 
@@ -274,7 +274,7 @@
                                             <c:when test="${sellOrder != null}">
                                                 <c:if test="${currentUser.id == owner.id}">
                                                 <li class="z-20">
-                                                    <a href="<c:url value="/sell/update/${productId}" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                                                    <a href="<c:url value="/sellOrder/${productId}/update" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
                                                         <span><spring:message code="product.updateSell"/></span>
                                                     </a>
                                                 </li>
@@ -397,14 +397,14 @@
             <jsp:include page="../components/DeleteModal.jsp">
                 <jsp:param name="title" value="${deleteSellOrder}"/>
                 <jsp:param name="description" value="${deleteSellOrderConfirm}"/>
-                <jsp:param name="deletePath" value="/sell/delete/${nft.id}"/>
+                <jsp:param name="deletePath" value="/sellOrder/${nft.id}/delete"/>
             </jsp:include>
         </c:when>
         <c:otherwise>
             <jsp:include page="../components/DeleteModal.jsp">
                 <jsp:param name="title" value="${deleteNft}"/>
                 <jsp:param name="description" value="${deleteNftConfirm}"/>
-                <jsp:param name="deletePath" value="/product/delete/${nft.id}"/>
+                <jsp:param name="deletePath" value="/product/${nft.id}/delete"/>
             </jsp:include>
         </c:otherwise>
     </c:choose>

@@ -1,11 +1,14 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.interfaces.ImageConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.UniqueNftConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.ValidChainConstraint;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
 
+@UniqueNftConstraint
 public class CreateNftForm {
     @Digits(integer = 15, fraction = 0)
     @Min(value=0L)
@@ -22,6 +25,7 @@ public class CreateNftForm {
     private String name;
 
     @NotBlank
+    @ValidChainConstraint
     private String chain;
 
     @ImageConstraint(maxSizeMB = 5)

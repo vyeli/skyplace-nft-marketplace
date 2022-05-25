@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -74,18 +75,12 @@ public class FrontController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ModelAndView createUser(@Valid @ModelAttribute("userForm") final UserForm form, final BindingResult errors) {
-        if (errors.hasErrors()) {
+        if (errors.hasErrors())
             return createUserForm(form);
-        }
         final Optional<User> user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getWalletChain(), form.getPassword());
 
-        if (!user.isPresent()) {
-            final ModelAndView mav = new ModelAndView("frontcontroller/register");
-            List<String> chains = chainService.getChains();
-            mav.addObject("chains", chains);
-            mav.addObject("error", Boolean.TRUE);
-            return mav;
-        }
+        if (!user.isPresent())
+            return createUserForm(form);
 
         userDetailsService.autologin(user.get().getEmail(), form.getPassword());
         return new ModelAndView("redirect:/");
@@ -150,20 +145,15 @@ public class FrontController {
 
     @RequestMapping(value = "/sell/{productId}", method = RequestMethod.POST)
     public ModelAndView createSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors, @PathVariable String productId) {
-        if(errors.hasErrors()) {
-            errors.getAllErrors().forEach(error -> {
-                if(error.getCode().equals("typeMismatch"))
-                    throw new InvalidInputTypeException();
-            });
+        if(errors.hasErrors())
             return createSellOrderForm(form, productId);
-        }
 
         int parsedProductId = parseInt(productId);
         SellOrder sellOrder = sellOrderService.create(form.getPrice(), parsedProductId, form.getCategory()).orElseThrow(CreateSellOrderException::new);
         return new ModelAndView("redirect:/product/" + sellOrder.getNftId());
     }
 
-    @RequestMapping(value = "/sell/update/{productId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/sellOrder/{productId}/update", method = RequestMethod.GET)
     public ModelAndView getUpdateSellOrder(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
         int parsedProductId = parseInt(productId);
 
@@ -180,7 +170,7 @@ public class FrontController {
         return mav;
     }
 
-    @RequestMapping(value = "/sell/update/{productId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/sellOrder/{productId}/update", method = RequestMethod.POST)
     public ModelAndView updateSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors, @PathVariable String productId) {
         int parsedProductId = parseInt(productId);
         if (errors.hasErrors())
@@ -191,7 +181,7 @@ public class FrontController {
         return updated ? new ModelAndView("redirect:/product/" + nft.getId()) : getUpdateSellOrder(form, productId);
     }
 
-    @RequestMapping(value = "/sell/delete/{productId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/sellOrder/{productId}/delete", method = RequestMethod.POST)
     public ModelAndView deleteSellOrder(@PathVariable String productId) {
         int parsedProductId = parseInt(productId);
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
@@ -263,7 +253,7 @@ public class FrontController {
         return mav;
     }
 
-    @RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/product/{productId}/delete", method = RequestMethod.POST)
     public ModelAndView deleteNft(@PathVariable String productId) {
         int parsedProductId = parseInt(productId);
         nftService.delete(parsedProductId);
@@ -301,13 +291,8 @@ public class FrontController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ModelAndView publishNft(@Valid @ModelAttribute("createNftForm") final CreateNftForm form, final BindingResult errors) {
-        if(errors.hasErrors()) {
-            errors.getAllErrors().forEach(error -> {
-                if(error.getCode().equals("typeMismatch"))
-                    throw new InvalidInputTypeException();
-            });
+        if(errors.hasErrors())
             return createNft(form);
-        }
         User user = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
         final Nft nft = nftService.create(form.getNftId(), form.getContractAddr(), form.getName(), form.getChain(), form.getImage(), user.getId(), form.getCollection(), form.getDescription(), form.getProperties()).orElseThrow(CreateNftException::new);
         return new ModelAndView("redirect:/product/"+nft.getId());
@@ -365,7 +350,7 @@ public class FrontController {
         return mav;
     }
 
-    @RequestMapping(value = "/favorite/add/{productId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/favorite/{productId}/add", method = RequestMethod.POST)
     public String addFavorite(@PathVariable String productId, HttpServletRequest request){
         int parsedProductId = parseInt(productId);
         userService.getCurrentUser().ifPresent(user -> favoriteService.addNftFavorite(parsedProductId, user));
@@ -373,7 +358,7 @@ public class FrontController {
         return "redirect:"+ referer;
     }
 
-    @RequestMapping(value = "/favorite/remove/{productId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/favorite/{productId}/remove", method = RequestMethod.POST)
     public String removeFavorite(@PathVariable String productId, HttpServletRequest request){
         int parsedProductId = parseInt(productId);
         userService.getCurrentUser().ifPresent(user -> favoriteService.removeNftFavorite(parsedProductId, user));
@@ -416,9 +401,9 @@ public class FrontController {
         if (!Objects.equals(locale.getLanguage(), "es")) {
             switch(sort) {
                 case "priceAsc":
-                    return "Price Ascending";
+                    return "Price: Low to High";
                 case "priceDsc":
-                    return "Price Descending";
+                    return "Price: High to Low";
                 case "collection":
                     return "Collection";
                 default:
@@ -427,9 +412,9 @@ public class FrontController {
         }
         switch(sort) {
             case "priceAsc":
-                return "Precio ascendente";
+                return "Precio: Menor a Mayor";
             case "priceDsc":
-                return "Precio descendente";
+                return "Precio: Mayor a menor";
             case "collection":
                 return "Colección";
             default:

@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.validators.interfaces.ValidCategoryConstraint;
+
 public class SellNftForm extends PriceForm {
+    @ValidCategoryConstraint
     private String category;
 
     public String getCategory() {

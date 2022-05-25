@@ -1,17 +1,20 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.interfaces.PasswordsEqualConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.UniqueEmailConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.ValidChainConstraint;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@PasswordsEqualConstraint(message = "passwords are not equal")
+@PasswordsEqualConstraint
 public class UserForm {
 
     @NotBlank
     @Email
+    @UniqueEmailConstraint
     private String email;
 
     @NotBlank
@@ -19,6 +22,7 @@ public class UserForm {
     private String walletAddress;
 
     @NotBlank
+    @ValidChainConstraint
     private String walletChain;
 
     @NotBlank

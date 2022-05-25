@@ -11,7 +11,7 @@
       <h1 class="text-3xl text-center mb-12">
         <spring:message code="updateSellOrder.update"/>
       </h1>
-      <c:url value="/sell/update/${nft.id}" var="postPath"/>
+      <c:url value="/sellOrder/${nft.id}/update" var="postPath"/>
       <form:form modelAttribute="sellNftForm" action="${postPath}" method="post" class="grid grid-cols-2 gap-8 pt-8" enctype="multipart/form-data">
         <div class="flex flex-col gap-1">
           <p class="text-slate-600">

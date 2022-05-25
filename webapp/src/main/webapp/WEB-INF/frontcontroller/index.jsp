@@ -20,7 +20,7 @@
             <spring:message code="index.become"/>
         </p>
         <div class="flex justify-center flex-wrap gap-6">
-            <a href="<c:url value="/sell" />">
+            <a href="<c:url value="/create" />">
             <button type="button" class="shadow-md px-6 rounded-md transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl h-12">
                 <spring:message code="index.create"/>
             </button>

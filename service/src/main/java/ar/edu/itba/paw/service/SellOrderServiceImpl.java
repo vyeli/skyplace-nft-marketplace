@@ -48,7 +48,7 @@ public class SellOrderServiceImpl implements SellOrderService {
 
     @Override
     public void delete(int id) {
-        if (!userService.currentUserOwnsNft(id) && !userService.isAdmin())
+        if (!userService.currentUserOwnsSellOrder(id) && !userService.isAdmin())
             throw new UserNoPermissionException();
 
         sellOrderDao.delete(id);

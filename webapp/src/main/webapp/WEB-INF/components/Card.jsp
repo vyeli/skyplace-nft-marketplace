@@ -38,7 +38,7 @@
     <!-- Fav button -->
     <c:if test="${param.isFaved != null}">
 
-    <c:url value="/favorite/${param.isFaved ? 'remove' : 'add'}/${param.idProduct}" var="favPath" />
+    <c:url value="/favorite/${param.idProduct}/${param.isFaved ? 'remove' : 'add'}" var="favPath" />
 
     <form action="${favPath}" method="post" class="absolute top-4 right-4 hidden group-hover:block bg-white p-2 rounded-full cursor-pointer border shadow border-gray-300">
         <button type="submit">
