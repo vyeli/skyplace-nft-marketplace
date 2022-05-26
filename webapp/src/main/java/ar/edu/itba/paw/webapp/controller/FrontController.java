@@ -39,10 +39,11 @@ public class FrontController {
     private final BuyOrderService buyOrderService;
     private final FavoriteService favoriteService;
     private final PurchaseService purchaseService;
+    private final ReviewService reviewService;
     private final SkyplaceUserDetailsService userDetailsService;
 
     @Autowired
-    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService, SkyplaceUserDetailsService userDetailsService) {
+    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService, ReviewService reviewService, SkyplaceUserDetailsService userDetailsService) {
         this.sellOrderService = sellOrderService;
         this.categoryService = categoryService;
         this.chainService = chainService;
@@ -52,6 +53,7 @@ public class FrontController {
         this.buyOrderService = buyOrderService;
         this.favoriteService = favoriteService;
         this.purchaseService = purchaseService;
+        this.reviewService = reviewService;
         this.userDetailsService = userDetailsService;
     }
 
@@ -278,7 +280,6 @@ public class FrontController {
         return new ModelAndView("redirect:/product/" + productId);
     }
 
-
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public ModelAndView createNft(@ModelAttribute("createNftForm") final CreateNftForm form) {
         final ModelAndView mav = new ModelAndView("frontcontroller/create");
@@ -333,6 +334,12 @@ public class FrontController {
             mav.addObject("historyItems", transactions);
             mav.addObject("historyItemsSize", transactions.size());
             mav.addObject("pages", purchaseService.getAmountPagesByUserId(parsedUserId));
+        } else if(tabName.equals("reviews")) {
+            // TODO: Add correct review retrieval once migrated to Hibernate
+            List<DummyReview> reviews = reviewService.getUserReviews(user.getId());
+            mav.addObject("reviews", reviews);
+            mav.addObject("reviewAmount", reviews.size());
+            mav.addObject("pages", 1);
         } else {
             List<Publication> publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, tabName, profileFilter.getSort());
             int publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, tabName);
@@ -366,6 +373,26 @@ public class FrontController {
         return "redirect:"+ referer;
     }
 
+    @RequestMapping(value = "/review/{userId}", method = RequestMethod.GET)
+    public ModelAndView getCreateReviewFormPage(@ModelAttribute("createReviewForm") final CreateReviewForm form, @PathVariable final String userId){
+        final int parsedUserId = parseInt(userId);
+        final ModelAndView mav = new ModelAndView("frontcontroller/createReview");
+        Optional<User> maybeReviewee = userService.getUserById(parsedUserId);
+        Optional<User> maybeReviewer = userService.getCurrentUser();
+        if(maybeReviewee.isPresent() && maybeReviewer.isPresent()) {
+            mav.addObject("reviewerIdParam", maybeReviewer.get());
+            mav.addObject("revieweeIdParam", parsedUserId);
+            mav.addObject("revieweeUsername", maybeReviewee.get().getUsername());
+        }
+        return mav;
+    }
+
+    @RequestMapping(value = "/review/{userId}", method = RequestMethod.POST)
+    public ModelAndView createReview(@Valid @ModelAttribute("createReviewForm") final CreateReviewForm form, final BindingResult errors, @PathVariable final String userId){
+        if(errors.hasErrors())
+            return getCreateReviewFormPage(form, userId);
+        return new ModelAndView("redirect:/profile/" + userId);
+    }
 
     @RequestMapping(value = "/images/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody

@@ -77,6 +77,14 @@
                     <c:set var="historyClasses" value="${inactiveClasses}"/>
                 </c:otherwise>
             </c:choose>
+            <c:choose>
+                <c:when test="${tabName == 'reviews'}">
+                    <c:set var="reviewsClasses" value="${activeClasses}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="reviewsClasses" value="${inactiveClasses}"/>
+                </c:otherwise>
+            </c:choose>
 
             <!-- Inventory -->
             <li class="${inventoryClasses}">
@@ -107,8 +115,8 @@
                     <form:hidden path="page" value="1"/>
                 </form:form>
             </li>
-            <!-- Favorited -->
             <c:if test="${isOwner == true}">
+                <!-- Favorited -->
                 <li class="${favoritedClasses}">
                     <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
                         <form:button type="submit" path="tab" name="tab" value="favorited" class="flex">
@@ -121,6 +129,7 @@
                         <form:hidden path="page" value="1"/>
                     </form:form>
                 </li>
+                <!-- History -->
                 <li class="${historyClasses}">
                     <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
                         <form:button type="submit" path="tab" name="tab" value="history" class="flex">
@@ -134,6 +143,19 @@
                     </form:form>
                 </li>
             </c:if>
+            <!-- Reviews -->
+            <li class="${reviewsClasses}">
+                <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                    <form:button type="submit" path="tab" name="tab" value="reviews" class="flex">
+                        <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                        </svg>
+                        <spring:message code="profile.reviews"/>
+                    </form:button>
+                    <form:hidden path="sort" value="${sortValue}"/>
+                    <form:hidden path="page" value="1"/>
+                </form:form>
+            </li>
         </ul>
     </div>
 
@@ -175,7 +197,7 @@
         </div>
 
         <!-- Dropdown menu -->
-        <c:if test="${tabName != 'history'}">
+        <c:if test="${tabName != 'history' && tabName != 'reviews'}">
             <div class="flex flex-row text-2xl">
                 <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button">
                     <c:out value="${sortName}" />
@@ -203,9 +225,9 @@
         </c:if>
     </div>
 
-    <!-- NFTs -->
+    <!-- Objects (NFTs, history or review cards) -->
     <c:choose>
-        <c:when test="${tabName != 'history'}">
+        <c:when test="${tabName != 'history' && tabName != 'reviews'}">
             <div class="flex flex-wrap justify-center gap-8">
                 <c:forEach items="${publications}" var="publication">
                     <c:if test="${publication.nft.sellOrder != null}">
@@ -231,7 +253,7 @@
                 </c:if>
             </div>
         </c:when>
-        <c:otherwise>
+        <c:when test="${tabName == 'history'}">
             <div class="flex flex-col gap-2 w-3/4 max-w-4xl self-center">
                 <c:forEach items="${historyItems}" var="item">
                     <jsp:include page="../components/HistoryItem.jsp">
@@ -250,6 +272,84 @@
                 <c:if test="${historyItemsSize == 0}">
                     <span class="text-center text-slay-700"><spring:message code="profile.noActivity"/></span>
                 </c:if>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <!-- Reviews -->
+            <div class="flex flex-row gap-6">
+                <!-- Mean score -->
+                <div class="border rounded-md h-fit p-5">
+                    <h2 class="text-lg">
+                        <spring:message code="profile.ratings"/>
+                    </h2>
+                    <h3 class="mb-6 text-gray-400"><spring:message code="profile.totalReviews" arguments="${reviewAmount}"/></h3>
+                    <div class="flex flex-col">
+                        <div class="flex flex-row items-center w-64 xl:w-80 2xl:w-96">
+                            <div class="flex flex-col gap-3">
+                                <c:forEach var="i" begin="0" end="3">
+                                    <span class="text-sm font-medium text-blue-600">
+                                        <spring:message code="profile.stars" arguments="${5-i}"/>
+                                    </span>
+                                </c:forEach>
+                                <span class="text-sm font-medium text-blue-600">
+                                    <spring:message code="profile.star" arguments="1"/>
+                                </span>
+                            </div>
+                            <div class="flex flex-col grow gap-3">
+                                <div class="h-5 mx-4 bg-gray-200 rounded">
+                                    <div class="h-5 bg-yellow-400 rounded" style="width: 70%"></div>
+                                </div>
+                                <div class="h-5 mx-4 bg-gray-200 rounded">
+                                    <div class="h-5 bg-yellow-400 rounded" style="width: 17%"></div>
+                                </div>
+                                <div class="h-5 mx-4 bg-gray-200 rounded">
+                                    <div class="h-5 bg-yellow-400 rounded" style="width: 8%"></div>
+                                </div>
+                                <div class="h-5 mx-4 bg-gray-200 rounded">
+                                    <div class="h-5 bg-yellow-400 rounded" style="width: 4%"></div>
+                                </div>
+                                <div class="h-5 mx-4 bg-gray-200 rounded">
+                                    <div class="h-5 bg-yellow-400 rounded" style="width: 1%"></div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <span class="text-sm font-medium text-blue-600">70%</span>
+                                <span class="text-sm font-medium text-blue-600">17%</span>
+                                <span class="text-sm font-medium text-blue-600">8%</span>
+                                <span class="text-sm font-medium text-blue-600">4%</span>
+                                <span class="text-sm font-medium text-blue-600">1%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Detailed reviews -->
+                <div class="flex flex-col grow divide-y gap-4 mx-8">
+                    <div class="flex flex-row items-center justify-between">
+                        <h2 class="text-2xl"><spring:message code="profile.reviews"/></h2>
+                        <c:if test="${isOwner == false}">
+                            <a href="<c:url value='/review/${user.id}'/>">
+                                <button type="button" class="shadow-md px-6 py-2.5 rounded-md transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl">
+                                    <spring:message code="profile.addReview"/>
+                                </button>
+                            </a>
+                        </c:if>
+                    </div>
+                    <c:choose>
+                        <c:when test="${reviewAmount == 0}">
+                            <span class="pt-5 text-center"><spring:message code="profile.noReviews"/></span>
+                        </c:when>
+                        <c:otherwise>
+                            <c:forEach items="${reviews}" var="review">
+                                <jsp:include page="../components/ReviewItem.jsp">
+                                    <jsp:param name="reviewerName" value="${review.reviewer.username}"/>
+                                    <jsp:param name="title" value="${review.title}"/>
+                                    <jsp:param name="description" value="${review.comments}"/>
+                                    <jsp:param name="score" value="${review.score}"/>
+                                </jsp:include>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
             </div>
         </c:otherwise>
     </c:choose>
