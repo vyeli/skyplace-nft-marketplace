@@ -38,8 +38,6 @@ public class CreateNftForm {
 
     private String description;
 
-    private String[] properties;
-
     public int getNftId() {
         return nftId;
     }
@@ -95,13 +93,4 @@ public class CreateNftForm {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    public String[] getProperties() {
-        return properties;
-    }
-
-    public void setProperties(String[] properties) {
-        this.properties = properties;
-    }
-
 }

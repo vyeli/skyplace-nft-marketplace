@@ -16,6 +16,10 @@ import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -30,6 +34,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -46,8 +51,6 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class WebConfig extends WebMvcConfigurationSupport {
 
-    @Value("classpath:sql/schema.sql")
-    private Resource schemaSql;
     public static final String DB_URL_PARAMETER = "DB_URL";
     public static final String DB_USERNAME_PARAMETER = "DB_USERNAME";
     public static final String DB_PASSWORD_PARAMETER = "DB_PASSWORD";
@@ -107,10 +110,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
         return handlerMapping;
     }
 
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(dataSource());
-    }
 
     @Bean
     public MessageSource messageSource() {
@@ -130,6 +129,33 @@ public class WebConfig extends WebMvcConfigurationSupport {
         templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
         templateResolver.setCacheable(false);
         return templateResolver;
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+        factoryBean.setPackagesToScan("ar.edu.itba.paw.model");
+        factoryBean.setDataSource(dataSource());
+
+        final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        factoryBean.setJpaVendorAdapter(vendorAdapter);
+
+        final Properties properties = new Properties();
+        properties.setProperty("hibernate.hbm2ddl.auto", "none");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
+
+        // Estas 2 son solo para desarrollo (en local)
+        // FIXME: Si las ponen en prod (en el server) hay tabla!!!
+        properties.setProperty("hibernate.show_sql", "true");
+        properties.setProperty("format_sql", "true");
+
+        factoryBean.setJpaProperties(properties);
+        return factoryBean;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(final EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
     }
 
     @Bean
@@ -158,21 +184,22 @@ public class WebConfig extends WebMvcConfigurationSupport {
         return mailSender;
     }
 
-    @Bean
-    public DatabasePopulator databasePopulator() {
-        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(schemaSql);
-
-        return populator;
-    }
-
-    @Bean
-    public DataSourceInitializer dataSourceInitializer() {
-        DataSourceInitializer dsi = new DataSourceInitializer();
-        dsi.setDataSource(dataSource());
-        dsi.setDatabasePopulator(databasePopulator());
-
-        return dsi;
-    }
-
+//    @Value("classpath:sql/schema.sql")
+//    private Resource schemaSql;
+//    @Bean
+//    public DatabasePopulator databasePopulator() {
+//        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+//        populator.addScript(schemaSql);
+//
+//        return populator;
+//    }
+//
+//    @Bean
+//    public DataSourceInitializer dataSourceInitializer() {
+//        DataSourceInitializer dsi = new DataSourceInitializer();
+//        dsi.setDataSource(dataSource());
+//        dsi.setDatabasePopulator(databasePopulator());
+//
+//        return dsi;
+//    }
 }

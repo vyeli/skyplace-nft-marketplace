@@ -1,16 +1,16 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.BuyOrder;
+import ar.edu.itba.paw.model.SellOrder;
+import ar.edu.itba.paw.model.User;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface BuyOrderDao {
-    boolean create(int sellOrderId, BigDecimal price, int userId);
 
-    List<BuyOrder> getOrdersBySellOrderId(int offerPage, int sellOrderId, int pageSize);
+    BuyOrder create(SellOrder sellOrder, BigDecimal price, User bidder);
 
-    int getAmountPagesBySellOrderId(int sellOrderId, int pageSize);
+    List<BuyOrder> getOrdersBySellOrderId(int page, int sellOrderId, int pageSize);
 
-    void deleteBuyOrder(int sellOrderId, int buyerId);
 }

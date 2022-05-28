@@ -217,19 +217,19 @@
                 </c:if>
                 <c:forEach items="${publications}" var="publication">
                     <c:if test="${publication.nft.sellOrder != null}">
-                        <c:set value="${publication.sellOrder.price}" var="sellPrice" />
-                        <c:set value="${publication.sellOrder.category}" var="sellCategory" />
+                        <c:set value="${publication.nft.sellOrder.price}" var="sellPrice" />
+                        <c:set value="${publication.nft.sellOrder.category}" var="sellCategory" />
                     </c:if>
                     <jsp:include page="../components/Card.jsp">
                         <jsp:param name="name" value="${publication.nft.nftName}"/>
-                        <jsp:param name="isFaved" value="${publication.isFaved}"/>
+                        <jsp:param name="isFaved" value="${publication.isFaved != null}"/>
                         <jsp:param name="nftId" value="${publication.nft.nftId}" />
                         <jsp:param name="descr" value="${publication.nft.description}"/>
                         <jsp:param name="img" value="${publication.nft.idImage}"/>
                         <jsp:param name="onSale" value="${publication.nft.sellOrder != null}"/>
                         <jsp:param name="price" value="${sellPrice}" />
                         <jsp:param name="category" value="${sellCategory}"/>
-                        <jsp:param name="sellerEmail" value="${publication.user.email}"/>
+                        <jsp:param name="sellerEmail" value="${publication.nft.owner.email}"/>
                         <jsp:param name="idProduct" value="${publication.nft.id}"/>
                         <jsp:param name="isFaved" value="false" />
                     </jsp:include>
@@ -242,7 +242,7 @@
 <script>
     const params = new URLSearchParams(window.location.search)
 
-    if(params.get("category") != null && params.get("category") !== "") {
+    if((params.get("category") != null && params.get("category") !== "") || (params.get("sort") != null && params.get("sort") === "priceAsc") || (params.get("sort") != null && params.get("sort") === "priceDsc")) {
         document.querySelector("input[value='onSale']").checked = true
     }
 

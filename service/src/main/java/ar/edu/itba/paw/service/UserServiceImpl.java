@@ -2,6 +2,8 @@ package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.exceptions.UserAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserNotLoggedInException;
+import ar.edu.itba.paw.model.Chain;
+import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -26,14 +29,13 @@ public class UserServiceImpl implements UserService{
         this.passwordEncoder = passwordEncoder;
         this.mailingService = mailingService;
     }
-
+    @Transactional
     @Override
-    public Optional<User> create(String email, String username, String wallet, String walletChain, String password) {
+    public User create(String email, String username, String wallet, String walletChain, String password) {
         if(userDao.getUserByEmail(email).isPresent())
             throw new UserAlreadyExistsException();
-        Optional<User> user = userDao.create(email, username, wallet, walletChain, passwordEncoder.encode(password));
-        if(user.isPresent())
-            mailingService.sendRegisterMail(email, username, LocaleContextHolder.getLocale());
+        User user = userDao.create(email, username, wallet, Chain.valueOf(walletChain), passwordEncoder.encode(password));
+        mailingService.sendRegisterMail(email, username, LocaleContextHolder.getLocale());
         return user;
     }
 
@@ -57,24 +59,13 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public boolean userOwnsNft(int productId, User user) {
-        return userDao.userOwnsNft(productId, user);
+        return user.isNftOwner(productId);
     }
 
     @Override
-    public boolean currentUserOwnsNft(int productId) {
+    public boolean currentUserOwnsNft(int nftId) {
         User currentUser = getCurrentUser().orElseThrow(UserNotLoggedInException::new);
-        return userOwnsNft(productId, currentUser);
-    }
-
-    @Override
-    public boolean userOwnsSellOrder(int productId, User user) {
-        return userDao.userOwnsSellOrder(productId, user);
-    }
-
-    @Override
-    public boolean currentUserOwnsSellOrder(int productId) {
-        User currentUser = getCurrentUser().orElseThrow(UserNotLoggedInException::new);
-        return userOwnsSellOrder(productId, currentUser);
+        return userOwnsNft(nftId, currentUser);
     }
 
     @Override

@@ -5,7 +5,7 @@ import ar.edu.itba.paw.model.User;
 import java.util.Optional;
 
 public interface UserService {
-    Optional<User> create(String email, String username, String wallet, String walletChain, String password);
+    User create(String email, String username, String wallet, String walletChain, String password);
 
     Optional<User> getUserByEmail(String email);
 
@@ -16,10 +16,6 @@ public interface UserService {
     boolean userOwnsNft(int productId, User user);
 
     boolean currentUserOwnsNft(int productId);
-
-    boolean userOwnsSellOrder(int productId, User user);
-
-    boolean currentUserOwnsSellOrder(int productId);
 
     boolean isAdmin();
 }

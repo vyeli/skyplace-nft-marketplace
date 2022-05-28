@@ -1,3 +1,4 @@
+/*
 package ar.edu.itba.paw.persistence;
 
 import org.junit.Before;
@@ -35,3 +36,4 @@ public class CategoryJdbcDaoTest {
         assertFalse(categories.contains("Gaming"));
     }
 }
+*/

@@ -17,49 +17,46 @@ import java.util.Optional;
 public class BuyOrderServiceImpl implements BuyOrderService {
     private final BuyOrderDao buyOrderDao;
     private final UserService userService;
-    private final SellOrderDao sellOrderDao;
-    private final NftDao nftDao;
-    private final ImageDao imageDao;
+    private final SellOrderService sellOrderService;
+    private final ImageService imageService;
     private final MailingService mailingService;
     private final PurchaseService purchaseService;
 
     private final int pageSize = 5;
 
     @Autowired
-    public BuyOrderServiceImpl(BuyOrderDao  buyOrderDao, UserService userService, SellOrderDao sellOrderDao, NftDao nftDao, ImageDao imageDao, MailingService mailingService, PurchaseService purchaseService) {
+    public BuyOrderServiceImpl(BuyOrderDao buyOrderDao, UserService userService, SellOrderService sellOrderService, ImageService imageService, MailingService mailingService, PurchaseService purchaseService) {
         this.buyOrderDao = buyOrderDao;
         this.userService = userService;
-        this.sellOrderDao = sellOrderDao;
-        this.nftDao = nftDao;
-        this.imageDao = imageDao;
+        this.sellOrderService = sellOrderService;
+        this.imageService = imageService;
         this.mailingService = mailingService;
         this.purchaseService = purchaseService;
     }
 
+    @Transactional
     @Override
     public boolean create(int idSellOrder, BigDecimal price, int userId) {
-        if(userService.currentUserOwnsSellOrder(idSellOrder))
+        if(sellOrderService.currentUserOwnsSellOrder(idSellOrder))
             throw new UserNoPermissionException();
-
-        if(buyOrderDao.create(idSellOrder, price, userId)){
-            BuyOrder buyOrder = new BuyOrder(idSellOrder, price, userId);
-            SellOrder sellOrder = sellOrderDao.getOrderById(idSellOrder).orElseThrow(SellOrderNotFoundException::new);
-            Nft nft = nftDao.getNFTById(sellOrder.getNftId()).orElseThrow(NftNotFoundException::new);
-            User seller = userService.getUserById(nft.getIdOwner()).orElseThrow(UserNotFoundException::new);
-            User bidder = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
-            Image image = imageDao.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
-            mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), buyOrder.getAmount(), image.getImage(), LocaleContextHolder.getLocale());
-            return true;
-        }
-        return false;
+        
+        SellOrder sellOrder = sellOrderService.getOrderById(idSellOrder).orElseThrow(SellOrderNotFoundException::new);
+        User bidder = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
+        buyOrderDao.create(sellOrder, price, bidder);
+        Nft nft = sellOrder.getNft();
+        User seller = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
+        Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
+        mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), price, image.getImage(), LocaleContextHolder.getLocale());
+        return true;
     }
 
     @Override
     public List<BuyOffer> getOrdersBySellOrderId(int offerPage, int idSellOrder) {
+        // TODO: refactor with SellOrder model getter
         List<BuyOrder> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder, pageSize);
         List<BuyOffer> buyOffers = new ArrayList<>();
         buyOrders.forEach(buyOrder -> {
-            Optional<User> user = userService.getUserById(buyOrder.getIdBuyer());
+            Optional<User> user = userService.getUserById(buyOrder.getOfferedBy().getId());
             user.ifPresent(value -> buyOffers.add(new BuyOffer(buyOrder, value)));
         });
         return buyOffers;
@@ -67,7 +64,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
 
     @Override
     public int getAmountPagesBySellOrderId(int idSellOrder) {
-        return buyOrderDao.getAmountPagesBySellOrderId(idSellOrder, pageSize);
+        Optional<SellOrder> maybeSellOrder = sellOrderService.getOrderById(idSellOrder);
+        return maybeSellOrder.map(sellOrder -> (sellOrder.getBuyOrdersAmount() - 1) / pageSize + 1).orElse(0);
     }
 
     @Transactional
@@ -76,20 +74,24 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         if (!userService.currentUserOwnsNft(productId))
             throw new UserIsNotNftOwnerException();
 
-        SellOrder sOrder = sellOrderDao.getOrderById(sellOrderId).orElseThrow(SellOrderNotFoundException::new);
+        SellOrder sellOrder = sellOrderService.getOrderById(sellOrderId).orElseThrow(SellOrderNotFoundException::new);
         User buyerUser = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
 
-        nftDao.updateOwner(sOrder.getNftId(), buyerUser.getId());
-        sellOrderDao.delete(sOrder.getId());
+        sellOrder.getNft().setOwner(buyerUser);
+        sellOrderService.delete(sellOrder.getId());
         purchaseService.createPurchase(buyerId, seller, productId, price);
     }
 
+    @Transactional
     @Override
     public void deleteBuyOrder(int sellOrderId, int buyerId) {
-        if (!userService.currentUserOwnsSellOrder(sellOrderId))
+        if (!sellOrderService.currentUserOwnsSellOrder(sellOrderId))
             throw new UserIsNotNftOwnerException();
 
-        buyOrderDao.deleteBuyOrder(sellOrderId, buyerId);
+        // TODO: delete using SellOrder model method
+        SellOrder sellOrder = sellOrderService.getOrderById(sellOrderId).orElseThrow(SellOrderNotFoundException::new);
+        User buyer = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
+        sellOrder.deleteBuyOrder(buyer);
     }
 
     public int getPageSize() {

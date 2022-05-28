@@ -2,28 +2,16 @@ package ar.edu.itba.paw.model;
 
 public class Publication {
     private Nft nft;
-    private SellOrder sellOrder;
-    private User user;
-    private boolean isFaved = false;
+    private Favorited favorite;
 
-    public Publication(Nft nft, SellOrder sellOrder, User user, boolean isFaved) {
+    public Publication(Nft nft, Favorited favorite) {
         this.nft = nft;
-        this.sellOrder = sellOrder;
-        this.user = user;
-        this.isFaved = isFaved;
+        this.favorite = favorite;
     }
 
     public Nft getNft() {
         return nft;
     }
 
-    public SellOrder getSellOrder() {
-        return sellOrder;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public boolean getIsFaved() {return isFaved;}
+    public Favorited getIsFaved() {return favorite;}
 }

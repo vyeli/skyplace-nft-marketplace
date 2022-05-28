@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.persistence;
+/*package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.exceptions.CreateImageException;
 import ar.edu.itba.paw.exceptions.InvalidChainException;
@@ -224,3 +224,4 @@ public class NftJdbcDaoTest {
     }
 
 }
+*/

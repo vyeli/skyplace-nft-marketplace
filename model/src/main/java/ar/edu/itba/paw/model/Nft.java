@@ -1,60 +1,87 @@
 package ar.edu.itba.paw.model;
 
-public class Nft {
-    private int id;
-    private int nftId;
-    private String contractAddr;
-    private String name;
-    private String chain;
-    private int idImage;
-    private int idOwner;
-    private String collection;
-    private String description;
-    private String[] properties;
-    private Integer sellOrder;
 
-    public Nft(int id, int nftId, String contractAddr, String name, String chain, int idImage, int idOwner, String collection, String description, String[] properties, Integer sellOrder) {
-        this.id = id;
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.List;
+
+@Entity
+@Table(name = "nfts")
+public class Nft {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "nfts_id_seq")
+    @SequenceGenerator(allocationSize = 1, sequenceName = "nfts_id_seq", name = "nfts_id_seq")
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "nft_id", nullable = false)
+    private int nftId;
+
+    @Column(name = "contract_addr", nullable = false, length = -1)
+    private String contractAddr;
+
+    @Column(name = "nft_name", nullable = false, length = -1)
+    private String nftName;
+
+    @Enumerated(EnumType.STRING)
+    private Chain chain;
+
+    @Column(name = "id_image", nullable = false)
+    private int idImage;
+
+    @Column(name = "collection", nullable = true)
+    private String collection;
+
+    @Column(name = "description", nullable = true)
+    private String description;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_owner", referencedColumnName = "id", nullable = false)
+    private User owner;
+
+    @OneToMany(mappedBy = "nftsByIdNft")
+    private List<Purchase> purchasesById;
+
+    @OneToMany(mappedBy = "nft")
+    private List<Favorited> favoritedsById;
+
+    @OneToOne(mappedBy = "nft")
+    private SellOrder sellorder;
+
+    /* default */ Nft() {
+        // just for hibernate
+    }
+
+    public Nft(int nftId, String contractAddr, String nftName, Chain chain, int idImage, String collection, String description, User owner) {
         this.nftId = nftId;
         this.contractAddr = contractAddr;
-        this.name = name;
+        this.nftName = nftName;
         this.chain = chain;
         this.idImage = idImage;
-        this.idOwner = idOwner;
         this.collection = collection;
         this.description = description;
-        this.properties = properties;
-        this.sellOrder = sellOrder;
+        this.owner = owner;
     }
 
-    public Nft() {
-        this.name = "Deleted NFT";
+    public int getNftId() {
+        return nftId;
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getNftId() {return nftId;}
 
     public String getContractAddr() {
         return contractAddr;
     }
 
     public String getNftName() {
-        return name;
+        return nftName;
     }
 
-    public String getChain() {
+    public Chain getChain() {
         return chain;
     }
 
     public int getIdImage() {
         return idImage;
-    }
-
-    public int getIdOwner() {
-        return idOwner;
     }
 
     public String getCollection() {
@@ -65,11 +92,31 @@ public class Nft {
         return description;
     }
 
-    public String[] getProperties() {
-        return properties;
+    public int getId() {
+        return id;
     }
 
-    public Integer getSellOrder() {
-        return sellOrder;
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User newOwner) {
+        this.owner = newOwner;
+    }
+
+    public Collection<Purchase> getPurchasesById() {
+        return purchasesById;
+    }
+
+    public Collection<Favorited> getFavoritedsById() {
+        return favoritedsById;
+    }
+
+    public SellOrder getSellOrder() {
+        return sellorder;
+    }
+
+    public void setSellorder(SellOrder sellorder) {
+        this.sellorder = sellorder;
     }
 }

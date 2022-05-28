@@ -1,3 +1,4 @@
+/*
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.exceptions.NftNotFoundException;
@@ -142,3 +143,4 @@ public class FavoriteJdbcDaoTest {
         assertEquals(2, amountFavorites);
     }
 }
+*/

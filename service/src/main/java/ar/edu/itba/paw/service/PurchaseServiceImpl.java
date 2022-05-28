@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Purchase;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.PurchaseDao;
@@ -7,20 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PurchaseServiceImpl implements PurchaseService {
 
     private final PurchaseDao purchaseDao;
     private final UserService userService;
-    private final int pageSize = 8;
+    private final NftService nftService;
+    private final int pageSize = 3;
 
     @Autowired
-    public PurchaseServiceImpl(PurchaseDao purchaseDao, UserService userService) {
+    public PurchaseServiceImpl(PurchaseDao purchaseDao, UserService userService, NftService nftService) {
         this.purchaseDao = purchaseDao;
         this.userService = userService;
+        this.nftService = nftService;
     }
 
     @Override
@@ -30,30 +34,41 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public List<Purchase> getUserSales(int userId) {
-        return purchaseDao.getUserSales(userId);
+        Optional<User> maybeUser = userService.getUserById(userId);
+        if (maybeUser.isPresent())
+            return maybeUser.get().getSaleHistory();
+        return Collections.emptyList();
     }
 
     @Override
     public List<Purchase> getUserPurchases(int userId) {
-        return purchaseDao.getUserPurchases(userId);
+        Optional<User> maybeUser = userService.getUserById(userId);
+        if (maybeUser.isPresent())
+            return maybeUser.get().getPurchaseHistory();
+        return Collections.emptyList();
     }
 
     @Override
     public int getAmountPagesByUserId(int userId) {
-        return purchaseDao.getAmountPagesByUserId(userId, pageSize);
+        Optional<User> maybeUser = userService.getUserById(userId);
+        return maybeUser.map(user -> (user.getTransactionAmount() - 1) / pageSize + 1).orElse(0);
     }
 
     @Override
     public List<Purchase> getAllTransactions(int userId, int page) {
         User currentUser = userService.getCurrentUser().orElse(null);
-        if (currentUser == null || currentUser.getId() != userId) {
-            return new ArrayList<>();
-        }
+        if (currentUser == null || currentUser.getId() != userId)
+            return Collections.emptyList();
         return purchaseDao.getAllTransactions(userId, page, pageSize);
     }
 
     @Override
     public int createPurchase(int idBuyer, int idSeller, int idNft, BigDecimal price) {
-        return purchaseDao.createPurchase(idBuyer, idSeller, idNft, price);
+        Optional<User> maybeBuyer = userService.getUserById(idBuyer);
+        Optional<User> maybeSeller = userService.getUserById(idSeller);
+        Optional<Nft> maybeNft = nftService.getNFTById(idNft);
+        if (!maybeBuyer.isPresent() || !maybeNft.isPresent() || !maybeSeller.isPresent())
+            return 0;
+        return purchaseDao.createPurchase(maybeBuyer.get(), maybeSeller.get(), maybeNft.get(), price).getId();
     }
 }

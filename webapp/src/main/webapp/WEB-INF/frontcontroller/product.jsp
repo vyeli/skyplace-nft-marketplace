@@ -130,10 +130,10 @@
                                                 </div>
                                                 <c:if test="${sellOrder != null && owner.id == currentUser.id}">
                                                     <div class="flex gap-2">
-                                                        <button onclick="handleReject(${offer.buyOrder.idSellOrder}, ${offer.buyOrder.idBuyer}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
+                                                        <button onclick="handleReject(${offer.buyOrder.offeredFor.id}, ${offer.buyOrder.offeredBy.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
                                                             <spring:message code="product.reject"/>
                                                         </button>
-                                                        <button onclick="handleAccept(${offer.buyOrder.idSellOrder}, ${offer.buyOrder.idBuyer}, ${currentUser.id}, ${sellOrder.price}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
+                                                        <button onclick="handleAccept(${offer.buyOrder.offeredFor.id}, ${offer.buyOrder.offeredBy.id}, ${currentUser.id}, ${sellOrder.price}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
                                                             <spring:message code="product.accept"/>
                                                         </button>
                                                     </div>

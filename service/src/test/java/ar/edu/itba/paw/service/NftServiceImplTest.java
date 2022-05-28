@@ -1,3 +1,4 @@
+/*
 package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.exceptions.UserIsNotNftOwnerException;
@@ -47,3 +48,4 @@ public class NftServiceImplTest {
     }
 
 }
+*/

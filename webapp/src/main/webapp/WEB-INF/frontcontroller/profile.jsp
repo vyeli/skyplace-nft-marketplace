@@ -231,21 +231,20 @@
             <div class="flex flex-wrap justify-center gap-8">
                 <c:forEach items="${publications}" var="publication">
                     <c:if test="${publication.nft.sellOrder != null}">
-                        <c:set value="${publication.sellOrder.price}" var="sellPrice" />
-                        <c:set value="${publication.sellOrder.category}" var="sellCategory" />
+                        <c:set value="${publication.nft.sellOrder.price}" var="sellPrice" />
+                        <c:set value="${publication.nft.sellOrder.category}" var="sellCategory" />
                     </c:if>
                     <jsp:include page="../components/Card.jsp">
                         <jsp:param name="name" value="${publication.nft.nftName}"/>
-                        <jsp:param name="isFaved" value="${publication.isFaved}"/>
                         <jsp:param name="nftId" value="${publication.nft.nftId}" />
                         <jsp:param name="descr" value="${publication.nft.description}"/>
                         <jsp:param name="img" value="${publication.nft.idImage}"/>
                         <jsp:param name="onSale" value="${publication.nft.sellOrder != null}"/>
                         <jsp:param name="price" value="${sellPrice}" />
                         <jsp:param name="category" value="${sellCategory}"/>
-                        <jsp:param name="sellerEmail" value="${publication.user.email}"/>
+                        <jsp:param name="sellerEmail" value="${publication.nft.owner.email}"/>
                         <jsp:param name="idProduct" value="${publication.nft.id}"/>
-                        <jsp:param name="isFaved" value="false" />
+                        <jsp:param name="isFaved" value="${publication.isFaved != null}" />
                     </jsp:include>
                 </c:forEach>
                 <c:if test="${publicationsSize == 0}">
@@ -257,11 +256,11 @@
             <div class="flex flex-col gap-2 w-3/4 max-w-4xl self-center">
                 <c:forEach items="${historyItems}" var="item">
                     <jsp:include page="../components/HistoryItem.jsp">
-                        <jsp:param name="nftName" value="${item.nft.nftName}"/>
-                        <jsp:param name="nftId" value="${item.nft.id}"/>
-                        <jsp:param name="nftImg" value="${item.nft.idImage}"/>
+                        <jsp:param name="nftName" value="${item.nftsByIdNft.nftName}"/>
+                        <jsp:param name="nftId" value="${item.nftsByIdNft.id}"/>
+                        <jsp:param name="nftImg" value="${item.nftsByIdNft.idImage}"/>
                         <jsp:param name="price" value="${item.price}"/>
-                        <jsp:param name="date" value="${item.date}"/>
+                        <jsp:param name="date" value="${item.buyDate}"/>
                         <jsp:param name="sellerUsername" value="${item.seller.username}"/>
                         <jsp:param name="sellerId" value="${item.seller.id}"/>
                         <jsp:param name="buyerUsername" value="${item.buyer.username}"/>

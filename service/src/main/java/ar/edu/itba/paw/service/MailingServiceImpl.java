@@ -35,6 +35,7 @@ public class MailingServiceImpl implements MailingService{
     private static final String EMAIL_ENCODING = "UTF-8";
     private static final String IMG_PNG_FORMAT = "image/png";
 
+    // FIXME: no deberia esto ser estatico hardcodeado
     private static final String EXPLORE_URL = "http://pawserver.it.itba.edu.ar/paw-2022a-09/explore";
     private static final String PRODUCT_BASE_URL = "http://pawserver.it.itba.edu.ar/paw-2022a-09/product/";
 

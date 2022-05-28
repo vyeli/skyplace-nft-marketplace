@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.validation.BindingResult;
 
@@ -31,8 +32,6 @@ public class FrontController {
     private static final Logger LOGGER = LoggerFactory.getLogger(FrontController.class);
 
     private final SellOrderService sellOrderService;
-    private final CategoryService categoryService;
-    private final ChainService chainService;
     private final UserService userService;
     private final ImageService imageService;
     private final NftService nftService;
@@ -43,10 +42,8 @@ public class FrontController {
     private final SkyplaceUserDetailsService userDetailsService;
 
     @Autowired
-    public FrontController(SellOrderService sellOrderService, CategoryService categoryService, ChainService chainService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService, ReviewService reviewService, SkyplaceUserDetailsService userDetailsService) {
+    public FrontController(SellOrderService sellOrderService, UserService userService, ImageService imageService, NftService nftService, BuyOrderService buyOrderService, FavoriteService favoriteService, PurchaseService purchaseService, ReviewService reviewService, SkyplaceUserDetailsService userDetailsService) {
         this.sellOrderService = sellOrderService;
-        this.categoryService = categoryService;
-        this.chainService = chainService;
         this.userService = userService;
         this.imageService = imageService;
         this.nftService = nftService;
@@ -70,7 +67,7 @@ public class FrontController {
     @RequestMapping( value = "/register", method = RequestMethod.GET)
     public ModelAndView createUserForm(@ModelAttribute("userForm") final UserForm form) {
         final ModelAndView mav = new ModelAndView("frontcontroller/register");
-        List<String> chains = chainService.getChains();
+        List<String> chains = Chain.getChains();
         mav.addObject("chains", chains);
         return mav;
     }
@@ -79,26 +76,24 @@ public class FrontController {
     public ModelAndView createUser(@Valid @ModelAttribute("userForm") final UserForm form, final BindingResult errors) {
         if (errors.hasErrors())
             return createUserForm(form);
-        final Optional<User> user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getWalletChain(), form.getPassword());
+            
+        final User user =  userService.create(form.getEmail(), form.getUsername(), form.getWalletAddress(), form.getWalletChain(), form.getPassword());
 
-        if (!user.isPresent())
-            return createUserForm(form);
-
-        userDetailsService.autologin(user.get().getEmail(), form.getPassword());
+        userDetailsService.autologin(user.getEmail(), form.getPassword());
         return new ModelAndView("redirect:/");
     }
 
     @RequestMapping("/explore")
     public ModelAndView explore(@ModelAttribute("exploreFilter") @Valid ExploreFilter exploreFilter, HttpServletRequest request) {
         setEncodingToUTF(request);
-        List<String> categories = categoryService.getCategories();
-        List<String> chains = chainService.getChains();
+        List<String> categories = Category.getCategories();
+        List<String> chains = Chain.getChains();
 
         final ModelAndView mav = new ModelAndView("frontcontroller/explore");
 
         final int parsedPage = parseInt(exploreFilter.getPage());
         final List<Publication> publications = nftService.getAllPublications(parsedPage, exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), exploreFilter.getSearchFor());
-        int publicationsAmount = nftService.getAmountPublications(exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSearch(), exploreFilter.getSearchFor());
+        int publicationsAmount = nftService.getAmountPublications(exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(), exploreFilter.getSearch(), exploreFilter.getSearchFor());
 
         String lang = LocaleContextHolder.getLocale().getLanguage();
         String categoryFormat = lang.equals("es") ? "Todos" : "All";
@@ -136,11 +131,11 @@ public class FrontController {
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
         User user = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
 
-        if (nft.getIdOwner() != user.getId())
+        if (nft.getOwner().getId() != user.getId())
             throw new UserIsNotNftOwnerException();
         mav.addObject("nft", nft);
 
-        List<String> categories = categoryService.getCategories();
+        List<String> categories = Category.getCategories();
         mav.addObject("categories", categories);
         return mav;
     }
@@ -151,8 +146,8 @@ public class FrontController {
             return createSellOrderForm(form, productId);
 
         int parsedProductId = parseInt(productId);
-        SellOrder sellOrder = sellOrderService.create(form.getPrice(), parsedProductId, form.getCategory()).orElseThrow(CreateSellOrderException::new);
-        return new ModelAndView("redirect:/product/" + sellOrder.getNftId());
+        SellOrder sellOrder = sellOrderService.create(form.getPrice(), parsedProductId, form.getCategory());
+        return new ModelAndView("redirect:/product/" + sellOrder.getNft().getId());
     }
 
     @RequestMapping(value = "/sellOrder/{productId}/update", method = RequestMethod.GET)
@@ -163,11 +158,11 @@ public class FrontController {
             throw new UserNoPermissionException();
 
         final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
-        List<String> categories = categoryService.getCategories();
+        List<String> categories = Category.getCategories();
         mav.addObject("categories", categories);
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
         mav.addObject(  "nft", nft);
-        SellOrder order = sellOrderService.getOrderById(nft.getSellOrder()).orElseThrow(SellOrderNotFoundException::new);
+        SellOrder order = sellOrderService.getOrderById(nft.getSellOrder().getId()).orElseThrow(SellOrderNotFoundException::new);
         mav.addObject("order",order);
         return mav;
     }
@@ -179,7 +174,7 @@ public class FrontController {
             return getUpdateSellOrder(form, productId);
 
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
-        boolean updated = sellOrderService.update(nft.getSellOrder(), form.getCategory(), form.getPrice());
+        boolean updated = sellOrderService.update(nft.getSellOrder().getId(), form.getCategory(), form.getPrice());
         return updated ? new ModelAndView("redirect:/product/" + nft.getId()) : getUpdateSellOrder(form, productId);
     }
 
@@ -188,7 +183,7 @@ public class FrontController {
         int parsedProductId = parseInt(productId);
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
 
-        sellOrderService.delete(nft.getSellOrder());
+        sellOrderService.delete(nft.getSellOrder().getId());
         return new ModelAndView("redirect:/product/" + parsedProductId);
     }
 
@@ -200,7 +195,7 @@ public class FrontController {
         int parsedOfferPage = offerPage == null ? 1 : parseInt(offerPage);
 
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
-        User owner = userService.getUserById(nft.getIdOwner()).orElseThrow(UserNotFoundException::new);
+        User owner = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
         Optional<User> currentUser = userService.getCurrentUser();
         List<BuyOffer> buyOffers = new ArrayList<>();
         long amountOfferPages = 0;
@@ -208,7 +203,7 @@ public class FrontController {
         final ModelAndView mav = new ModelAndView("frontcontroller/product");
 
         if(nft.getSellOrder() != null) {
-            SellOrder sellOrder = sellOrderService.getOrderById(nft.getSellOrder()).orElseThrow(SellOrderNotFoundException::new);
+            SellOrder sellOrder = sellOrderService.getOrderById(nft.getSellOrder().getId()).orElseThrow(SellOrderNotFoundException::new);
             buyOffers = buyOrderService.getOrdersBySellOrderId(parsedOfferPage, sellOrder.getId());
             amountOfferPages = buyOrderService.getAmountPagesBySellOrderId(sellOrder.getId());
             mav.addObject("sellOrder", sellOrder);
@@ -245,7 +240,7 @@ public class FrontController {
         int parsedProductId = parseInt(productId);
 
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
-        SellOrder sellOrder = sellOrderService.getOrderById(nft.getSellOrder()).orElseThrow(SellOrderNotFoundException::new);
+        SellOrder sellOrder = sellOrderService.getOrderById(nft.getSellOrder().getId()).orElseThrow(SellOrderNotFoundException::new);
         User currentUser = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
 
         buyOrderService.create(sellOrder.getId(), form.getPrice(), currentUser.getId());
@@ -283,8 +278,8 @@ public class FrontController {
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public ModelAndView createNft(@ModelAttribute("createNftForm") final CreateNftForm form) {
         final ModelAndView mav = new ModelAndView("frontcontroller/create");
-        List<String> categories = categoryService.getCategories();
-        List<String> chains = chainService.getChains();
+        List<String> categories = Category.getCategories();
+        List<String> chains = Chain.getChains();
         mav.addObject("categories", categories);
         mav.addObject("chains", chains);
         return mav;
@@ -295,7 +290,7 @@ public class FrontController {
         if(errors.hasErrors())
             return createNft(form);
         User user = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
-        final Nft nft = nftService.create(form.getNftId(), form.getContractAddr(), form.getName(), form.getChain(), form.getImage(), user.getId(), form.getCollection(), form.getDescription(), form.getProperties()).orElseThrow(CreateNftException::new);
+        final Nft nft = nftService.create(form.getNftId(), form.getContractAddr(), form.getName(), form.getChain(), form.getImage(), user.getId(), form.getCollection(), form.getDescription());
         return new ModelAndView("redirect:/product/"+nft.getId());
     }
 
