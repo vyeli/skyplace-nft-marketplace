@@ -241,6 +241,18 @@ public class NftJpaDao implements NftDao {
         query.executeUpdate();
     }
 
+    @Override
+    public boolean isNftCreated(int nftId, String contractAddr, String chain) {
+        if(!Chain.getChains().contains(chain))
+            return false;
+        final Query query = em.createQuery("FROM Nft nft WHERE nft.nftId = :nftId AND nft.contractAddr = :contractAddr AND nft.chain = :chain");
+        query.setParameter("nftId", nftId);
+        query.setParameter("contractAddr", contractAddr);
+
+        query.setParameter("chain", Chain.valueOf(chain));
+        return query.getResultList().size() > 0;
+    }
+
     protected static class Pair<T, U> {
         private final T left;
         private final U right;

@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.model;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "favorited")
@@ -9,6 +8,7 @@ public class Favorited {
 
     @EmbeddedId
     private FavoritedId favoritedId;
+
     @ManyToOne(optional = false)
     @MapsId("userId")
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)

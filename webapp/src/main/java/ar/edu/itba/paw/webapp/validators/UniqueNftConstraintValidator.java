@@ -19,6 +19,6 @@ public class UniqueNftConstraintValidator implements ConstraintValidator<UniqueN
 
     @Override
     public boolean isValid(CreateNftForm createNftForm, ConstraintValidatorContext constraintValidatorContext) {
-        return true; // TODO: nftService.getNftByPK(contract_addr, id, chain)
+        return !nftService.isNftCreated(createNftForm.getNftId(), createNftForm.getContractAddr(), createNftForm.getChain());
     }
 }

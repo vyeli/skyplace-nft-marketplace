@@ -108,6 +108,7 @@
                 value="<spring:message code="create.publish"/>"
                 class="px-1 py-4 col-start-2 font-bold rounded-lg shadow-sm cursor-pointer bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
         />
+        <form:errors element="p" cssStyle="color: tomato"/>
     </form:form>
 </div>
 </body>

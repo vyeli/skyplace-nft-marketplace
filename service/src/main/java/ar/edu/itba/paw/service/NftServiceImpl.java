@@ -124,4 +124,9 @@ public class NftServiceImpl implements NftService {
         nftDao.delete(productId);
     }
 
+    @Override
+    public boolean isNftCreated(int nftId, String contractAddr, String chain) {
+        return nftDao.isNftCreated(nftId, contractAddr, chain);
+    }
+
 }

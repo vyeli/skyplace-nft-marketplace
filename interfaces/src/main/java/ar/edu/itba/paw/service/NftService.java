@@ -25,4 +25,6 @@ public interface NftService {
     int getAmountPublicationPagesByUser(User user, User currentUser, String publicationType);
 
     void delete(int productId);
+
+    boolean isNftCreated(int nftId, String contractAddr, String chain);
 }

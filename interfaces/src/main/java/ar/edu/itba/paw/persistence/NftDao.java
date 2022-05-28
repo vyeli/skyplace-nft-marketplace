@@ -24,4 +24,6 @@ public interface NftDao {
     int getAmountPublicationPagesByUser(int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale);
 
     void delete(int productId);
+
+    boolean isNftCreated(int nftId, String contractAddr, String chain);
 }
