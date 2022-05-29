@@ -40,7 +40,7 @@
                 <img class="h-11 w-11" src='<c:url value="/resources/filled_star.svg"/>' alt="filled_star">
                     <p class="text-xl font-bold text-gray-900 ml-1">${userScore}</p>
                 <span class="w-1.5 h-1.5 mx-2 bg-gray-500 rounded-full dark:bg-gray-400"></span>
-                <a href='<c:url value="/profile/${userId}?tab=reviews"/>' class="text-xl font-medium text-cyan-600 hover:text-orange-600 hover:underline"><spring:message code="review.totalAmount" arguments="${reviewAmount}"/></a>
+                <a href='<c:url value="/profile/${userId}?tab=reviews"/>' class="text-xl font-medium text-cyan-600 hover:text-cyan-800 hover:underline"><spring:message code="review.totalAmount" arguments="${reviewAmount}"/></a>
             </div>
         </div>
     </div>
