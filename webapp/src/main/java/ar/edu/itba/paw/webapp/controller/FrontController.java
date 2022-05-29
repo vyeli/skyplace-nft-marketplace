@@ -332,6 +332,11 @@ public class FrontController {
             mav.addObject("reviews", reviews);
             mav.addObject("reviewAmount", reviews.size());
             mav.addObject("pages", 1);
+        } else if(tabName.equals("buyOrders")) {
+            List<BuyOrder> buyOrders = buyOrderService.getBuyOrdersForUser(user, Integer.parseInt(profileFilter.getPage()));
+            mav.addObject("buyOrderItems", buyOrders);
+            mav.addObject("buyOrderItemsSize", buyOrders.size());
+            mav.addObject("pages", buyOrderService.getAmountPagesForUser(user));
         } else {
             List<Publication> publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, tabName, profileFilter.getSort());
             int publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, tabName);

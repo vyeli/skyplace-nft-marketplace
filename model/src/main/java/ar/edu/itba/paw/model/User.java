@@ -2,6 +2,7 @@ package ar.edu.itba.paw.model;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "offeredBy", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Collection<BuyOrder> buyOrders;
+    private List<BuyOrder> buyOrders;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private Collection<Favorited> favorited;
@@ -111,8 +112,15 @@ public class User {
         return role;
     }
 
-    public Collection<BuyOrder> getBuyOrders() {
+    public List<BuyOrder> getBuyOrders() {
         return buyOrders;
+    }
+
+    public List<BuyOrder> getBuyOrdersByPage(int page, int pageSize) {
+        if (page <= 0) return Collections.emptyList();
+        int toIndex = page * pageSize;
+        if (toIndex > buyOrders.size()) toIndex = buyOrders.size();
+        return buyOrders.subList((page - 1) * pageSize, toIndex);
     }
 
     public Collection<Favorited> getFavorited() {

@@ -20,8 +20,6 @@ public class Purchase {
     @Column(name = "buy_date", nullable = false)
     private Timestamp buyDate;
 
-    // TODO: allow nullable in buyer, seller and nft to persist transaction?
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_nft", referencedColumnName = "id", nullable = false)
     private Nft nftsByIdNft;

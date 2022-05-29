@@ -68,6 +68,16 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         return maybeSellOrder.map(sellOrder -> (sellOrder.getBuyOrdersAmount() - 1) / pageSize + 1).orElse(0);
     }
 
+    @Override
+    public List<BuyOrder> getBuyOrdersForUser(User user, int page) {
+        return user.getBuyOrdersByPage(page, pageSize);
+    }
+
+    @Override
+    public int getAmountPagesForUser(User user) {
+        return (user.getBuyOrders().size() - 1) / pageSize + 1;
+    }
+
     @Transactional
     @Override
     public void confirmBuyOrder(int sellOrderId, int buyerId, int seller, int productId, BigDecimal price) {
@@ -93,6 +103,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         User buyer = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
         sellOrder.deleteBuyOrder(buyer);
     }
+
+
 
     public int getPageSize() {
         return pageSize;

@@ -62,6 +62,14 @@
                 </c:otherwise>
             </c:choose>
             <c:choose>
+                <c:when test="${tabName == 'buyOrders'}">
+                    <c:set var="buyOrderClasses" value="${activeClasses}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="buyOrderClasses" value="${inactiveClasses}"/>
+                </c:otherwise>
+            </c:choose>
+            <c:choose>
                 <c:when test="${tabName == 'favorited'}">
                     <c:set var="favoritedClasses" value="${activeClasses}"/>
                 </c:when>
@@ -116,6 +124,19 @@
                 </form:form>
             </li>
             <c:if test="${isOwner == true}">
+                <!-- Buy orders -->
+                <li class="${buyOrderClasses}">
+                    <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+                        <form:button type="submit" path="tab" name="tab" value="buyOrders" class="flex">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <spring:message code="profile.bidded"/>
+                        </form:button>
+                        <form:hidden path="sort" value="${sortValue}"/>
+                        <form:hidden path="page" value="1"/>
+                    </form:form>
+                </li>
                 <!-- Favorited -->
                 <li class="${favoritedClasses}">
                     <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
@@ -227,7 +248,7 @@
 
     <!-- Objects (NFTs, history or review cards) -->
     <c:choose>
-        <c:when test="${tabName != 'history' && tabName != 'reviews'}">
+        <c:when test="${tabName != 'history' && tabName != 'buyOrders' && tabName != 'reviews'}">
             <div class="flex flex-wrap justify-center gap-8">
                 <c:forEach items="${publications}" var="publication">
                     <c:if test="${publication.nft.sellOrder != null}">
@@ -249,6 +270,21 @@
                 </c:forEach>
                 <c:if test="${publicationsSize == 0}">
                     <span class="text-center text-slay-700"><spring:message code="profile.noNft"/></span>
+                </c:if>
+            </div>
+        </c:when>
+        <c:when test="${tabName == 'buyOrders'}">
+            <div class="flex flex-col gap-2 w-3/4 max-w-4xl self-center">
+                <c:forEach items="${buyOrderItems}" var="item">
+                    <jsp:include page="../components/BuyOrderItem.jsp">
+                        <jsp:param name="nftName" value="${item.offeredFor.nft.nftName}"/>
+                        <jsp:param name="nftId" value="${item.offeredFor.nft.id}"/>
+                        <jsp:param name="nftImg" value="${item.offeredFor.nft.idImage}"/>
+                        <jsp:param name="price" value="${item.offeredFor.price}"/>
+                    </jsp:include>
+                </c:forEach>
+                <c:if test="${buyOrderItemsSize == 0}">
+                    <span class="text-center text-slay-700"><spring:message code="bidded.noBidsPlaced"/></span>
                 </c:if>
             </div>
         </c:when>
