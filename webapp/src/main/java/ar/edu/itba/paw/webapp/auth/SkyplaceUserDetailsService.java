@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.auth;
 
+import ar.edu.itba.paw.model.Role;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Component
 public class SkyplaceUserDetailsService implements UserDetailsService {
@@ -36,10 +38,10 @@ public class SkyplaceUserDetailsService implements UserDetailsService {
                 orElseThrow(()->new UsernameNotFoundException("No such user with email: " + email));
 
         final Collection<GrantedAuthority> roles = new ArrayList<>();
+        for(String rol:Role.getRoles())
+            if(user.getRole().name().equals(rol))
+                roles.add(new SimpleGrantedAuthority(String.format("ROLE_%s",rol.toUpperCase())));
 
-        roles.add(new SimpleGrantedAuthority("ROLE_USER"));
-        if(user.getRole().equals("Admin"))
-            roles.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), roles);
     }
