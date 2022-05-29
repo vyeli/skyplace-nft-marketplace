@@ -28,9 +28,9 @@
             </c:otherwise>
         </c:choose>
     </div>
-    <!-- Seller email -->
+    <!-- Seller username-->
     <p class="flex justify-between pt-1 pb-4 px-4 text-sm rounded-b-lg text-slate-500 border-x border-b border-gray-300">
-        <span class="max-w-[40ch] inline-block truncate"><c:out value="${param.sellerEmail}" /></span>
+        <span class="max-w-[40ch] inline-block truncate"><c:out value="${param.sellerUsername}" /></span>
         <c:if test="${param.onSale}">
             <span class="min-w-max">${param.category}</span>
         </c:if>

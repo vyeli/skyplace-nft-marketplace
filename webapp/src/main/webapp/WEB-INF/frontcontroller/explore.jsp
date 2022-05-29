@@ -229,7 +229,7 @@
                         <jsp:param name="onSale" value="${publication.nft.sellOrder != null}"/>
                         <jsp:param name="price" value="${sellPrice}" />
                         <jsp:param name="category" value="${sellCategory}"/>
-                        <jsp:param name="sellerEmail" value="${publication.nft.owner.email}"/>
+                        <jsp:param name="sellerUsername" value="${publication.nft.owner.username}"/>
                         <jsp:param name="idProduct" value="${publication.nft.id}"/>
                         <jsp:param name="isFaved" value="false" />
                     </jsp:include>
