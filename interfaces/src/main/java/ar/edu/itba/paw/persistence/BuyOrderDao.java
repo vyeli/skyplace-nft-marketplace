@@ -11,6 +11,4 @@ public interface BuyOrderDao {
 
     BuyOrder create(SellOrder sellOrder, BigDecimal price, User bidder);
 
-    List<BuyOrder> getOrdersBySellOrderId(int page, int sellOrderId, int pageSize);
-
 }

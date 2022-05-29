@@ -51,21 +51,13 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     @Override
-    public List<BuyOffer> getOrdersBySellOrderId(int offerPage, int idSellOrder) {
-        // TODO: refactor with SellOrder model getter
-        List<BuyOrder> buyOrders = buyOrderDao.getOrdersBySellOrderId(offerPage, idSellOrder, pageSize);
-        List<BuyOffer> buyOffers = new ArrayList<>();
-        buyOrders.forEach(buyOrder -> {
-            Optional<User> user = userService.getUserById(buyOrder.getOfferedBy().getId());
-            user.ifPresent(value -> buyOffers.add(new BuyOffer(buyOrder, value)));
-        });
-        return buyOffers;
+    public List<BuyOrder> getOrdersBySellOrderId(int page, SellOrder sellOrder) {
+        return sellOrder.getBuyOrdersByPage(page, pageSize);
     }
 
     @Override
-    public int getAmountPagesBySellOrderId(int idSellOrder) {
-        Optional<SellOrder> maybeSellOrder = sellOrderService.getOrderById(idSellOrder);
-        return maybeSellOrder.map(sellOrder -> (sellOrder.getBuyOrdersAmount() - 1) / pageSize + 1).orElse(0);
+    public int getAmountPagesBySellOrderId(SellOrder sellOrder) {
+        return (sellOrder.getBuyOrdersAmount() - 1) / pageSize + 1;
     }
 
     @Override

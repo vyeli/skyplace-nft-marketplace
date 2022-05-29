@@ -110,8 +110,8 @@
                                                 </div>
                                                 <p class="text-sm break-words line-clamp-3 w-80">
                                                     <spring:message code="product.by"/>
-                                                    <a href="<c:url value="/profile/${offer.buyer.id}" />" class="text-cyan-600 hover:underline hover:text-cyan-800">
-                                                        <c:out value="${offer.buyer.email}"/>
+                                                    <a href="<c:url value="/profile/${offer.offeredBy.id}" />" class="text-cyan-600 hover:underline hover:text-cyan-800">
+                                                        <c:out value="${offer.offeredBy.email}"/>
                                                     </a>
                                                 </p>
                                             </div>
@@ -125,15 +125,15 @@
                                                         <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
                                                     </svg>
                                                     <span class="text-slate-700">
-                                                        <c:out value="${offer.buyOrder.amount}"/>
+                                                        <c:out value="${offer.amount}"/>
                                                     </span>
                                                 </div>
                                                 <c:if test="${sellOrder != null && owner.id == currentUser.id}">
                                                     <div class="flex gap-2">
-                                                        <button onclick="handleReject(${offer.buyOrder.offeredFor.id}, ${offer.buyOrder.offeredBy.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
+                                                        <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
                                                             <spring:message code="product.reject"/>
                                                         </button>
-                                                        <button onclick="handleAccept(${offer.buyOrder.offeredFor.id}, ${offer.buyOrder.offeredBy.id}, ${currentUser.id}, ${sellOrder.price}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
+                                                        <button onclick="handleAccept(${offer.offeredFor.id}, ${offer.offeredBy.id}, ${currentUser.id}, ${sellOrder.price}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600">
                                                             <spring:message code="product.accept"/>
                                                         </button>
                                                     </div>

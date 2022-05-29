@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.service;
 
-import ar.edu.itba.paw.model.BuyOffer;
 import ar.edu.itba.paw.model.BuyOrder;
+import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
 
 import java.math.BigDecimal;
@@ -11,9 +11,9 @@ public interface BuyOrderService {
 
     boolean create(int sellOrderId, BigDecimal price, int userId);
 
-    List<BuyOffer> getOrdersBySellOrderId(int offerPage, int sellOrderId);
+    List<BuyOrder> getOrdersBySellOrderId(int offerPage, SellOrder sellOrder);
 
-    int getAmountPagesBySellOrderId(int sellOrderId);
+    int getAmountPagesBySellOrderId(SellOrder sellOrder);
 
     List<BuyOrder> getBuyOrdersForUser(User user, int page);
 

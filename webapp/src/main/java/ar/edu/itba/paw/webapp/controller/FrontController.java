@@ -194,15 +194,15 @@ public class FrontController {
         Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
         User owner = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
         Optional<User> currentUser = userService.getCurrentUser();
-        List<BuyOffer> buyOffers = new ArrayList<>();
+        List<BuyOrder> buyOffers = new ArrayList<>();
         long amountOfferPages = 0;
 
         final ModelAndView mav = new ModelAndView("frontcontroller/product");
 
         if(nft.getSellOrder() != null) {
             SellOrder sellOrder = sellOrderService.getOrderById(nft.getSellOrder().getId()).orElseThrow(SellOrderNotFoundException::new);
-            buyOffers = buyOrderService.getOrdersBySellOrderId(parsedOfferPage, sellOrder.getId());
-            amountOfferPages = buyOrderService.getAmountPagesBySellOrderId(sellOrder.getId());
+            buyOffers = buyOrderService.getOrdersBySellOrderId(parsedOfferPage, sellOrder);
+            amountOfferPages = buyOrderService.getAmountPagesBySellOrderId(sellOrder);
             mav.addObject("sellOrder", sellOrder);
         }
 

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -34,6 +35,13 @@ public class SellOrder {
         this.price = price;
         this.nft = nft;
         this.category = category;
+    }
+
+    public List<BuyOrder> getBuyOrdersByPage(int page, int pageSize) {
+        if (page <= 0) return Collections.emptyList();
+        int toIndex = page * pageSize;
+        if (toIndex > offers.size()) toIndex = offers.size();
+        return offers.subList((page - 1) * pageSize, toIndex);
     }
 
     public int getBuyOrdersAmount() {
