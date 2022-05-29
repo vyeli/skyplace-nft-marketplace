@@ -110,7 +110,7 @@
                                                 </div>
                                                 <p class="text-sm break-words line-clamp-3 w-80">
                                                     <spring:message code="product.by"/>
-                                                    <a href="<c:url value="/profile/${offer.buyer.id}" />" class="text-cyan-600">
+                                                    <a href="<c:url value="/profile/${offer.buyer.id}" />" class="text-cyan-600 hover:underline hover:text-cyan-800">
                                                         <c:out value="${offer.buyer.email}"/>
                                                     </a>
                                                 </p>
@@ -314,7 +314,7 @@
                             <spring:message code="product.own"/>
                         </span>
                         <a href="<c:url value="/profile/${owner.id}" />" class="text-accent block">
-                            <span class="text-sm font-bold pl-2 text-cyan-600"><c:out value="${owner.email}" /></span>
+                            <span class="text-sm font-bold pl-2 text-cyan-600 hover:underline hover:text-cyan-800"><c:out value="${owner.email}" /></span>
                         </a>
                     </div>
                     <div class="mb-8 flex items-center space-x-4 whitespace-nowrap">

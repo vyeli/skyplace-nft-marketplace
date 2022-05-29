@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.exceptions.NftNotFoundException;
 import ar.edu.itba.paw.model.Favorited;
+import ar.edu.itba.paw.model.FavoritedId;
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.User;
 import org.slf4j.Logger;
@@ -34,9 +35,9 @@ public class FavoriteJpaDao implements FavoriteDao{
 
     @Override
     public void removeNftFavorite(int productId, User user) {
-        Nft nft = nftDao.getNFTById(productId).orElseThrow(NftNotFoundException::new);
-        Favorited favoriteToRemove = new Favorited(user, nft);
-        em.remove(em.contains(favoriteToRemove) ? favoriteToRemove : em.merge(favoriteToRemove));
+        nftDao.getNFTById(productId).orElseThrow(NftNotFoundException::new);
+        Favorited favoriteToRemove = em.find(Favorited.class, new FavoritedId(user.getId(), productId));
+        em.remove(favoriteToRemove);
     }
 
     @Override

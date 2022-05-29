@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
@@ -11,7 +11,7 @@
 
     <c:url value="${param.deletePath}" var="deletePath"/>
     <form class="mb-0" action="${deletePath}" method="post">
-        <button class="px-4 py-2 rounded-md text-white bg-red-500" type="submit"><spring:message code="deleteModal.delete"/></button>
+        <button class="px-4 py-2 rounded-md text-white bg-red-500 transition duration-300 hover:bg-red-900 text-white hover:shadow-xl" type="submit"><spring:message code="deleteModal.delete"/></button>
     </form>
 </dialog>
 

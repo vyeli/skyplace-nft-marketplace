@@ -5,7 +5,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-public class CreateReviewForm {
+public class ReviewForm {
     @NotBlank
     private String reviewerId;
 

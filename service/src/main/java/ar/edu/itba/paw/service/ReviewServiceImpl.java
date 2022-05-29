@@ -1,42 +1,77 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.exceptions.InvalidReviewException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.model.DummyReview;
+import ar.edu.itba.paw.model.Review;
 import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.persistence.ReviewDao;
+import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @Service
 public class ReviewServiceImpl implements ReviewService{
 
-    private UserService userService;
+    private final ReviewDao reviewDao;
+    private final UserDao userDao;
+    private final static int pageSize = 5;
 
     @Autowired
-    public ReviewServiceImpl(UserService userService) {
-        this.userService = userService;
+    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao) {
+        this.reviewDao = reviewDao;
+        this.userDao = userDao;
+    }
+
+    @Transactional
+    @Override
+    public void addReview(int reviewerId, int revieweeId, int score, String title, String comments) {
+        if(reviewerId == revieweeId)
+            throw new InvalidReviewException();
+        User reviewer = userDao.getUserById(reviewerId).orElseThrow(UserNotFoundException::new);
+        User reviewee = userDao.getUserById(revieweeId).orElseThrow(UserNotFoundException::new);
+        reviewDao.addReview(reviewer, reviewee, score, title, comments);
     }
 
     @Override
-    public void addReview(int idReviewer, int idReviewee, int score, String title, String comments) {
-
+    public List<Review> getUserReviews(int page, int userId) {
+        if(!userDao.getUserById(userId).isPresent())
+            throw new UserNotFoundException();
+        return reviewDao.getUserReviews(page, userId, pageSize);
     }
 
     @Override
-    public List<DummyReview> getUserReviews(int idUser) {
-        Optional<User> user = userService.getUserById(idUser);
-        List<DummyReview> userReviews = new ArrayList<>();
-        userReviews.add(new DummyReview(userService.getUserById(2).get(),user.get(),5,"One of the best vendors", "Always having such an extensive nft catalog and with not so high prices. 10/10"));
-        userReviews.add(new DummyReview(userService.getUserById(2).get(),user.get(),1,"Go buy the actual nft", "This guy just screenshots every NFT he sells. Just look up on the searchbar for one of his NFTs and you'll find another publicaction for EVERY SINGLE ONE of his articles. Disgraceful"));
-        userReviews.add(new DummyReview(userService.getUserById(2).get(),user.get(),3,"Could be better", "His nfts aren't that good, but with such an extensive catalog you can buy almost anything. Also try making multiple offers on some NFTs to get a 'discount'. It worked for me, so try yourself"));
-        return userReviews;
+    public List<Review> getAllUserReviews(int userId) {
+        if(!userDao.getUserById(userId).isPresent())
+            throw new UserNotFoundException();
+        return reviewDao.getAllUserReviews(userId);
     }
 
     @Override
-    public void deleteReview(int idReview) {
+    public int getUserReviewsPageAmount(int userId) {
+        long userReviewsAmount = reviewDao.getUserReviewsAmount(userId);
+        if(userReviewsAmount == 0)
+            return 1;
+        return (int)(userReviewsAmount-1)/pageSize + 1;
+    }
 
+    @Override
+    public long getUserReviewsAmount(int userId) {
+        return reviewDao.getUserReviewsAmount(userId);
+    }
+
+    @Transactional
+    @Override
+    public void deleteReview(int reviewId) {
+        reviewDao.deleteReview(reviewId);
+    }
+
+    @Override
+    public int getPageSize() {
+        return pageSize;
     }
 }
