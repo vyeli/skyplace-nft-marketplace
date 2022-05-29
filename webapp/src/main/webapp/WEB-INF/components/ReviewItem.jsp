@@ -23,7 +23,7 @@
     </div>
     <h3 class="font-semibold text-gray-500 mt-4">${param.title}</h3>
     <p class="mb-2 mt-1 font-light text-gray-500">${param.comments}</p>
-    <c:if test="${!param.isAdmin}">
+    <c:if test="${param.isAdmin || param.isReviewer}">
         <c:url value='/review/${param.revieweeId}/delete' var="deletePath"/>
         <div class="flex flex-row items-center justify-end">
             <button id="open-delete-modal-${param.modalId}" class="shadow-md px-6 py-2.5 rounded-md transition duration-300 bg-red-500 hover:bg-red-900 text-white hover:shadow-xl cursor-pointer">

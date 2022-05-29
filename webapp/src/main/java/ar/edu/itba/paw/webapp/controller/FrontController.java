@@ -317,6 +317,7 @@ public class FrontController {
         if(optionalCurrentUser.isPresent()) {
             currentUser = optionalCurrentUser.get();
             mav.addObject("isOwner", currentUser.getId() == user.getId());
+            mav.addObject("currentUserId", currentUser.getId());
         }
         mav.addObject("user", user);
 
