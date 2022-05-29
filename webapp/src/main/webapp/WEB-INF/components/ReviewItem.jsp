@@ -9,7 +9,7 @@
             <img class="w-14 h-14 rounded-full" src="<c:url value='/resources/profile_picture.png'/>" alt="">
             <c:url value="/profile/${param.reviewerId}" var="reviewerProfileUrl"/>
             <div class="space-y-1 font-medium">
-                <a href="${reviewerProfileUrl}"><span class="text-lg text-cyan-600 decoration-current hover:text-cyan-800 hover:underline">${param.reviewerName}</span></a>
+                <a href='<c:out value="${reviewerProfileUrl}"/>'><span class="text-lg text-cyan-600 decoration-current hover:text-cyan-800 hover:underline">${param.reviewerName}</span></a>
             </div>
         </div>
         <div class="flex flex-row">
@@ -35,10 +35,10 @@
         <spring:message code="review.deleteDesc" var="deleteReviewDesc"/>
         <dialog class="relative p-4 rounded-lg text-center max-w-md" id="delete-modal-${param.modalId}">
             <button class="absolute top-4 right-6 font-bold text-slate-600" id="close-delete-modal-${param.modalId}">X</button>
-            <h2 class="font-bold text-xl text-red-500">${deleteReview}</h2>
-            <p class="py-6 text-slate-600">${deleteReviewDesc}</p>
-            <form class="mb-0" action="${deletePath}" method="post">
-                <input type="hidden" name="reviewId" value="${param.reviewId}"/>
+            <h2 class="font-bold text-xl text-red-500"><c:out value="${deleteReview}"/></h2>
+            <p class="py-6 text-slate-600"><c:out value="${deleteReviewDesc}"/></p>
+            <form class="mb-0" action='<c:out value="${deletePath}"/>' method="post">
+                <input type="hidden" name="reviewId" value='<c:out value="${param.reviewId}"/>'>
                 <button class="px-4 py-2 rounded-md text-white bg-red-500 transition duration-300 hover:bg-red-800 text-white hover:shadow-xl" type="submit"><spring:message code="deleteModal.delete"/></button>
             </form>
         </dialog>
@@ -46,9 +46,9 @@
 </div>
 
 <script defer>
-    const modal${param.modalId} = document.querySelector("#delete-modal-${param.modalId}");
-    const openModal${param.modalId} = document.querySelector("#open-delete-modal-${param.modalId}");
-    const closeModal${param.modalId} = document.querySelector("#close-delete-modal-${param.modalId}");
+    const modal${param.modalId} = document.querySelector("#delete-modal-<c:out value='${param.modalId}'/>");
+    const openModal${param.modalId} = document.querySelector("#open-delete-modal-<c:out value='${param.modalId}'/>");
+    const closeModal${param.modalId} = document.querySelector("#close-delete-modal-<c:out value='${param.modalId}'/>");
 
     openModal${param.modalId}.addEventListener("click", () => {
         modal${param.modalId}.showModal();

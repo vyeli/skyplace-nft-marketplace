@@ -111,7 +111,7 @@
                                                 <p class="text-sm break-words line-clamp-3 w-80">
                                                     <spring:message code="product.by"/>
                                                     <a href="<c:url value="/profile/${offer.offeredBy.id}" />" class="text-cyan-600 hover:underline hover:text-cyan-800">
-                                                        <c:out value="${offer.offeredBy.email}"/>
+                                                        <c:out value="${offer.offeredBy.username}"/>
                                                     </a>
                                                 </p>
                                             </div>
@@ -221,7 +221,7 @@
                             <form action="${exploreUrl}" method="get" class="mb-0">
                                 <input type="hidden" name="search" value="${nft.collection}" />
                                 <input type="hidden" name="searchFor" value="collection" />
-                                <button type="submit" class="text-accent mr-2 underline decoration-cyan-700 font-bold max-w-[24rem] truncate"><spring:message code="product.collection"/> <c:out value="${nft.collection}" /></button>
+                                <button type="submit" class="mr-2 text-cyan-600 font-bold hover:underline hover:text-cyan-800 max-w-[24rem] truncate"><spring:message code="product.collection" arguments="${nft.collection}"/></button>
                             </form>
                             <span class=" bg-green inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
                                   data-tippy-content="Verified Collection">
@@ -314,7 +314,7 @@
                             <spring:message code="product.own"/>
                         </span>
                         <a href="<c:url value="/profile/${owner.id}" />" class="text-accent block">
-                            <span class="text-sm font-bold pl-2 text-cyan-600 hover:underline hover:text-cyan-800"><c:out value="${owner.email}" /></span>
+                            <span class="text-sm font-bold pl-2 text-cyan-600 hover:underline hover:text-cyan-800"><c:out value="${owner.username}" /></span>
                         </a>
                     </div>
                     <div class="mb-8 flex items-center space-x-4 whitespace-nowrap">

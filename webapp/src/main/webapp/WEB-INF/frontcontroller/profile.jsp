@@ -269,7 +269,7 @@
                         <jsp:param name="onSale" value="${publication.nft.sellOrder != null}"/>
                         <jsp:param name="price" value="${sellPrice}" />
                         <jsp:param name="category" value="${sellCategory}"/>
-                        <jsp:param name="sellerEmail" value="${publication.nft.owner.email}"/>
+                        <jsp:param name="sellerUsername" value="${publication.nft.owner.username}"/>
                         <jsp:param name="idProduct" value="${publication.nft.id}"/>
                         <jsp:param name="isFaved" value="${publication.isFaved != null}" />
                     </jsp:include>
@@ -328,11 +328,11 @@
                         <div class="flex flex-row items-center w-64 xl:w-80 2xl:w-96">
                             <div class="flex flex-col gap-3">
                                 <c:forEach var="i" begin="0" end="3">
-                                    <span class="text-sm font-medium text-blue-600">
+                                    <span class="text-sm font-medium text-blue-700">
                                         <spring:message code="profile.stars" arguments="${5-i}"/>
                                     </span>
                                 </c:forEach>
-                                <span class="text-sm font-medium text-blue-600">
+                                <span class="text-sm font-medium text-blue-700">
                                     <spring:message code="profile.star" arguments="1"/>
                                 </span>
                             </div>
@@ -354,11 +354,11 @@
                                 </div>
                             </div>
                             <div class="flex flex-col gap-3">
-                                <span class="text-sm font-medium text-blue-600">${percentageStars5}%</span>
-                                <span class="text-sm font-medium text-blue-600">${percentageStars4}%</span>
-                                <span class="text-sm font-medium text-blue-600">${percentageStars3}%</span>
-                                <span class="text-sm font-medium text-blue-600">${percentageStars2}%</span>
-                                <span class="text-sm font-medium text-blue-600">${percentageStars1}%</span>
+                                <span class="text-sm font-medium text-blue-700"><c:out value="${percentageStars5}"/>%</span>
+                                <span class="text-sm font-medium text-blue-700"><c:out value="${percentageStars4}"/>%</span>
+                                <span class="text-sm font-medium text-blue-700"><c:out value="${percentageStars3}"/>%</span>
+                                <span class="text-sm font-medium text-blue-700"><c:out value="${percentageStars2}"/>%</span>
+                                <span class="text-sm font-medium text-blue-700"><c:out value="${percentageStars1}"/>%</span>
                             </div>
                         </div>
                     </div>
