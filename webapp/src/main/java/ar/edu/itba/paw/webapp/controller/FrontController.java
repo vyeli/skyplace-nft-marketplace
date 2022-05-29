@@ -335,6 +335,7 @@ public class FrontController {
                 List<Review> reviews = reviewService.getUserReviews(Integer.parseInt(profileFilter.getPage()), user.getId());
                 mav.addObject("reviews", reviews);
                 mav.addObject("pages", getPageAmount(reviewAmount, reviewService.getPageSize()));
+                optionalCurrentUser.ifPresent(value -> mav.addObject("hasReviewByUser", reviewService.hasReviewByUser(value.getId(), user.getId())));
                 // The 'right' approach, but as review amount is retrieved anyway its done differently
                 // mav.addObject("pages", reviewService.getUserReviewsPageAmount(user.getId()));
 

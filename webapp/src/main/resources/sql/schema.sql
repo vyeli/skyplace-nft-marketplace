@@ -28,7 +28,9 @@ CREATE TABLE IF NOT EXISTS reviews (
                                        id_reviewer INT NOT NULL,
                                        id_reviewee INT NOT NULL,
                                        score INT NOT NULL,
+                                       title TEXT,
                                        comments TEXT,
+                                       UNIQUE(id_reviewer, id_reviewee),
                                        FOREIGN KEY (id_reviewer) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (id_reviewee) REFERENCES users(id) ON DELETE CASCADE
     );

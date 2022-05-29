@@ -30,7 +30,7 @@ public class ReviewServiceImpl implements ReviewService{
     @Transactional
     @Override
     public void addReview(int reviewerId, int revieweeId, int score, String title, String comments) {
-        if(reviewerId == revieweeId)
+        if(reviewerId == revieweeId || hasReviewByUser(reviewerId, revieweeId))
             throw new InvalidReviewException();
         User reviewer = userDao.getUserById(reviewerId).orElseThrow(UserNotFoundException::new);
         User reviewee = userDao.getUserById(revieweeId).orElseThrow(UserNotFoundException::new);
@@ -57,6 +57,11 @@ public class ReviewServiceImpl implements ReviewService{
         if(userReviewsAmount == 0)
             return 1;
         return (int)(userReviewsAmount-1)/pageSize + 1;
+    }
+
+    @Override
+    public boolean hasReviewByUser(int idReviewer, int idReviewee) {
+        return reviewDao.hasReviewByUser(idReviewer, idReviewee);
     }
 
     @Override

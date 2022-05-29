@@ -13,6 +13,8 @@ public interface ReviewDao {
 
     List<Review> getAllUserReviews(int userId);
 
+    boolean hasReviewByUser(int idReviewer, int idReviewee);
+
     long getUserReviewsAmount(int userId);
 
     void deleteReview(int reviewId);

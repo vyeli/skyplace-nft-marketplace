@@ -18,6 +18,8 @@ public interface ReviewService {
 
     long getUserReviewsAmount(int userId);
 
+    boolean hasReviewByUser(int idReviewer, int idReviewee);
+
     int getPageSize();
 
 }
