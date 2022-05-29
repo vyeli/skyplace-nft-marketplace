@@ -6,3 +6,4 @@ ALTER TABLE users DROP CONSTRAINT users_wallet_chain_fkey;
 ALTER TABLE sellorders DROP CONSTRAINT sellorders_category_fkey;
 DROP TABLE chains;
 DROP TABLE categories;
+ALTER TABLE reviews ADD title TEXT;

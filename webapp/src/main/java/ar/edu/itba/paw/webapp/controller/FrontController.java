@@ -305,6 +305,8 @@ public class FrontController {
     @RequestMapping("/profile/{userId}")
     public ModelAndView getUser(@ModelAttribute("profileFilter") @Valid ProfileFilter profileFilter, @PathVariable String userId, @RequestParam(name = "tab", required = false) String userTab){
         int parsedUserId = parseInt(userId);
+        long reviewAmount;
+        Double userScore = 0D;
 
         ModelAndView mav = new ModelAndView("frontcontroller/profile");
 
@@ -318,34 +320,56 @@ public class FrontController {
         }
         mav.addObject("user", user);
 
+        List<Review> allReviews = reviewService.getAllUserReviews(user.getId());
+        reviewAmount = allReviews.size();
+        for(Review r : allReviews)
+            userScore += r.getScore();
+        userScore /= reviewAmount;
+
         String tabName = (userTab != null ? userTab : profileFilter.getTab());
         tabName = tabName != null ? tabName : "inventory";
 
-        if (tabName.equals("history")) {
-            List<Purchase> transactions = purchaseService.getAllTransactions(parsedUserId, Integer.parseInt(profileFilter.getPage()));
-            mav.addObject("historyItems", transactions);
-            mav.addObject("historyItemsSize", transactions.size());
-            mav.addObject("pages", purchaseService.getAmountPagesByUserId(parsedUserId));
-        } else if(tabName.equals("reviews")) {
-            // TODO: Add correct review retrieval once migrated to Hibernate
-            List<DummyReview> reviews = reviewService.getUserReviews(user.getId());
-            mav.addObject("reviews", reviews);
-            mav.addObject("reviewAmount", reviews.size());
-            mav.addObject("pages", 1);
-        } else {
-            List<Publication> publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, tabName, profileFilter.getSort());
-            int publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, tabName);
-            mav.addObject("publications", publications);
-            mav.addObject("publicationsSize", publications.size());
-            mav.addObject("pages", publicationPages);
+        switch(tabName){
+            case "reviews":
+                List<Review> reviews = reviewService.getUserReviews(Integer.parseInt(profileFilter.getPage()), user.getId());
+                mav.addObject("reviews", reviews);
+                mav.addObject("pages", getPageAmount(reviewAmount, reviewService.getPageSize()));
+                // The 'right' approach, but as review amount is retrieved anyway its done differently
+                // mav.addObject("pages", reviewService.getUserReviewsPageAmount(user.getId()));
+
+                Map<Integer, Double> starRatings = new HashMap<>();
+                for(Review r : allReviews){
+                    starRatings.put(r.getScore(), starRatings.getOrDefault(r.getScore(), 0D) + 1);
+                }
+                for(int i=1 ; i <= 5 ; i++){
+                    double percentage = starRatings.getOrDefault(i, 0D) * 100 / reviewAmount;
+                    mav.addObject("percentageStars" + i, (int) percentage);
+                }
+                break;
+            case "history":
+                List<Purchase> transactions = purchaseService.getAllTransactions(parsedUserId, Integer.parseInt(profileFilter.getPage()));
+                mav.addObject("historyItems", transactions);
+                mav.addObject("historyItemsSize", transactions.size());
+                mav.addObject("pages", purchaseService.getAmountPagesByUserId(parsedUserId));
+                break;
+            default:
+                List<Publication> publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, tabName, profileFilter.getSort());
+                int publicationPages = nftService.getAmountPublicationPagesByUser(user, currentUser, tabName);
+                mav.addObject("publications", publications);
+                mav.addObject("publicationsSize", publications.size());
+                mav.addObject("pages", publicationPages);
+                break;
         }
 
         String sortFormat = getSortStringFormat(profileFilter.getSort());
 
+        mav.addObject("userScore", round(userScore, 2));
+        mav.addObject("reviewAmount", reviewAmount);
         mav.addObject("tabName", tabName);
         mav.addObject("sortName", sortFormat);
         mav.addObject("sortValue", profileFilter.getSort());
         mav.addObject("currentPage", profileFilter.getPage());
+        mav.addObject("isAdmin", userService.isAdmin());
         return mav;
     }
 
@@ -365,25 +389,36 @@ public class FrontController {
         return "redirect:"+ referer;
     }
 
-    @RequestMapping(value = "/review/{userId}", method = RequestMethod.GET)
-    public ModelAndView getCreateReviewFormPage(@ModelAttribute("createReviewForm") final CreateReviewForm form, @PathVariable final String userId){
+    @RequestMapping(value = "/review/{userId}/create", method = RequestMethod.GET)
+    public ModelAndView getCreateReviewFormPage(@ModelAttribute("reviewForm") final ReviewForm form, @PathVariable final String userId){
         final int parsedUserId = parseInt(userId);
         final ModelAndView mav = new ModelAndView("frontcontroller/createReview");
         Optional<User> maybeReviewee = userService.getUserById(parsedUserId);
         Optional<User> maybeReviewer = userService.getCurrentUser();
         if(maybeReviewee.isPresent() && maybeReviewer.isPresent()) {
-            mav.addObject("reviewerIdParam", maybeReviewer.get());
+            mav.addObject("reviewerIdParam", maybeReviewer.get().getId());
             mav.addObject("revieweeIdParam", parsedUserId);
             mav.addObject("revieweeUsername", maybeReviewee.get().getUsername());
         }
         return mav;
     }
 
-    @RequestMapping(value = "/review/{userId}", method = RequestMethod.POST)
-    public ModelAndView createReview(@Valid @ModelAttribute("createReviewForm") final CreateReviewForm form, final BindingResult errors, @PathVariable final String userId){
+    @RequestMapping(value = "/review/{userId}/create", method = RequestMethod.POST)
+    public ModelAndView createReview(@Valid @ModelAttribute("reviewForm") final ReviewForm form, final BindingResult errors, @PathVariable final String userId){
         if(errors.hasErrors())
             return getCreateReviewFormPage(form, userId);
-        return new ModelAndView("redirect:/profile/" + userId);
+        int reviewerId = parseInt(form.getReviewerId());
+        int revieweeId = parseInt(form.getRevieweeId());
+        int score = parseInt(form.getScore());
+        reviewService.addReview(reviewerId, revieweeId, score, form.getTitle(), form.getComments());
+        return new ModelAndView("redirect:/profile/" + userId + "?tab=reviews");
+    }
+
+    @RequestMapping(value="/review/{userId}/delete", method = RequestMethod.POST)
+    public ModelAndView deleteReview(@RequestParam String reviewId, @PathVariable String userId){
+        int parsedReviewId = parseInt(reviewId);
+        reviewService.deleteReview(parsedReviewId);
+        return new ModelAndView("redirect:/profile/" + userId + "?tab=reviews");
     }
 
     @RequestMapping(value = "/images/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
@@ -392,6 +427,15 @@ public class FrontController {
         int parseId = parseInt(id);
         Image image = imageService.getImage(parseId).orElseThrow(ImageNotFoundException::new);
         return image.getImage();
+    }
+
+    private double round(double number, int decimals){
+        double rounder = Math.pow(10, decimals);
+        return Math.round(number * rounder) / rounder;
+    }
+
+    private long getPageAmount(long itemAmount, int pageSize){
+        return itemAmount == 0 ? 1 : (itemAmount-1)/pageSize + 1;
     }
 
     private String capitalizeString(String s) {
@@ -440,6 +484,5 @@ public class FrontController {
                 return "Nombre";
         }
     }
-
 
 }

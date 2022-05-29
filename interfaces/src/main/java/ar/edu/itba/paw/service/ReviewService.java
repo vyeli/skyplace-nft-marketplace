@@ -1,15 +1,23 @@
 package ar.edu.itba.paw.service;
 
-import ar.edu.itba.paw.model.DummyReview;
+import ar.edu.itba.paw.model.Review;
 
 import java.util.List;
 
 public interface ReviewService {
 
-    void addReview(int idReviewer, int idReviewee, int score, String title, String comments);
+    void addReview(int reviewerId, int revieweeId, int score, String title, String comments);
 
-    List<DummyReview> getUserReviews(int idUser);
+    List<Review> getUserReviews(int page, int userId);
 
-    void deleteReview(int idReview);
+    List<Review> getAllUserReviews(int userId);
+
+    void deleteReview(int reviewId);
+
+    int getUserReviewsPageAmount(int userId);
+
+    long getUserReviewsAmount(int userId);
+
+    int getPageSize();
 
 }

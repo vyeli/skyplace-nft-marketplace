@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -36,6 +36,12 @@
                 </div>
             </div>
             <span class="text-lg font-light text-gray-400 break-words w-96 lg:w-[36rem] xl:w-[44rem] 2xl:w-[52rem]"><c:out value="${user.email}" /></span>
+            <div class="flex flex-row items-center">
+                <img class="h-11 w-11" src='<c:url value="/resources/filled_star.svg"/>' alt="filled_star">
+                    <p class="text-xl font-bold text-gray-900 ml-1">${userScore}</p>
+                <span class="w-1.5 h-1.5 mx-2 bg-gray-500 rounded-full dark:bg-gray-400"></span>
+                <a href='<c:url value="/profile/${userId}?tab=reviews"/>' class="text-xl font-medium text-cyan-600 hover:text-orange-600 hover:underline"><spring:message code="review.totalAmount" arguments="${reviewAmount}"/></a>
+            </div>
         </div>
     </div>
 
@@ -44,7 +50,7 @@
         <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500">
             <!-- Inventory -->
             <c:set var="activeClasses" value="border-b-2 border-cyan-600 text-cyan-600 active"/>
-            <c:set var="inactiveClasses" value="border-transparent hover:text-gray-600"/>
+            <c:set var="inactiveClasses" value="border-transparent hover:text-gray-700"/>
             <c:choose>
                 <c:when test="${tabName == 'inventory'}">
                     <c:set var="inventoryClasses" value="${activeClasses}"/>
@@ -295,28 +301,28 @@
                                 </span>
                             </div>
                             <div class="flex flex-col grow gap-3">
-                                <div class="h-5 mx-4 bg-gray-200 rounded">
-                                    <div class="h-5 bg-yellow-400 rounded" style="width: 70%"></div>
+                                <div class="h-5 mx-4 bg-gray-100 rounded border border-gray-300">
+                                    <div class="h-5 bg-amber-500 rounded" style="width: ${percentageStars5}%; height: 99%"></div>
                                 </div>
-                                <div class="h-5 mx-4 bg-gray-200 rounded">
-                                    <div class="h-5 bg-yellow-400 rounded" style="width: 17%"></div>
+                                <div class="h-5 mx-4 bg-gray-100 rounded border border-gray-300">
+                                    <div class="h-5 bg-amber-500 rounded" style="width: ${percentageStars4}%; height: 99%"></div>
                                 </div>
-                                <div class="h-5 mx-4 bg-gray-200 rounded">
-                                    <div class="h-5 bg-yellow-400 rounded" style="width: 8%"></div>
+                                <div class="h-5 mx-4 bg-gray-100 rounded border border-gray-300">
+                                    <div class="h-5 bg-amber-500 rounded" style="width: ${percentageStars3}%; height: 99%"></div>
                                 </div>
-                                <div class="h-5 mx-4 bg-gray-200 rounded">
-                                    <div class="h-5 bg-yellow-400 rounded" style="width: 4%"></div>
+                                <div class="h-5 mx-4 bg-gray-100 rounded border border-gray-300">
+                                    <div class="h-5 bg-amber-500 rounded" style="width: ${percentageStars2}%; height: 99%"></div>
                                 </div>
-                                <div class="h-5 mx-4 bg-gray-200 rounded">
-                                    <div class="h-5 bg-yellow-400 rounded" style="width: 1%"></div>
+                                <div class="h-5 mx-4 bg-gray-100 rounded border border-gray-300">
+                                    <div class="h-5 bg-amber-500 rounded" style="width: ${percentageStars1}%; height: 99%"></div>
                                 </div>
                             </div>
                             <div class="flex flex-col gap-3">
-                                <span class="text-sm font-medium text-blue-600">70%</span>
-                                <span class="text-sm font-medium text-blue-600">17%</span>
-                                <span class="text-sm font-medium text-blue-600">8%</span>
-                                <span class="text-sm font-medium text-blue-600">4%</span>
-                                <span class="text-sm font-medium text-blue-600">1%</span>
+                                <span class="text-sm font-medium text-blue-600">${percentageStars5}%</span>
+                                <span class="text-sm font-medium text-blue-600">${percentageStars4}%</span>
+                                <span class="text-sm font-medium text-blue-600">${percentageStars3}%</span>
+                                <span class="text-sm font-medium text-blue-600">${percentageStars2}%</span>
+                                <span class="text-sm font-medium text-blue-600">${percentageStars1}%</span>
                             </div>
                         </div>
                     </div>
@@ -326,7 +332,7 @@
                     <div class="flex flex-row items-center justify-between">
                         <h2 class="text-2xl"><spring:message code="profile.reviews"/></h2>
                         <c:if test="${isOwner == false}">
-                            <a href="<c:url value='/review/${user.id}'/>">
+                            <a href="<c:url value='/review/${user.id}/create'/>">
                                 <button type="button" class="shadow-md px-6 py-2.5 rounded-md transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl">
                                     <spring:message code="profile.addReview"/>
                                 </button>
@@ -340,10 +346,15 @@
                         <c:otherwise>
                             <c:forEach items="${reviews}" var="review">
                                 <jsp:include page="../components/ReviewItem.jsp">
-                                    <jsp:param name="reviewerName" value="${review.reviewer.username}"/>
+                                    <jsp:param name="reviewerName" value="${review.usersByIdReviewer.username}"/>
+                                    <jsp:param name="reviewerId" value="${review.usersByIdReviewer.id}"/>
+                                    <jsp:param name="revieweeId" value="${review.usersByIdReviewee.id}"/>
                                     <jsp:param name="title" value="${review.title}"/>
-                                    <jsp:param name="description" value="${review.comments}"/>
+                                    <jsp:param name="comments" value="${review.comments}"/>
                                     <jsp:param name="score" value="${review.score}"/>
+                                    <jsp:param name="reviewId" value="${review.id}"/>
+                                    <jsp:param name="isAdmin" value="${isAdmin}"/>
+                                    <jsp:param name="modalId" value="${review.id}"/>
                                 </jsp:include>
                             </c:forEach>
                         </c:otherwise>

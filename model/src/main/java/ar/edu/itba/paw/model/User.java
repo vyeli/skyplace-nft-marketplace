@@ -52,10 +52,10 @@ public class User {
     @OneToMany(mappedBy = "seller")
     private List<Purchase> saleHistory;
 
-    @OneToMany(mappedBy = "usersByIdReviewer")
+    @OneToMany(mappedBy = "usersByIdReviewer", cascade = CascadeType.ALL)
     private Collection<Review> reviewsCreated;
 
-    @OneToMany(mappedBy = "usersByIdReviewee")
+    @OneToMany(mappedBy = "usersByIdReviewee", cascade = CascadeType.ALL)
     private Collection<Review> reviewsReceived;
 
     /* default */ User() {
