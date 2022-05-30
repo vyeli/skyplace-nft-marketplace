@@ -32,27 +32,27 @@
                         <form:hidden id="ratingValue" path="score" value="1"/>
                         <span class="text-slate-600"><spring:message code="review.rating"/>*</span>
                         <div class="flex flex-row">
-                            <button type="button" onclick="setRatingValue(1)" onmouseover="hoverStars(1)">
+                            <button type="button" onclick="toggleRatingStatus(1)" onmouseover="hoverStars(1)">
                                 <svg id="star1" class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="#FBBF24" viewBox="0 0 24 24" stroke="#4B5563" stroke-width="0.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                 </svg>
                             </button>
-                            <button type="button" onclick="setRatingValue(2)" onmouseover="hoverStars(2)">
+                            <button type="button" onclick="toggleRatingStatus(2)" onmouseover="hoverStars(2)">
                                 <svg id="star2" class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#4B5563" stroke-width="0.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                 </svg>
                             </button>
-                            <button type="button" onclick="setRatingValue(3)" onmouseover="hoverStars(3)">
+                            <button type="button" onclick="toggleRatingStatus(3)" onmouseover="hoverStars(3)">
                                 <svg id="star3" class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#4B5563" stroke-width="0.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                 </svg>
                             </button>
-                            <button type="button" onclick="setRatingValue(4)" onmouseover="hoverStars(4)">
+                            <button type="button" onclick="toggleRatingStatus(4)" onmouseover="hoverStars(4)">
                                 <svg id="star4" class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#4B5563" stroke-width="0.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                 </svg>
                             </button>
-                            <button type="button" onclick="setRatingValue(5)" onmouseover="hoverStars(5)">
+                            <button type="button" onclick="toggleRatingStatus(5)" onmouseover="hoverStars(5)">
                                 <svg id="star5" class="h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#4B5563" stroke-width="0.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                                 </svg>
@@ -98,7 +98,14 @@
         document.getElementById("star4"),
         document.getElementById("star5")
     ];
+    let hasUserClickedRating = false;
     const ratingInput = document.getElementById("ratingValue");
+
+    function toggleRatingStatus(rating){
+        if(hasUserClickedRating)
+            setRatingValue(rating);
+        hasUserClickedRating = !hasUserClickedRating;
+    }
 
     function setRatingValue(rating){
         ratingInput.value = rating.toString();
@@ -112,11 +119,13 @@
     }
 
     function hoverStars(hoveredStarNumber){
-        for(let i = 1 ; i <= 5 ; i++){
-            if(i <= hoveredStarNumber){
-                stars[i-1].style.fill = "#FBBF24";
-            } else {
-                stars[i-1].style.fill = "none";
+        if(hasUserClickedRating) {
+            for (let i = 1; i <= 5; i++) {
+                if (i <= hoveredStarNumber) {
+                    stars[i - 1].style.fill = "#FBBF24";
+                } else {
+                    stars[i - 1].style.fill = "none";
+                }
             }
         }
     }

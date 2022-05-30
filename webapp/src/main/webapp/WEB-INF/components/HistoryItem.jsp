@@ -12,15 +12,23 @@
         <h3 class="font-display text-jacarta-700 mb-1 text-base font-semibold truncate">
             <c:out value="${param.nftName}" />
         </h3>
-        <div class="text-jacarta-500 mb-3 block text-sm">
+        <div class="flex flex-row gap-1 text-jacarta-500 mb-3 block text-sm">
             <c:choose>
                 <c:when test="${param.sold}">
                     <spring:message code="history.soldTo"/>
-                    <span class="text-cyan-700">${param.buyerUsername}</span>
+                    <object>
+                        <a href='<c:url value="/profile/${param.buyerId}"/>' class="text-cyan-600 hover:text-cyan-800 hover:underline">
+                            <c:out value="${param.buyerUsername}"/>
+                        </a>
+                    </object>
                 </c:when>
                 <c:otherwise>
                     <spring:message code="history.boughtFrom"/>
-                    <span class="text-cyan-700">${param.sellerUsername}</span>
+                    <object>
+                        <a href='<c:url value="/profile/${param.sellerId}"/>' class="text-cyan-700">
+                            <c:out value="${param.sellerUsername}"/>
+                        </a>
+                    </object>
                 </c:otherwise>
             </c:choose>
             <spring:message code="history.for" arguments="${param.price}"/>
