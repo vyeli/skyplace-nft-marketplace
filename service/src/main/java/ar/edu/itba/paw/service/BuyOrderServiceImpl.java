@@ -72,16 +72,21 @@ public class BuyOrderServiceImpl implements BuyOrderService {
 
     @Transactional
     @Override
-    public void confirmBuyOrder(int sellOrderId, int buyerId, int seller, int productId, BigDecimal price) {
+    public void confirmBuyOrder(int sellOrderId, int buyerId, int sellerId, int productId, BigDecimal price) {
         if (!userService.currentUserOwnsNft(productId))
             throw new UserIsNotNftOwnerException();
 
         SellOrder sellOrder = sellOrderService.getOrderById(sellOrderId).orElseThrow(SellOrderNotFoundException::new);
-        User buyerUser = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
+        User buyer = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
+        User seller = userService.getUserById(sellerId).orElseThrow(UserNotFoundException::new);
+        Nft nft = sellOrder.getNft();
+        Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
 
-        sellOrder.getNft().setOwner(buyerUser);
+        sellOrder.getNft().setOwner(buyer);
+        mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), sellerId, buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), price, image.getImage(), LocaleContextHolder.getLocale());
+
         sellOrderService.delete(sellOrder.getId());
-        purchaseService.createPurchase(buyerId, seller, productId, price);
+        purchaseService.createPurchase(buyerId, sellerId, productId, price);
     }
 
     @Transactional
@@ -92,7 +97,13 @@ public class BuyOrderServiceImpl implements BuyOrderService {
 
         SellOrder sellOrder = sellOrderService.getOrderById(sellOrderId).orElseThrow(SellOrderNotFoundException::new);
         User buyer = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
+        Nft nft = sellOrder.getNft();
+        User seller = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
+        Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
+        BigDecimal offerAmount = sellOrder.getBuyOrder(buyer).get().getAmount();
         sellOrder.deleteBuyOrder(buyer);
+        mailingService.sendOfferRejectedMail(buyer.getEmail(), seller.getEmail(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), new BigDecimal(offerAmount.stripTrailingZeros()
+                .toPlainString()), image.getImage(),  LocaleContextHolder.getLocale());
     }
 
 

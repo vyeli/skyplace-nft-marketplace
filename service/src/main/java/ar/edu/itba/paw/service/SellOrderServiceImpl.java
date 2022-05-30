@@ -1,14 +1,12 @@
 package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.model.Category;
-import ar.edu.itba.paw.model.Nft;
-import ar.edu.itba.paw.model.SellOrder;
-import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.persistence.SellOrderDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,13 +21,19 @@ public class SellOrderServiceImpl implements SellOrderService {
     private final UserService userService;
     private final NftService nftService;
 
+    private final MailingService mailingService;
+
+    private final ImageService imageService;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SellOrderServiceImpl.class);
 
     @Autowired
-    public SellOrderServiceImpl(SellOrderDao sellOrderDao, UserService userService, NftService nftService) {
+    public SellOrderServiceImpl(SellOrderDao sellOrderDao, UserService userService, NftService nftService, MailingService mailingService, ImageService imageService) {
         this.sellOrderDao = sellOrderDao;
         this.userService = userService;
         this.nftService = nftService;
+        this.mailingService = mailingService;
+        this.imageService = imageService;
     }
 
     @Transactional
@@ -41,7 +45,12 @@ public class SellOrderServiceImpl implements SellOrderService {
             throw new InvalidCategoryException();
 
         Nft nft = nftService.getNFTById(idNft).orElseThrow(NftNotFoundException::new);
-        return sellOrderDao.create(price, nft, Category.valueOf(category));
+        User owner = nft.getOwner();
+        SellOrder sellOrder = sellOrderDao.create(price, nft, Category.valueOf(category));
+        Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
+        mailingService.sendNftSellOrderCreatedMail(owner.getEmail(), owner.getUsername(), nft.getNftId(), nft.getNftName(), nft.getContractAddr(), new BigDecimal(price.stripTrailingZeros()
+                .toPlainString()), image.getImage(), LocaleContextHolder.getLocale());
+        return sellOrder;
     }
 
     @Override
@@ -65,7 +74,14 @@ public class SellOrderServiceImpl implements SellOrderService {
         if (!currentUserOwnsSellOrder(id) && !userService.isAdmin())
             throw new UserNoPermissionException();
 
+        Optional<SellOrder> sellOrder = getOrderById(id);
+        Nft nft = sellOrder.get().getNft();
+        User owner = sellOrder.get().getNft().getOwner();
+        Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
+
         sellOrderDao.delete(id);
+        mailingService.sendSellOrderDeletedMail(owner.getEmail(), owner.getUsername(),nft.getNftId(), nft.getNftName(), nft.getContractAddr(), image.getImage(), new BigDecimal(sellOrder.get().getPrice().stripTrailingZeros()
+                .toPlainString()),  LocaleContextHolder.getLocale());
     }
 
     @Override

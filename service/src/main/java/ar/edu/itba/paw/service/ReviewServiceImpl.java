@@ -7,6 +7,7 @@ import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.ReviewDao;
 import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +20,15 @@ public class ReviewServiceImpl implements ReviewService{
 
     private final ReviewDao reviewDao;
     private final UserDao userDao;
+
+    private final MailingService mailingService;
     private final static int pageSize = 5;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao) {
+    public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, MailingService mailingService) {
         this.reviewDao = reviewDao;
         this.userDao = userDao;
+        this.mailingService = mailingService;
     }
 
     @Transactional
@@ -34,7 +38,8 @@ public class ReviewServiceImpl implements ReviewService{
             throw new InvalidReviewException();
         User reviewer = userDao.getUserById(reviewerId).orElseThrow(UserNotFoundException::new);
         User reviewee = userDao.getUserById(revieweeId).orElseThrow(UserNotFoundException::new);
-        reviewDao.addReview(reviewer, reviewee, score, title, comments);
+        Review newReview = reviewDao.addReview(reviewer, reviewee, score, title, comments);
+        mailingService.sendNewReviewMail(newReview, LocaleContextHolder.getLocale());
     }
 
     @Override

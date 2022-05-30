@@ -275,19 +275,19 @@
                                 </button>
                             </c:if>
                             <div id="productMenu" class="hidden z-10 w-44 bg-white flex flex-col flex-grow rounded text-gray-700 border border-gray-300 text-sm divide-y divide-gray-300 shadow">
-                                <ul class="py-1" aria-labelledby="productButton">
+                                <ul class="" aria-labelledby="productButton">
                                     <c:if test="${currentUser.id == owner.id || isAdmin}">
                                         <c:choose>
                                             <c:when test="${sellOrder != null}">
                                                 <c:if test="${currentUser.id == owner.id}">
                                                 <li class="z-20">
-                                                    <a href="<c:url value="/sellOrder/${productId}/update" />" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                                                    <a href="<c:url value="/sellOrder/${productId}/update" />" class="block flex flex-row items-center rounded-t justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
                                                         <span><spring:message code="product.updateSell"/></span>
                                                     </a>
                                                 </li>
                                                 </c:if>
                                                 <li class="z-20">
-                                                    <span id="open-delete-modal" class="block cursor-pointer flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                                                    <span id="open-delete-modal" class="block cursor-pointer flex flex-row items-center rounded-b justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
                                                         <spring:message code="product.deleteSell"/>
                                                     </span>
                                                 </li>

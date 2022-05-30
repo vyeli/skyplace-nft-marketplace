@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{email.newReview.title}"></title>
+</head>
+<body style="background-color: #E5E7EB; display: flex;">
+<div style="background-color: #FFFFFF; color: #1F2937; padding: 1rem; width: 100%; max-width: 42rem; margin: 2rem auto; border-radius: 0.375rem; font-family: Roboto, sans-serif;">
+    <div style="text-align: center">
+        <img src="cid:logo" th:src="|cid:${logoResourceName}|" alt="skyplace_logo"/>
+        <h2 style="font-size: 1.875rem; line-height: 2.25rem; margin-top: 0.125rem;">Skyplace</h2>
+    </div>
+    <div style="display: inline-block;">
+        <span th:text="#{email.newReview.hello}"></span>
+        <span th:text="${revieweeName}"></span>
+        <span> ,</span>
+    </div>
+    <br>
+    <div>
+        <p th:text="#{email.newReview.thereis}"></p>
+        <p th:text="#{email.newReview.details}"></p>
+    </div>
+    <hr style="color: #E5E7EB;">
+    <div style="display: flex; flex-direction: row; margin: auto;">
+        <div style="margin: auto 0 auto 1rem">
+            <div style="margin: 0.5rem 0;">
+                <span  style="margin: 0 0 0.25rem 0; font-size: 1rem;"><b th:text="#{email.newReview.reviewer}"></b></span>
+                <div style="display: flex">
+                    <img style="max-height: 1.75rem;" src="cid:userImage" th:src="|cid:${userImageResourceName}|" alt="skyplace_logo"/>
+                    <span style="" th:text="${reviewerName}"></span>
+                </div>
+            </div>
+            <div style="margin: 0.5rem 0;">
+                <span style="margin: 0 0 0.25rem 0; font-size: 1rem;"><b th:text="#{email.newReview.reviewTitle}"></b></span>
+                <div style="display: flex">
+                    <img style="max-height: 1.75rem; margin: auto 0;" src="cid:reviewImage" th:src="|cid:${reviewImageResourceName}|" alt="skyplace_logo"/>
+                    <span style="margin: auto 0 auto 0.5rem;" th:text="${reviewTitle}"></span>
+                </div>
+                <span style="margin: 0 0 0.25rem 0; font-size: 1rem;"><b th:text="#{email.newReview.score}"></b></span>
+                <div style="display: flex">
+                    <img style="max-height: 1.75rem; margin: auto 0;" src="cid:scoreImage" th:src="|cid:${reviewScoreImageResourceName}|" alt="skyplace_logo"/>
+                    <span style="margin: auto 0 auto 0.5rem;" th:text="${score}"></span>
+                </div>
+                <p><b th:text="#{email.newReview.comment}"></b></p>
+                <p th:text="${reviewComment}"></p>
+            </div>
+        </div>
+    </div>
+    <hr style="color: #E5E7EB;">
+    <div style="text-align: center; width:100%; display: inline-block; margin-top: 12px;">
+        <span th:text="#{email.newReview.goto}"></span>
+        <a th:href="${profileUrl}" th:text="#{email.newReview.profilepage}" style="text-decoration-line: underline; text-decoration-color: dodgerblue "></a>
+        <span th:text="#{email.newReview.check}"></span>
+    </div>
+</div>
+</body>
+</html>

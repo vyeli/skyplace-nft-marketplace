@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "sellorders")
@@ -78,6 +79,10 @@ public class SellOrder {
 
     public void deleteBuyOrder(User buyer) {
         offers.removeIf(order -> order.getOfferedBy().getId() == buyer.getId());
+    }
+
+    public Optional<BuyOrder> getBuyOrder(User buyer) {
+         return offers.stream().filter(buyOrder -> buyOrder.getOfferedBy().getId() == buyer.getId()).findFirst();
     }
 
 }

@@ -9,7 +9,7 @@
             <img class="w-14 h-14 rounded-full" src="<c:url value='/resources/profile_picture.png'/>" alt="">
             <c:url value="/profile/${param.reviewerId}" var="reviewerProfileUrl"/>
             <div class="space-y-1 font-medium">
-                <a href='<c:out value="${reviewerProfileUrl}"/>'><span class="text-lg text-cyan-600 decoration-current hover:text-cyan-800 hover:underline">${param.reviewerName}</span></a>
+                <a href='<c:out value="${reviewerProfileUrl}"/>'><span class="text-lg text-cyan-600 decoration-current hover:text-cyan-800 hover:underline"><c:out value="${param.reviewerName}"/></span></a>
             </div>
         </div>
         <div class="flex flex-row">

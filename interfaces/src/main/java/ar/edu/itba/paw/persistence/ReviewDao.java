@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ReviewDao {
 
-    void addReview(User reviewer, User reviewee, int score, String title, String comments);
+    Review addReview(User reviewer, User reviewee, int score, String title, String comments);
 
     List<Review> getUserReviews(int page, int userId, int pageSize);
 

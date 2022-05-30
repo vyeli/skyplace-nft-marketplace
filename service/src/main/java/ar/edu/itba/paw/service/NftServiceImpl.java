@@ -1,12 +1,13 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.exceptions.ImageNotFoundException;
 import ar.edu.itba.paw.exceptions.InvalidChainException;
 import ar.edu.itba.paw.exceptions.UserIsNotNftOwnerException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.persistence.NftDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,10 +21,15 @@ public class NftServiceImpl implements NftService {
     private final int pageSize = 12;
     private final UserService userService;
 
+    private final MailingService mailingService;
+    private final ImageService imageService;
+
     @Autowired
-    public NftServiceImpl(NftDao nftDao, UserService userService) {
+    public NftServiceImpl(NftDao nftDao, UserService userService, MailingService mailingService, ImageService imageService) {
         this.nftDao = nftDao;
         this.userService = userService;
+        this.mailingService = mailingService;
+        this.imageService = imageService;
     }
 
     @Transactional
@@ -33,7 +39,10 @@ public class NftServiceImpl implements NftService {
             throw new InvalidChainException();
 
         User owner = userService.getUserById(idOwner).orElseThrow(UserNotFoundException::new); // FIXME: replace with checked exception
-        return nftDao.create(nftId, contractAddr, nftName, Chain.valueOf(chain), image, owner, collection, description);
+        Nft nft = nftDao.create(nftId, contractAddr, nftName, Chain.valueOf(chain), image, owner, collection, description);
+        Image nftImage = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
+        mailingService.sendNftCreatedMail(owner.getEmail(), owner.getUsername(), nftId, nftName, contractAddr, nftImage.getImage(), LocaleContextHolder.getLocale());
+        return nft;
     }
 
     @Override
@@ -121,7 +130,11 @@ public class NftServiceImpl implements NftService {
         if (!userService.currentUserOwnsNft(productId) && !userService.isAdmin())
             throw new UserIsNotNftOwnerException();
 
+        Optional<Nft> nft = getNFTById(productId);
+        User owner = nft.get().getOwner();
+        Image image = imageService.getImage(nft.get().getIdImage()).orElseThrow(ImageNotFoundException::new);
         nftDao.delete(productId);
+        mailingService.sendNftDeletedMail(owner.getEmail(), owner.getUsername(), nft.get().getNftId(), nft.get().getNftName(), nft.get().getContractAddr(), image.getImage(), LocaleContextHolder.getLocale() );
     }
 
     @Override
