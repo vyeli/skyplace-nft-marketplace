@@ -87,10 +87,9 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     @Transactional
     @Override
     public void deleteBuyOrder(int sellOrderId, int buyerId) {
-        if (!sellOrderService.currentUserOwnsSellOrder(sellOrderId))
+        if (!sellOrderService.currentUserOwnsSellOrder(sellOrderId) && buyerId != userService.getCurrentUser().get().getId())
             throw new UserIsNotNftOwnerException();
 
-        // TODO: delete using SellOrder model method
         SellOrder sellOrder = sellOrderService.getOrderById(sellOrderId).orElseThrow(SellOrderNotFoundException::new);
         User buyer = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
         sellOrder.deleteBuyOrder(buyer);

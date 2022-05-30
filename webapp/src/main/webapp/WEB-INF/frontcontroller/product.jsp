@@ -128,6 +128,13 @@
                                                         <c:out value="${offer.amount}"/>
                                                     </span>
                                                 </div>
+                                                <c:if test="${sellOrder != null && offer.offeredBy.id == currentUser.id}">
+                                                    <div class="flex gap-2">
+                                                        <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
+                                                            <spring:message code="product.removeOffer"/>
+                                                        </button>
+                                                    </div>
+                                                </c:if>
                                                 <c:if test="${sellOrder != null && owner.id == currentUser.id}">
                                                     <div class="flex gap-2">
                                                         <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400">
