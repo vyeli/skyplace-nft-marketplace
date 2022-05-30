@@ -9,3 +9,6 @@ DROP TABLE categories;
 -- Add title field to reviews and unique constraint on reviewer, reviewee
 ALTER TABLE reviews ADD title TEXT;
 ALTER TABLE reviews ADD CONSTRAINT unique_reviewer_reviewee UNIQUE (id_reviewer, id_reviewee);
+
+-- Add unique username
+ALTER TABLE users ADD UNIQUE(username);

@@ -245,7 +245,7 @@ public class NftJpaDao implements NftDao {
     public boolean isNftCreated(int nftId, String contractAddr, String chain) {
         if(!Chain.getChains().contains(chain))
             return false;
-        final Query query = em.createQuery("FROM Nft nft WHERE nft.nftId = :nftId AND nft.contractAddr = :contractAddr AND nft.chain = :chain");
+        final Query query = em.createQuery("FROM Nft nft WHERE nft.nftId = :nftId AND lower(nft.contractAddr) = lower(:contractAddr) AND nft.chain = :chain");
         query.setParameter("nftId", nftId);
         query.setParameter("contractAddr", contractAddr);
 

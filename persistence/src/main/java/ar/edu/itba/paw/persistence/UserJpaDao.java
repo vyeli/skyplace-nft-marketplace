@@ -25,8 +25,15 @@ public class UserJpaDao implements UserDao {
 
     @Override
     public Optional<User> getUserByEmail(String email) {
-        final TypedQuery<User> query = em.createQuery("from User as u where u.email = :email", User.class);
+        final TypedQuery<User> query = em.createQuery("from User as u where lower(u.email) = lower(:email)", User.class);
         query.setParameter("email", email);
+        return query.getResultList().stream().findFirst();
+    }
+
+    @Override
+    public Optional<User> getUserByUsername(String username) {
+        final TypedQuery<User> query = em.createQuery("from User as u where lower(u.username) = lower(:username)", User.class);
+        query.setParameter("username", username);
         return query.getResultList().stream().findFirst();
     }
 

@@ -11,6 +11,8 @@ public interface UserDao {
 
     Optional<User> getUserByEmail(String email);
 
+    Optional<User> getUserByUsername(String username);
+
     Optional<User> getUserById(int id);
 
     User merge(User user);

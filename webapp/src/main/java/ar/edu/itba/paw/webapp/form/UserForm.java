@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.validators.interfaces.PasswordsEqualConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.UniqueEmailConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.UniqueUsernameConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.ValidChainConstraint;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -28,6 +29,7 @@ public class UserForm {
     @NotBlank
     @Size(min = 6, max = 20)
     @Pattern(regexp = "[a-zA-Z][a-zA-Z0-9]*")
+    @UniqueUsernameConstraint
     private String username;
 
     @NotBlank
