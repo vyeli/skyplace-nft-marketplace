@@ -79,6 +79,8 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>ERROR</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
