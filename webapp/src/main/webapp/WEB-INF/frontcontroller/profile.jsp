@@ -286,6 +286,8 @@
                         <jsp:param name="nftId" value="${item.offeredFor.nft.id}"/>
                         <jsp:param name="nftImg" value="${item.offeredFor.nft.idImage}"/>
                         <jsp:param name="price" value="${item.amount}"/>
+                        <jsp:param name="sellOrderId" value="${item.offeredFor.id}"/>
+                        <jsp:param name="buyerId" value="${item.offeredBy.id}"/>
                     </jsp:include>
                 </c:forEach>
                 <c:if test="${buyOrderItemsSize == 0}">

@@ -374,7 +374,7 @@
                             <c:url value="/product/${nft.id}" var="postPath" />
                             <form:form modelAttribute="buyNftForm" action="${postPath}" method="post">
                                 <label class="flex mb-4 items-center">
-                                    <span class="text-lg pr-2"><spring:message code="product.yourOffer"/></span>
+                                    <span class="text-[1.1rem] pr-2"><spring:message code="product.yourOffer"/></span>
                                     <svg x="0" y="0" viewBox="0 0 1920 1920" xml:space="preserve" class="mr-1 h-6 w-6">
                                     <path fill="#8A92B2" d="M959.8 80.7L420.1 976.3 959.8 731z"></path>
                                         <path fill="#62688F" d="M959.8 731L420.1 976.3l539.7 319.1zm539.8 245.3L959.8 80.7V731z"></path>
@@ -433,7 +433,7 @@
         const offerInput = document.getElementById("offerInput")
         const offerDisplay = document.getElementById("offerDisplay")
 
-        offerInput.addEventListener("keyup", e => {
+        offerInput?.addEventListener("keyup", e => {
             const _usdPrice = e.target.value * prices.ethereum.usd
             offerDisplay.innerText = "~ " + _usdPrice.toFixed(0) + " USD"
         })
