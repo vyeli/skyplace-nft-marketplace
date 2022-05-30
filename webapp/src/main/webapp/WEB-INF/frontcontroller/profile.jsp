@@ -48,7 +48,6 @@
     <!-- Tabs -->
     <div class="flex border-b border-gray-200">
         <ul class="flex flex-wrap flex-grow justify-evenly items-center font-medium text-lg text-center text-gray-500">
-            <!-- Inventory -->
             <c:set var="activeClasses" value="border-b-2 border-cyan-600 text-cyan-600 active"/>
             <c:set var="inactiveClasses" value="border-transparent hover:text-gray-700"/>
             <c:choose>
@@ -286,7 +285,7 @@
                         <jsp:param name="nftName" value="${item.offeredFor.nft.nftName}"/>
                         <jsp:param name="nftId" value="${item.offeredFor.nft.id}"/>
                         <jsp:param name="nftImg" value="${item.offeredFor.nft.idImage}"/>
-                        <jsp:param name="price" value="${item.offeredFor.price}"/>
+                        <jsp:param name="price" value="${item.amount}"/>
                     </jsp:include>
                 </c:forEach>
                 <c:if test="${buyOrderItemsSize == 0}">
