@@ -36,7 +36,7 @@ public class ExceptionController {
         return new ModelAndView("frontcontroller/login");
     }
 
-    @ExceptionHandler({CreateSellOrderException.class, InvalidChainException.class, InvalidCategoryException.class, CreateImageException.class, CreateUserException.class, InvalidInputTypeException.class, CreateNftException.class})
+    @ExceptionHandler({CreateSellOrderException.class, InvalidChainException.class, InvalidCategoryException.class, CreateImageException.class, CreateUserException.class, InvalidInputTypeException.class, CreateNftException.class, InvalidReviewException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ModelAndView internalError(Exception e) {
         LOGGER.error("{} redirecting to 500", e.getMessage());
