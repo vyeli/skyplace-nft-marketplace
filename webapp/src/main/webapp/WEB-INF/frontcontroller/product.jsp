@@ -351,6 +351,11 @@
                             <c:out value="${nft.description}" />
                         </p>
                     </div>
+                    <c:if test="${sellOrder == null && (currentUser != null && owner.id == currentUser.id)}">
+                        <a href="<c:url value="/sell/${nft.id}" />">
+                            <button class="shadow-md px-6 py-2.5 rounded-md transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl" type="submit"><spring:message code="product.sell" /></button>
+                        </a>
+                    </c:if>
                     <!-- Bid -->
                     <c:if test="${sellOrder != null && (currentUser == null || owner.id != currentUser.id)}">
                     <div class=" border-gray-200 rounded-2xl border bg-white pb-4 flex-col justify-between mb-8 bg-slate-50">
