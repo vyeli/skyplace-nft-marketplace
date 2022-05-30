@@ -13,11 +13,11 @@
         <div class="container">
             <div class="flex flex-row ">
                 <!-- Image and tabs -->
-                <div class="flex-col max-w-[50%]">
+                <div class="flex-col w-1/2">
                     <!--Image-->
                     <figure class="mb-8 flex justify-center">
                         <img src="<c:url value="/images/${nft.idImage}" />"
-                             alt="<c:out value="${nft.nftName}" />" class="rounded-2xl">
+                             alt="<c:out value="${nft.nftName}" />" class="rounded-2xl max-h-[550px]">
                     </figure>
                     <!--TAGS -->
                     <c:choose>
