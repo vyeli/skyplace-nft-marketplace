@@ -37,10 +37,10 @@
             </div>
             <span class="text-lg font-light text-gray-400 break-words w-96 lg:w-[36rem] xl:w-[44rem] 2xl:w-[52rem]"><c:out value="${user.email}" /></span>
             <div class="flex flex-row items-center">
-                <img class="h-11 w-11" src='<c:url value="/resources/filled_star.svg"/>' alt="filled_star">
-                    <p class="text-xl font-bold text-gray-900 ml-1">${userScore}</p>
+                <img class="h-9 w-9" src='<c:url value="/resources/filled_star.svg"/>' alt="filled_star">
+                    <p class="text-lg font-bold text-gray-900 ml-1">${userScore}</p>
                 <span class="w-1.5 h-1.5 mx-2 bg-gray-500 rounded-full dark:bg-gray-400"></span>
-                <a href='<c:url value="/profile/${userId}?tab=reviews"/>' class="text-xl font-medium text-cyan-600 hover:text-cyan-800 hover:underline"><spring:message code="review.totalAmount" arguments="${reviewAmount}"/></a>
+                <a href='<c:url value="/profile/${userId}?tab=reviews"/>' class="text-lg font-medium text-cyan-600 hover:text-cyan-800 hover:underline"><spring:message code="review.totalAmount" arguments="${reviewAmount}"/></a>
             </div>
         </div>
     </div>
