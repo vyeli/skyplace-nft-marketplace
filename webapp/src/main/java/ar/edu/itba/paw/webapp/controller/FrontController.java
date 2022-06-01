@@ -339,6 +339,7 @@ public class FrontController {
         switch(tabName) {
             case "reviews":
                 List<Review> reviews = reviewService.getUserReviews(Integer.parseInt(profileFilter.getPage()), user.getId());
+                mav.addObject("canReview", currentUser != null && reviewService.purchaseExists(currentUser.getId(), parsedUserId));
                 mav.addObject("reviews", reviews);
                 mav.addObject("pages", getPageAmount(reviewAmount, reviewService.getPageSize()));
                 optionalCurrentUser.ifPresent(value -> mav.addObject("hasReviewByUser", reviewService.hasReviewByUser(value.getId(), user.getId())));

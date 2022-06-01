@@ -84,4 +84,9 @@ public class ReviewServiceImpl implements ReviewService{
     public int getPageSize() {
         return pageSize;
     }
+
+    @Override
+    public boolean purchaseExists(int buyerId, int sellerId) {
+        return reviewDao.purchaseExists(buyerId, sellerId);
+    }
 }

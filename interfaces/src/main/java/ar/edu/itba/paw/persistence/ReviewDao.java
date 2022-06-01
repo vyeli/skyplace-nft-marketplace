@@ -18,4 +18,6 @@ public interface ReviewDao {
     long getUserReviewsAmount(int userId);
 
     void deleteReview(int reviewId);
+
+    boolean purchaseExists(int buyerId, int sellerId);
 }

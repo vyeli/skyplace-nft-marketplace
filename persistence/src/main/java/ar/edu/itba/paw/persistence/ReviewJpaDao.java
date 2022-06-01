@@ -79,4 +79,14 @@ public class ReviewJpaDao implements ReviewDao{
         Review review = em.find(Review.class, reviewId);
         em.remove(review);
     }
+
+    @Override
+    public boolean purchaseExists(int buyerId, int sellerId) {
+        if(buyerId == sellerId)
+            return false;
+        final Query query = em.createQuery("FROM Purchase AS purchase WHERE purchase.buyer.id = :buyerId AND purchase.seller.id = :sellerId ");
+        query.setParameter("buyerId",buyerId);
+        query.setParameter("sellerId", sellerId);
+        return query.getResultList().stream().findFirst().isPresent();
+    }
 }
