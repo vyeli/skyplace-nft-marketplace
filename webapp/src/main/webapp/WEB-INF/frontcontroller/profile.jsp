@@ -368,7 +368,7 @@
                 <div class="flex flex-col grow divide-y gap-4 mx-8">
                     <div class="flex flex-row items-center justify-between">
                         <h2 class="text-2xl"><spring:message code="profile.reviews"/></h2>
-                        <c:if test="${currentUserId != null && !isOwner && !hasReviewByUser}">
+                        <c:if test="${canReview == true}">
                             <a href="<c:url value='/review/${user.id}/create'/>">
                                 <button type="button" class="shadow-md px-6 py-2.5 rounded-md transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl">
                                     <spring:message code="profile.addReview"/>

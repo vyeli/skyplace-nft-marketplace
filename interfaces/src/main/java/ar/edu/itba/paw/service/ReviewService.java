@@ -22,4 +22,6 @@ public interface ReviewService {
 
     int getPageSize();
 
+    boolean purchaseExists(int buyerId, int sellerId);
+
 }
