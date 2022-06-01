@@ -84,11 +84,6 @@ public class FrontController {
     public ModelAndView explore(@ModelAttribute("exploreFilter") @Valid ExploreFilter exploreFilter, HttpServletRequest request) {
         setEncodingToUTF(request);
 
-        if(exploreFilter.getSearchFor().equals("user")) {
-            final User user = userService.getUserByUsername(exploreFilter.getSearch()).orElseThrow(UserNotFoundException::new);
-            return new ModelAndView(String.format("redirect:/profile/%s?searchFor=user&search=%s",user.getId(),exploreFilter.getSearch()));
-        }
-
         List<String> categories = Category.getCategories();
         List<String> chains = Chain.getChains();
 
