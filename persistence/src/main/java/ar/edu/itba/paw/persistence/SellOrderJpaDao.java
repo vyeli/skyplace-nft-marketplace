@@ -48,6 +48,7 @@ public class SellOrderJpaDao implements SellOrderDao{
         return query.executeUpdate() == 1;
     }
 
+    // FIXME: Change return value to Optional<Integer>
     @Override
     public int getNftWithOrder(int id) {
         final Query query = em.createQuery("select sellorder.idNft from SellOrder sellorder where sellorder.id = :id");
