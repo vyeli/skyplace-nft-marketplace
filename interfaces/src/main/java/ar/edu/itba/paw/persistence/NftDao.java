@@ -15,6 +15,8 @@ public interface NftDao {
 
     Optional<Nft> getNFTById(int nftId);
 
+    Optional<Nft> getNftByPk(int nftContractId, String contractAddr, String chain);
+
     List<Nft> getAllPublications(int page, int pageSize, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor);
 
     List<Nft> getAllPublicationsByUser(int page, int pageSize, User user, boolean onlyFaved, boolean onlyOnSale, String sort);
@@ -22,8 +24,6 @@ public interface NftDao {
     int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor);
 
     int getAmountPublicationPagesByUser(int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale);
-
-    void delete(int productId);
 
     boolean isNftCreated(int nftId, String contractAddr, String chain);
 }

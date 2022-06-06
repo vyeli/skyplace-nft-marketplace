@@ -39,7 +39,8 @@ public class NftJpaDao implements NftDao {
 
     @Override
     public Optional<Nft> getNFTById(int id) {
-        return Optional.ofNullable(em.find(Nft.class, id));
+        Nft nft = em.find(Nft.class, id);
+        return nft == null || nft.isDeleted() ? Optional.empty() : Optional.of(nft);
     }
 
     protected Pair<Pair<StringBuilder,StringBuilder>, Pair<String,Object>> applyFilter(String columnNativeName, String paramName, String filter) {
@@ -67,7 +68,7 @@ public class NftJpaDao implements NftDao {
         StringBuilder nativeQuery = new StringBuilder();
         StringBuilder hqlQuery = new StringBuilder();
         List<Pair<String,Object>> args = new ArrayList<>();
-        nativeQuery.append(" WHERE true ");
+        nativeQuery.append(" WHERE nfts.is_deleted = false ");
 
         if(status != null && !status.equals("")) {
             String[] statusArray = status.split(",");
@@ -96,11 +97,11 @@ public class NftJpaDao implements NftDao {
             args.add(applyChainFilter.getRight());
         }
 
-        if(minPrice != null && minPrice.compareTo(new BigDecimal(0)) > 0) {
+        if(minPrice != null && minPrice.compareTo(BigDecimal.ZERO) > 0) {
             nativeQuery.append(" AND sellorders.price >= :minPrice ");
             args.add(new Pair<>("minPrice", minPrice));
         }
-        if(maxPrice != null && maxPrice.compareTo(new BigDecimal(0)) > 0) {
+        if(maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) > 0) {
             nativeQuery.append(" AND sellorders.price <=  :maxPrice ");
             args.add(new Pair<>("maxPrice", minPrice));
         }
@@ -149,7 +150,7 @@ public class NftJpaDao implements NftDao {
         StringBuilder hqlQuery = new StringBuilder();
         StringBuilder nativeQuery = new StringBuilder();
         List<Pair<String,Object>> args = new ArrayList<>();
-        nativeQuery.append(" WHERE TRUE ");
+        nativeQuery.append(" WHERE nfts.is_deleted = false ");
         if(!onlyFaved) {
             nativeQuery.append(" AND nfts.id_owner=:idOwner ");
             args.add(new Pair<>("idOwner",user.getId()));
@@ -235,22 +236,20 @@ public class NftJpaDao implements NftDao {
     }
 
     @Override
-    public void delete(int nftId) {
-        final Query query = em.createQuery("delete from Nft nft where nft.id = :id");
-        query.setParameter("id", nftId);
-        query.executeUpdate();
+    public Optional<Nft> getNftByPk(int nftContractId, String contractAddr, String chain) {
+        final TypedQuery<Nft> query = em.createQuery("FROM Nft nft WHERE nft.nftId = :nftId AND lower(nft.contractAddr) = lower(:contractAddr) AND nft.chain = :chain", Nft.class);
+        query.setParameter("nftId", nftContractId);
+        query.setParameter("contractAddr", contractAddr);
+        query.setParameter("chain", Chain.valueOf(chain));
+        return query.getResultList().stream().findFirst();
     }
 
     @Override
     public boolean isNftCreated(int nftId, String contractAddr, String chain) {
         if(!Chain.getChains().contains(chain))
             return false;
-        final Query query = em.createQuery("FROM Nft nft WHERE nft.nftId = :nftId AND lower(nft.contractAddr) = lower(:contractAddr) AND nft.chain = :chain");
-        query.setParameter("nftId", nftId);
-        query.setParameter("contractAddr", contractAddr);
-
-        query.setParameter("chain", Chain.valueOf(chain));
-        return query.getResultList().size() > 0;
+        Optional<Nft> maybeNft = getNftByPk(nftId, contractAddr, chain);
+        return maybeNft.isPresent() && !maybeNft.get().isDeleted();
     }
 
     protected static class Pair<T, U> {

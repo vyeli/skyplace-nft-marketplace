@@ -3,14 +3,25 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!-- History item -->
-<a href="<c:url value="/product/${param.nftId}" />" class="border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-4 transition-shadow hover:shadow-lg">
+<div class="border-jacarta-100 rounded-2.5xl relative flex items-center border bg-white p-4 transition-shadow hover:shadow-lg">
     <figure class="mr-5 self-start">
         <img src="<c:url value="/images/${param.nftImg}" />" class="w-[6rem] h-[6rem] rounded-lg aspect-square object-cover border border-gray-300" alt="avatar 2" loading="lazy">
     </figure>
 
     <div class="max-w-[34rem]">
-        <h3 class="font-display text-jacarta-700 mb-1 text-base font-semibold truncate">
-            <c:out value="${param.nftName}" />
+        <h3 class="font-display text-jacarta-700 mb-1 text-base flex items-center font-semibold truncate">
+            <c:choose>
+                <c:when test="${param.isNftDeleted == true}">
+                    <c:out value="${param.nftName}" /> #<c:out value="${param.nftId}" />
+                    <span class="font-normal text-sm text-red-700 ml-4">(removed from skyplace)</span>
+                </c:when>
+                <c:otherwise>
+                    <a href="<c:url value="/product/${param.id}" />">
+                        <span aria-hidden="true" class="absolute inset-0"></span>
+                        <c:out value="${param.nftName}" /> #<c:out value="${param.nftId}" />
+                    </a>
+                </c:otherwise>
+            </c:choose>
         </h3>
         <div class="flex flex-row gap-1 text-jacarta-500 mb-3 block text-sm">
             <c:choose>
@@ -50,4 +61,4 @@
             </c:otherwise>
         </c:choose>
     </div>
-</a>
+</div>

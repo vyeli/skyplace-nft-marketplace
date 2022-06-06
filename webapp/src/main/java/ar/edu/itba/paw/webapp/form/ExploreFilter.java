@@ -21,11 +21,11 @@ public class ExploreFilter {
 
     @DecimalMin(value="0")
     @Digits(integer=18, fraction=18)
-    private BigDecimal minPrice = new BigDecimal(0);
+    private BigDecimal minPrice = BigDecimal.ZERO;
 
     @DecimalMin(value="0")
     @Digits(integer=18, fraction=18)
-    private BigDecimal maxPrice = new BigDecimal(0);
+    private BigDecimal maxPrice = BigDecimal.ZERO;
 
     public String getPage() {
         return page;
@@ -68,7 +68,7 @@ public class ExploreFilter {
     }
 
     public BigDecimal getMinPrice() {
-        return minPrice == null ? new BigDecimal(0) : new BigDecimal(minPrice.stripTrailingZeros().toPlainString());
+        return minPrice == null ? BigDecimal.ZERO : new BigDecimal(minPrice.stripTrailingZeros().toPlainString());
     }
 
     public void setMinPrice(BigDecimal minPrice) {
@@ -76,7 +76,7 @@ public class ExploreFilter {
     }
 
     public BigDecimal getMaxPrice() {
-        return maxPrice == null ? new BigDecimal(0) : new BigDecimal(maxPrice.stripTrailingZeros().toPlainString());
+        return maxPrice == null ? BigDecimal.ZERO : new BigDecimal(maxPrice.stripTrailingZeros().toPlainString());
     }
 
     public void setMaxPrice(BigDecimal maxPrice) {
