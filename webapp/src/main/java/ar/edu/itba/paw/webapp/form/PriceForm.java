@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public class PriceForm {
     @Digits(integer=18, fraction=18)
     @DecimalMin(value="0")
-    private BigDecimal price = new BigDecimal(0);
+    private BigDecimal price = BigDecimal.ZERO;
 
     public BigDecimal getPrice() {
         return price.stripTrailingZeros();
