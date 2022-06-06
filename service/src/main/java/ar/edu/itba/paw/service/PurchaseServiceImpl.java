@@ -2,6 +2,7 @@ package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Purchase;
+import ar.edu.itba.paw.model.StatusPurchase;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.PurchaseDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,12 +64,17 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public int createPurchase(int idBuyer, int idSeller, int idNft, BigDecimal price) {
+    public int createPurchase(int idBuyer, int idSeller, int idNft, BigDecimal price, String txHash, StatusPurchase status) {
         Optional<User> maybeBuyer = userService.getUserById(idBuyer);
         Optional<User> maybeSeller = userService.getUserById(idSeller);
         Optional<Nft> maybeNft = nftService.getNFTById(idNft);
         if (!maybeBuyer.isPresent() || !maybeNft.isPresent() || !maybeSeller.isPresent())
             return 0;
-        return purchaseDao.createPurchase(maybeBuyer.get(), maybeSeller.get(), maybeNft.get(), price).getId();
+        return purchaseDao.createPurchase(maybeBuyer.get(), maybeSeller.get(), maybeNft.get(), price, txHash, status).getId();
+    }
+
+    @Override
+    public boolean isTxHashAlreadyInUse(String txHash) {
+        return purchaseDao.isTxHashAlreadyInUse(txHash);
     }
 }

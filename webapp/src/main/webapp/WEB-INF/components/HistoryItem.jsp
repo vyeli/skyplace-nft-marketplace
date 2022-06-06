@@ -23,9 +23,9 @@
                 </c:otherwise>
             </c:choose>
         </h3>
-        <div class="flex flex-row gap-1 text-jacarta-500 mb-3 block text-sm">
+        <div class="flex flex-row gap-1 text-jacarta-500 mb-3 text-sm">
             <c:choose>
-                <c:when test="${param.sold}">
+                <c:when test="${param.status == 'SUCCESS' && param.sold}">
                     <spring:message code="history.soldTo"/>
                     <object>
                         <a href='<c:url value="/profile/${param.buyerId}"/>' class="text-cyan-600 hover:text-cyan-800 hover:underline">
@@ -33,8 +33,24 @@
                         </a>
                     </object>
                 </c:when>
-                <c:otherwise>
+                <c:when test="${param.status == 'SUCCESS' && !param.sold}">
                     <spring:message code="history.boughtFrom"/>
+                    <object>
+                        <a href='<c:url value="/profile/${param.sellerId}"/>' class="text-cyan-600 hover:text-cyan-800 hover:underline">
+                            <c:out value="${param.sellerUsername}"/>
+                        </a>
+                    </object>
+                </c:when>
+                <c:when test="${param.status == 'CANCELLED' && !param.sold}">
+                    <spring:message code="history.errorBoughtFrom"/>
+                    <object>
+                        <a href='<c:url value="/profile/${param.sellerId}"/>' class="text-cyan-600 hover:text-cyan-800 hover:underline">
+                            <c:out value="${param.sellerUsername}"/>
+                        </a>
+                    </object>
+                </c:when>
+                <c:otherwise>
+                    <spring:message code="history.errorSoldTo"/>
                     <object>
                         <a href='<c:url value="/profile/${param.sellerId}"/>' class="text-cyan-600 hover:text-cyan-800 hover:underline">
                             <c:out value="${param.sellerUsername}"/>
@@ -49,15 +65,18 @@
 
     <div class="border-jacarta-100 ml-auto rounded-full border p-3">
         <c:choose>
-            <c:when test="${param.sold}">
+            <c:when test="${param.status == 'SUCCESS' && param.sold}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+            </c:when>
+            <c:when test="${param.status == 'SUCCESS'}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
             </c:when>
             <c:otherwise>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </c:otherwise>
         </c:choose>
     </div>

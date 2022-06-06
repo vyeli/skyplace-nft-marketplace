@@ -8,13 +8,12 @@
     <h2 class="font-bold text-xl text-cyan-700"><spring:message code="offerModal.acceptOffer"/></h2>
     <p class="py-6 text-slate-600"><spring:message code="offerModal.confirmAccept"/></p>
 
-    <c:url value="/buyorder/confirm" var="confirmBuyOrder" />
+    <c:url value="/buyorder/accept" var="confirmBuyOrder" />
     <form action="${confirmBuyOrder}" method="post" class="mb-0">
         <input type="hidden" name="sellOrder" value="" />
         <input type="hidden" name="idBuyer" value="" />
         <input type="hidden" name="idNft" value="" />
         <input type="hidden" name="idSeller" value="" />
-        <input type="hidden" name="price" value="" />
         <button class="px-4 py-2 rounded-md text-white bg-cyan-700" type="submit"><spring:message code="offerModal.accept"/></button>
     </form>
 </dialog>
@@ -43,10 +42,9 @@
     closeRejectOfferModal.addEventListener("click", () => rejectOfferModal.close())
     closeConfirmOfferModal.addEventListener("click", () => confirmOfferModal.close())
 
-    function handleAccept(sellOrderId, buyerId, sellerId, price, productId) {
+    function handleAccept(sellOrderId, buyerId, sellerId, productId) {
       setInputData(confirmOfferModal, sellOrderId, buyerId, productId)
       confirmOfferModal.querySelector("input[name='idSeller']").value = sellerId
-      confirmOfferModal.querySelector("input[name='price']").value = price
       confirmOfferModal.showModal()
     }
 

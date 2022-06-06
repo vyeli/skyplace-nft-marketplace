@@ -5,16 +5,6 @@ public class ProfileFilter {
 
     private String sort = "Name";
 
-    private String tab;
-
-    public String getTab() {
-        return tab;
-    }
-
-    public void setTab(String tab) {
-        this.tab = tab;
-    }
-
     public String getPage() {
         return page;
     }

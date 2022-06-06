@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.Purchase;
+import ar.edu.itba.paw.model.StatusPurchase;
 import ar.edu.itba.paw.model.User;
 import org.springframework.stereotype.Repository;
 
@@ -40,11 +41,19 @@ public class PurchaseJpaDao implements PurchaseDao {
     }
 
     @Override
-    public Purchase createPurchase(User buyer, User seller, Nft nft, BigDecimal price) {
+    public Purchase createPurchase(User buyer, User seller, Nft nft, BigDecimal price, String txHash, StatusPurchase statusPurchase) {
         Timestamp currentTime = new Timestamp(Instant.now().toEpochMilli());
         currentTime.setNanos(0);
-        final Purchase newPurchase = new Purchase(price, currentTime, nft, buyer, seller);
+        final Purchase newPurchase = new Purchase(price, currentTime, nft, buyer, seller, statusPurchase, txHash);
         em.persist(newPurchase);
         return newPurchase;
+    }
+
+    @Override
+    public boolean isTxHashAlreadyInUse(String txHash) {
+        final TypedQuery<Purchase> query = em.createQuery("FROM Purchase AS p WHERE p.status = :statusPurchase AND p.txHash = :txHash",Purchase.class);
+        query.setParameter("statusPurchase", StatusPurchase.SUCCESS);
+        query.setParameter("txHash", txHash);
+        return query.getResultList().stream().findFirst().isPresent();
     }
 }

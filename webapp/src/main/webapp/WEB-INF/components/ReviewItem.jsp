@@ -13,10 +13,10 @@
             </div>
         </div>
         <div class="flex flex-row">
-            <c:forEach var="i" begin="1" end="${param.score}">
+            <c:forEach var="i" begin="${param.minScore}" end="${param.score}">
                 <img class="h-9 w-9" src="<c:url value='/resources/filled_star.svg'/>" alt=""/>
             </c:forEach>
-            <c:forEach var="j" begin="${param.score}" end="4">
+            <c:forEach var="j" begin="${param.score}" end="${param.maxScore-1}">
                 <img class="h-9 w-9" src="<c:url value='/resources/empty_star.svg'/>" alt=""/>
             </c:forEach>
         </div>

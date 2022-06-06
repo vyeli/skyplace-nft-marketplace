@@ -32,16 +32,24 @@ public class Purchase {
     @JoinColumn(name = "id_seller", referencedColumnName = "id", nullable = false)
     private User seller;
 
+    @Enumerated(EnumType.STRING)
+    private StatusPurchase status;
+
+    @Column(name = "tx")
+    private String txHash;
+
     /* default */ Purchase() {
         // just for hibernate
     }
 
-    public Purchase(BigDecimal price, Timestamp buyDate, Nft nftsByIdNft, User buyer, User seller) {
+    public Purchase(BigDecimal price, Timestamp buyDate, Nft nftsByIdNft, User buyer, User seller, StatusPurchase status, String txHash) {
         this.price = price;
         this.buyDate = buyDate;
         this.nftsByIdNft = nftsByIdNft;
         this.buyer = buyer;
         this.seller = seller;
+        this.status = status;
+        this.txHash = txHash;
     }
 
     public int getId() {
@@ -66,5 +74,11 @@ public class Purchase {
 
     public User getSeller() {
         return seller;
+    }
+
+    public StatusPurchase getStatus() {return status;}
+
+    public String getTxHash() {
+        return txHash;
     }
 }

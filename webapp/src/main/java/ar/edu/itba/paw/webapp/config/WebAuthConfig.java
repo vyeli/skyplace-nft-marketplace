@@ -50,7 +50,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .invalidSessionUrl("/")
             .and().authorizeRequests()
                 .antMatchers("/login", "/register").anonymous()
-                .antMatchers("/create", "/buyorder/confirm", "/buyorder/delete","/product/*/delete", "/sell/*", "/sellOrder/*/update", "/sellOrder/*/delete", "/favorite/*/add", "/favorite/*/remove", "/review/*").hasAnyRole("USER","ADMIN")
+                .antMatchers("/create", "/buyorder/accept", "/buyorder/validate", "/buyorder/delete","/product/*/delete", "/sell/*", "/sellOrder/*/update", "/sellOrder/*/delete", "/favorite/*/add", "/favorite/*/remove", "/review/*").hasAnyRole("USER","ADMIN")
                 .antMatchers(HttpMethod.POST, "/product/*").hasAnyRole("USER","ADMIN")
                 .antMatchers("/","/explore","/product/*", "/profile/*", "/images/*").permitAll()
                 .antMatchers("/**").authenticated()

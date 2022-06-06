@@ -38,13 +38,6 @@ public class SellOrder {
         this.category = category;
     }
 
-    public List<BuyOrder> getBuyOrdersByPage(int page, int pageSize) {
-        if (page <= 0) return Collections.emptyList();
-        int toIndex = page * pageSize;
-        if (toIndex > offers.size()) toIndex = offers.size();
-        return offers.subList((page - 1) * pageSize, toIndex);
-    }
-
     public int getBuyOrdersAmount() {
         return offers.size();
     }

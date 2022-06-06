@@ -12,3 +12,16 @@ ALTER TABLE reviews ADD CONSTRAINT unique_reviewer_reviewee UNIQUE (id_reviewer,
 
 -- Add unique username
 ALTER TABLE users ADD UNIQUE(username);
+
+-- Add status buyorder and purchases
+ALTER TABLE buyorders ADD COLUMN status TEXT NOT NULL DEFAULT 'NEW';
+ALTER TABLE purchases ADD COLUMN status TEXT NOT NULL DEFAULT 'SUCCESS';
+
+-- Add hash to purchases table
+ALTER TABLE purchases ADD COLUMN tx TEXT;
+
+-- Add timestamp for pending buyorders
+ALTER TABLE buyorders ADD COLUMN pending_date TIMESTAMP;
+
+-- Add soft delete to schema
+ALTER TABLE nfts ADD COLUMN is_deleted BOOLEAN DEFAULT false;

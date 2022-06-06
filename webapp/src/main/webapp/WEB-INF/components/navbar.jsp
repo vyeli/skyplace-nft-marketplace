@@ -12,6 +12,7 @@
     </a>
     <div class="w-2/5 relative flex flex-row flex-start rounded border border-gray-300 text-cyan-800">
         <c:url value="/explore" var="explorePath"/>
+        <!-- FIXME: hay que bindear al form del explore, estamos mandando estos nombres y el explore recibe un filter -->
         <form action="${explorePath}" method="get" class="w-full flex m-0 focus-within:shadow-[0px_3px_20px_4px_rgba(0,0,0,0.05)]">
             <select name="searchFor" class="border-0 border-r-[1px] pl-2 pr-7 border-gray-300 rounded-l cursor-pointer outline-none focus:outline-none">
                 <c:choose>
@@ -54,7 +55,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="<c:url value="/current-user?tab=buyOrders"/>" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
+                        <a href="<c:url value="/current-user?tab=buyorders"/>" class="block flex flex-row items-center justify-start py-2 px-4 hover:bg-gray-600 hover:text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mx-2 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>

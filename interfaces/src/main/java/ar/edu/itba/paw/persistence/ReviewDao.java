@@ -4,6 +4,7 @@ import ar.edu.itba.paw.model.Review;
 import ar.edu.itba.paw.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ReviewDao {
 
@@ -16,6 +17,12 @@ public interface ReviewDao {
     boolean hasReviewByUser(int idReviewer, int idReviewee);
 
     long getUserReviewsAmount(int userId);
+
+    double getUserScore(int userId);
+
+    Map<Integer, Integer> getUserReviewsRatings(int userId, int minScore, int maxScore);
+
+    List<Integer> getUserReviewsRatingsListSorted(int userId, int minScore, int maxScore, String sort);
 
     void deleteReview(int reviewId);
 

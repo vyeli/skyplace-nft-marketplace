@@ -116,13 +116,6 @@ public class User {
         return buyOrders;
     }
 
-    public List<BuyOrder> getBuyOrdersByPage(int page, int pageSize) {
-        if (page <= 0) return Collections.emptyList();
-        int toIndex = page * pageSize;
-        if (toIndex > buyOrders.size()) toIndex = buyOrders.size();
-        return buyOrders.subList((page - 1) * pageSize, toIndex);
-    }
-
     public Collection<Favorited> getFavorited() {
         return favorited;
     }

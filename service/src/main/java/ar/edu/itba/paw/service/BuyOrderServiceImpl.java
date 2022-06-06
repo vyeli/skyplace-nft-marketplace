@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,17 +21,20 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     private final ImageService imageService;
     private final MailingService mailingService;
     private final PurchaseService purchaseService;
+    private final EtherscanService etherscanService;
 
     private final int pageSize = 5;
+    private static final long SECONDS_IN_ONE_DAY = 24*60*60;
 
     @Autowired
-    public BuyOrderServiceImpl(BuyOrderDao buyOrderDao, UserService userService, SellOrderService sellOrderService, ImageService imageService, MailingService mailingService, PurchaseService purchaseService) {
+    public BuyOrderServiceImpl(BuyOrderDao buyOrderDao, UserService userService, SellOrderService sellOrderService, ImageService imageService, MailingService mailingService, PurchaseService purchaseService, EtherscanService etherscanService) {
         this.buyOrderDao = buyOrderDao;
         this.userService = userService;
         this.sellOrderService = sellOrderService;
         this.imageService = imageService;
         this.mailingService = mailingService;
         this.purchaseService = purchaseService;
+        this.etherscanService = etherscanService;
     }
 
     @Transactional
@@ -50,43 +53,81 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         return true;
     }
 
-    @Override
-    public List<BuyOrder> getOrdersBySellOrderId(int page, SellOrder sellOrder) {
-        return sellOrder.getBuyOrdersByPage(page, pageSize);
+    private void checkPendingOrdersDateBySellOrderId(int sellOrderId) {
+        rejectBuyOrder(getPendingBuyOrder(sellOrderId));
     }
 
-    @Override
-    public int getAmountPagesBySellOrderId(SellOrder sellOrder) {
-        return (sellOrder.getBuyOrdersAmount() - 1) / pageSize + 1;
-    }
-
-    @Override
-    public List<BuyOrder> getBuyOrdersForUser(User user, int page) {
-        return user.getBuyOrdersByPage(page, pageSize);
-    }
-
-    @Override
-    public int getAmountPagesForUser(User user) {
-        return (user.getBuyOrders().size() - 1) / pageSize + 1;
+    private void checkPendingOrdersDateForUser(User user) {
+        List<BuyOrder> buyOrders = buyOrderDao.getExpiredPendingOffersByUser(user);
+        for(BuyOrder b:buyOrders)
+            rejectBuyOrder(Optional.of(b));
     }
 
     @Transactional
     @Override
-    public void confirmBuyOrder(int sellOrderId, int buyerId, int sellerId, int productId, BigDecimal price) {
-        if (!userService.currentUserOwnsNft(productId))
-            throw new UserIsNotNftOwnerException();
+    public List<BuyOrder> getOrdersBySellOrderId(int page, int sellOrderId) {
+        checkPendingOrdersDateBySellOrderId(sellOrderId);
+        return buyOrderDao.getOrdersBySellOrderId(page, sellOrderId, getPageSize());
+    }
 
-        SellOrder sellOrder = sellOrderService.getOrderById(sellOrderId).orElseThrow(SellOrderNotFoundException::new);
-        User buyer = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
-        User seller = userService.getUserById(sellerId).orElseThrow(UserNotFoundException::new);
+    @Override
+    public int getAmountPagesBySellOrderId(SellOrder sellOrder) {
+        return (sellOrder.getBuyOrdersAmount() - 1) / getPageSize() + 1;
+    }
+
+    @Transactional
+    @Override
+    public List<BuyOrder> getBuyOrdersForUser(User user, int page) {
+        checkPendingOrdersDateForUser(user);
+        return buyOrderDao.getBuyOrdersForUser(user, page, getPageSize());
+    }
+
+    @Override
+    public int getAmountPagesForUser(User user) {
+        return (user.getBuyOrders().size() - 1) / getPageSize() + 1;
+    }
+
+    private boolean confirmBuyOrder(int sellOrderId, int buyerId, String txHash) {
+        Optional<BuyOrder> buyOrder = buyOrderDao.getBuyOrder(sellOrderId, buyerId);
+        if(!buyOrder.isPresent())
+            return false;
+        SellOrder sellOrder = buyOrder.get().getOfferedFor();
+        User buyer = buyOrder.get().getOfferedBy();
         Nft nft = sellOrder.getNft();
+        User seller = nft.getOwner();
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
 
         sellOrder.getNft().setOwner(buyer);
-        mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), sellerId, buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), price, image.getImage(), LocaleContextHolder.getLocale());
+        mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), seller.getId(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), buyOrder.get().getAmount(), image.getImage(), LocaleContextHolder.getLocale());
 
         sellOrderService.delete(sellOrder.getId());
-        purchaseService.createPurchase(buyerId, sellerId, productId, price);
+        purchaseService.createPurchase(buyerId, seller.getId(), nft.getId(), buyOrder.get().getAmount(), txHash, StatusPurchase.SUCCESS);
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public void acceptBuyOrder(int sellOrderId, int buyerId) {
+        buyOrderDao.acceptBuyOrder(sellOrderId, buyerId);
+    }
+
+    private void rejectBuyOrder(Optional<BuyOrder> buyOrder) {
+        if(!buyOrder.isPresent() || buyOrder.get().getStatus().equals(StatusBuyOrder.NEW))
+            return;
+
+        if(Instant.now().minusMillis(buyOrder.get().getPendingDate().getTime()).getEpochSecond() < SECONDS_IN_ONE_DAY)
+            return;
+
+        buyOrderDao.rejectBuyOrder(buyOrder.get().getOfferedFor().getId(), buyOrder.get().getOfferedBy().getId());
+        Nft nft = buyOrder.get().getOfferedFor().getNft();
+        User seller = buyOrder.get().getOfferedFor().getNft().getOwner();
+        purchaseService.createPurchase(buyOrder.get().getOfferedBy().getId(), seller.getId(), nft.getId(), buyOrder.get().getAmount(), null, StatusPurchase.CANCELLED);
+    }
+
+    @Transactional
+    @Override
+    public void rejectBuyOrder(int sellOrderId, int buyerId) {
+        rejectBuyOrder(buyOrderDao.getBuyOrder(sellOrderId, buyerId));
     }
 
     @Transactional
@@ -106,9 +147,46 @@ public class BuyOrderServiceImpl implements BuyOrderService {
                 .toPlainString()), image.getImage(),  LocaleContextHolder.getLocale());
     }
 
+    @Override
+    public boolean sellOrderPendingBuyOrder(int sellOrderId) {
+        return buyOrderDao.sellOrderPendingBuyOrder(sellOrderId);
+    }
 
+    @Override
+    public Optional<BuyOrder> getPendingBuyOrder(int sellOrderId) {
+        return buyOrderDao.getPendingBuyOrder(sellOrderId);
+    }
+
+    @Transactional
+    @Override
+    public boolean validateTransaction(String txHash, int sellOrderId, int buyerId) {
+        if(purchaseService.isTxHashAlreadyInUse(txHash))
+            return false;
+
+        Optional<BuyOrder> buyOrder = getPendingBuyOrder(sellOrderId);
+        if(!buyOrder.isPresent() || !buyOrder.get().getStatus().equals(StatusBuyOrder.PENDING))
+            return false;
+        User seller = buyOrder.get().getOfferedFor().getNft().getOwner();
+        User buyer = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
+        boolean isValid = etherscanService.isTransactionValid(txHash, buyer.getWallet(), seller.getWallet(), buyOrder.get().getAmount());
+        System.out.println("isValid: "+isValid);
+        if(!isValid)
+            return false;
+
+        return confirmBuyOrder(sellOrderId, buyerId, txHash);
+    }
 
     public int getPageSize() {
         return pageSize;
+    }
+
+
+    @Override
+    public boolean nftHasValidTransaction(int sellOrderId, int idBuyer, BigDecimal price, String txHash) {
+        Optional<SellOrder> sellOrder = sellOrderService.getOrderById(sellOrderId);
+        Optional<User> buyer = userService.getUserById(idBuyer);
+        if(!sellOrder.isPresent() || !buyer.isPresent())
+            return false;
+        return etherscanService.isTransactionValid(txHash,buyer.get().getWallet(),sellOrder.get().getNft().getOwner().getWallet(),price);
     }
 }

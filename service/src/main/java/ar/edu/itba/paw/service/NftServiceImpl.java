@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.service;
 
-import ar.edu.itba.paw.exceptions.ImageNotFoundException;
-import ar.edu.itba.paw.exceptions.InvalidChainException;
-import ar.edu.itba.paw.exceptions.UserIsNotNftOwnerException;
-import ar.edu.itba.paw.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.persistence.NftDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +63,6 @@ public class NftServiceImpl implements NftService {
     @Override
     public List<Publication> getAllPublications(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
         List<Nft> nfts = nftDao.getAllPublications(page, pageSize, status, category, chain, minPrice, maxPrice, sort, search, searchFor);
-        List<Publication> publications = new ArrayList<>();
         User currentUser = userService.getCurrentUser().orElse(null);
         return createPublicationsWithNfts(nfts, currentUser);
     }

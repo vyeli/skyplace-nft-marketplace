@@ -3,6 +3,7 @@ package ar.edu.itba.paw.service;
 import ar.edu.itba.paw.model.Review;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ReviewService {
 
@@ -18,9 +19,19 @@ public interface ReviewService {
 
     long getUserReviewsAmount(int userId);
 
+    double getUserScore(int userId);
+
+    Map<Integer, Integer> getUserReviewsRatings(int userId);
+
+    List<Integer> getUserReviewsRatingsListSorted(int userId, String sort);
+
     boolean hasReviewByUser(int idReviewer, int idReviewee);
 
     int getPageSize();
+
+    int getMinScore();
+
+    int getMaxScore();
 
     boolean purchaseExists(int buyerId, int sellerId);
 

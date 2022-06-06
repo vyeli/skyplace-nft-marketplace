@@ -23,6 +23,8 @@ public class ReviewServiceImpl implements ReviewService{
 
     private final MailingService mailingService;
     private final static int pageSize = 5;
+    private final static int minScore = 1;
+    private final static int maxScore = 5;
 
     @Autowired
     public ReviewServiceImpl(ReviewDao reviewDao, UserDao userDao, MailingService mailingService) {
@@ -57,7 +59,30 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
+    public double getUserScore(int userId) {
+        if(!userDao.getUserById(userId).isPresent())
+            throw new UserNotFoundException();
+        return reviewDao.getUserScore(userId);
+    }
+
+    @Override
+    public Map<Integer, Integer> getUserReviewsRatings(int userId) {
+        if(!userDao.getUserById(userId).isPresent())
+            throw new UserNotFoundException();
+        return reviewDao.getUserReviewsRatings(userId, minScore, maxScore);
+    }
+
+    @Override
+    public List<Integer> getUserReviewsRatingsListSorted(int userId, String sort) {
+        if(!userDao.getUserById(userId).isPresent())
+            throw new UserNotFoundException();
+        return reviewDao.getUserReviewsRatingsListSorted(userId, minScore, maxScore, sort);
+    }
+
+    @Override
     public int getUserReviewsPageAmount(int userId) {
+        if(!userDao.getUserById(userId).isPresent())
+            throw new UserNotFoundException();
         long userReviewsAmount = reviewDao.getUserReviewsAmount(userId);
         if(userReviewsAmount == 0)
             return 1;
@@ -66,11 +91,16 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     public boolean hasReviewByUser(int idReviewer, int idReviewee) {
+        if(!userDao.getUserById(idReviewer).isPresent() ||
+                !userDao.getUserById(idReviewee).isPresent())
+            throw new UserNotFoundException();
         return reviewDao.hasReviewByUser(idReviewer, idReviewee);
     }
 
     @Override
     public long getUserReviewsAmount(int userId) {
+        if(!userDao.getUserById(userId).isPresent())
+            throw new UserNotFoundException();
         return reviewDao.getUserReviewsAmount(userId);
     }
 
@@ -83,6 +113,16 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public int getPageSize() {
         return pageSize;
+    }
+
+    @Override
+    public int getMinScore() {
+        return minScore;
+    }
+
+    @Override
+    public int getMaxScore() {
+        return maxScore;
     }
 
     @Override

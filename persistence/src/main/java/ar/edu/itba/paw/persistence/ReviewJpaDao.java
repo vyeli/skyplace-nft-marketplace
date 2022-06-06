@@ -2,10 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.exceptions.NftNotFoundException;
 import ar.edu.itba.paw.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.model.Favorited;
-import ar.edu.itba.paw.model.Nft;
-import ar.edu.itba.paw.model.Review;
-import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +12,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -72,6 +69,56 @@ public class ReviewJpaDao implements ReviewDao{
         final Query query = em.createNativeQuery("SELECT count(*) FROM reviews WHERE id_reviewee = :id_reviewee");
         query.setParameter("id_reviewee", userId);
         return ((BigInteger)query.getSingleResult()).longValue();
+    }
+
+    @Override
+    public double getUserScore(int userId){
+        final Query query = em.createNativeQuery("SELECT avg(score) FROM reviews WHERE id_reviewee = :id_reviewee");
+        query.setParameter("id_reviewee", userId);
+        BigDecimal score = (BigDecimal)query.getSingleResult();
+        return score == null ? 0 : score.doubleValue();
+    }
+
+    @Override
+    public Map<Integer, Integer> getUserReviewsRatings(int userId, int minScore, int maxScore) {
+        long userReviewsAmount = getUserReviewsAmount(userId);
+        Map<Integer, Integer> ratingsPercentages = new HashMap<>();
+
+        final Query query = em.createNativeQuery("SELECT count(*) FROM reviews WHERE score = :score AND id_reviewee = :id_reviewee");
+        query.setParameter("id_reviewee", userId);
+        for(int i = minScore ; i <= maxScore ; i++){
+            query.setParameter("score", i);
+            ratingsPercentages.put(i, (int)(((BigInteger)query.getSingleResult()).doubleValue() * 100 / userReviewsAmount));
+        }
+
+        return ratingsPercentages;
+    }
+
+    @Override
+    public List<Integer> getUserReviewsRatingsListSorted(int userId, int minScore, int maxScore, String sort) {
+        long userReviewsAmount = getUserReviewsAmount(userId);
+        List<Integer> ratingsPercentages = new ArrayList<>();
+
+        final Query query = em.createNativeQuery("SELECT count(*) FROM reviews WHERE score = :score AND id_reviewee = :id_reviewee");
+        query.setParameter("id_reviewee", userId);
+
+        switch(sort){
+            case "desc":
+                for(int i = maxScore ; i >= minScore ; i--){
+                    query.setParameter("score", i);
+                    ratingsPercentages.add((int)(((BigInteger)query.getSingleResult()).doubleValue() * 100 / userReviewsAmount));
+                }
+                break;
+            case "asc":
+            default:
+                for(int i = minScore ; i <= maxScore ; i++){
+                    query.setParameter("score", i);
+                    ratingsPercentages.add((int)(((BigInteger)query.getSingleResult()).doubleValue() * 100 / userReviewsAmount));
+                }
+                break;
+        }
+
+        return ratingsPercentages;
     }
 
     @Override
