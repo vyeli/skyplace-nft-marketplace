@@ -251,7 +251,8 @@ public class FrontController {
     @RequestMapping(value = "/product/{productId}/delete", method = RequestMethod.POST)
     public ModelAndView deleteNft(@PathVariable String productId) {
         int parsedProductId = parseInt(productId);
-        nftService.delete(parsedProductId);
+        Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
+        nftService.delete(nft);
         return new ModelAndView("redirect:/explore");
     }
 

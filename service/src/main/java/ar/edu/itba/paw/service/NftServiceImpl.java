@@ -20,7 +20,6 @@ public class NftServiceImpl implements NftService {
     private final NftDao nftDao;
     private final int pageSize = 12;
     private final UserService userService;
-
     private final MailingService mailingService;
     private final ImageService imageService;
 
@@ -38,11 +37,20 @@ public class NftServiceImpl implements NftService {
         if(Arrays.stream(Chain.values()).noneMatch(e -> e.name().equals(chain)))
             throw new InvalidChainException();
 
-        User owner = userService.getUserById(idOwner).orElseThrow(UserNotFoundException::new); // FIXME: replace with checked exception
-        Nft nft = nftDao.create(nftId, contractAddr, nftName, Chain.valueOf(chain), image, owner, collection, description);
-        Image nftImage = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
+        Nft newNft;
+        Optional<Nft> maybeNft = nftDao.getNftByPk(nftId, contractAddr, chain);
+        User owner = userService.getUserById(idOwner).orElseThrow(UserNotFoundException::new);
+
+        if (maybeNft.isPresent()) {
+            newNft = maybeNft.get();
+            newNft.setOwner(owner);   // update owner
+            newNft.setDeleted(false); // remove soft delete
+        } else {
+            newNft = nftDao.create(nftId, contractAddr, nftName, Chain.valueOf(chain), image, owner, collection, description);
+        }
+        Image nftImage = imageService.getImage(newNft.getIdImage()).orElseThrow(ImageNotFoundException::new);
         mailingService.sendNftCreatedMail(owner.getEmail(), owner.getUsername(), nftId, nftName, contractAddr, nftImage.getImage(), LocaleContextHolder.getLocale());
-        return nft;
+        return newNft;
     }
 
     @Override
@@ -126,20 +134,19 @@ public class NftServiceImpl implements NftService {
 
     @Transactional
     @Override
-    public void delete(int productId) {
-        if (!userService.currentUserOwnsNft(productId) && !userService.isAdmin())
+    public void delete(Nft nft) {
+        if (!userService.currentUserOwnsNft(nft.getId()) && !userService.isAdmin())
             throw new UserIsNotNftOwnerException();
 
-        Optional<Nft> nft = getNFTById(productId);
-        User owner = nft.get().getOwner();
-        Image image = imageService.getImage(nft.get().getIdImage()).orElseThrow(ImageNotFoundException::new);
-        nftDao.delete(productId);
-        mailingService.sendNftDeletedMail(owner.getEmail(), owner.getUsername(), nft.get().getNftId(), nft.get().getNftName(), nft.get().getContractAddr(), image.getImage(), LocaleContextHolder.getLocale() );
+        User owner = nft.getOwner();
+        Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
+        nft.setDeleted(true); // soft delete
+        mailingService.sendNftDeletedMail(owner.getEmail(), owner.getUsername(), nft.getNftId(), nft.getNftName(), nft.getContractAddr(), image.getImage(), LocaleContextHolder.getLocale());
     }
 
     @Override
-    public boolean isNftCreated(int nftId, String contractAddr, String chain) {
-        return nftDao.isNftCreated(nftId, contractAddr, chain);
+    public boolean isNftCreated(int contractNftId, String contractAddr, String chain) {
+        return nftDao.isNftCreated(contractNftId, contractAddr, chain);
     }
 
 }
