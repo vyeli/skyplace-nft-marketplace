@@ -40,6 +40,9 @@ public class Nft {
     @JoinColumn(name = "id_owner", referencedColumnName = "id", nullable = false)
     private User owner;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
+
     @OneToMany(mappedBy = "nftsByIdNft")
     private List<Purchase> purchasesById;
 
@@ -98,6 +101,14 @@ public class Nft {
 
     public User getOwner() {
         return owner;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     public void setOwner(User newOwner) {

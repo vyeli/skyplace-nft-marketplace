@@ -300,8 +300,10 @@
                 <c:forEach items="${historyItems}" var="item">
                     <jsp:include page="../components/HistoryItem.jsp">
                         <jsp:param name="nftName" value="${item.nftsByIdNft.nftName}"/>
-                        <jsp:param name="nftId" value="${item.nftsByIdNft.id}"/>
+                        <jsp:param name="id" value="${item.nftsByIdNft.id}"/>
+                        <jsp:param name="nftId" value="${item.nftsByIdNft.nftId}"/>
                         <jsp:param name="nftImg" value="${item.nftsByIdNft.idImage}"/>
+                        <jsp:param name="isNftDeleted" value="${item.nftsByIdNft.deleted}"/>
                         <jsp:param name="price" value="${item.price}"/>
                         <jsp:param name="date" value="${item.buyDate}"/>
                         <jsp:param name="sellerUsername" value="${item.seller.username}"/>
