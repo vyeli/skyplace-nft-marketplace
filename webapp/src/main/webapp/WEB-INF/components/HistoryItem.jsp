@@ -25,7 +25,7 @@
                 <c:otherwise>
                     <spring:message code="history.boughtFrom"/>
                     <object>
-                        <a href='<c:url value="/profile/${param.sellerId}"/>' class="text-cyan-700">
+                        <a href='<c:url value="/profile/${param.sellerId}"/>' class="text-cyan-600 hover:text-cyan-800 hover:underline">
                             <c:out value="${param.sellerUsername}"/>
                         </a>
                     </object>
