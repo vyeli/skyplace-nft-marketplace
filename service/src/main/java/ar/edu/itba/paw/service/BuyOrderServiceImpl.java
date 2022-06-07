@@ -112,7 +112,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     }
 
     private void rejectBuyOrder(Optional<BuyOrder> buyOrder) {
-        if(!buyOrder.isPresent() || buyOrder.get().getStatus().equals(StatusBuyOrder.NEW))
+        if(!buyOrder.isPresent() || buyOrder.get().getStatus().equals(StatusBuyOrder.NEW) || buyOrder.get().getPendingDate() == null)
             return;
 
         if(Instant.now().minusMillis(buyOrder.get().getPendingDate().getTime()).getEpochSecond() < SECONDS_IN_ONE_DAY)
