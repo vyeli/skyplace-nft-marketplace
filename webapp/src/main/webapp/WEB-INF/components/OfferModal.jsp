@@ -14,7 +14,7 @@
         <input type="hidden" name="idBuyer" value="" />
         <input type="hidden" name="idNft" value="" />
         <input type="hidden" name="idSeller" value="" />
-        <button class="px-4 py-2 rounded-md text-white bg-cyan-700" type="submit"><spring:message code="offerModal.accept"/></button>
+        <button class="px-4 py-2 rounded-md text-white bg-cyan-600 shadow-md hover:shadow-xl hover:bg-cyan-800 transition duration-300" type="submit"><spring:message code="offerModal.accept"/></button>
     </form>
 </dialog>
 
@@ -29,7 +29,7 @@
       <input type="hidden" name="sellOrder" value="" />
       <input type="hidden" name="idBuyer" value="" />
       <input type="hidden" name="idNft" value="" />
-      <button class="px-4 py-2 rounded-md text-white bg-red-500" type="submit"><spring:message code="offerModal.reject"/></button>
+      <button class="px-4 py-2 rounded-md text-white bg-red-500 shadow-md hover:shadow-xl transition duration-300 hover:bg-red-900" type="submit"><spring:message code="offerModal.reject"/></button>
   </form>
 </dialog>
 

@@ -33,7 +33,7 @@
     <c:if test="${param.isAdmin == true || (param.isOwner != null && param.isOwner == true)}">
         <c:choose>
             <c:when test="${param.status == 'NEW'}">
-                <button type="submit" onclick="openDeleteOfferModal(${param.sellOrderId}, ${param.buyerId})" class="px-5 py-2 rounded-md text-white transition duration-300 shadow-md hover:shadow-xl bg-red-500 hover:bg-red-800 z-10 absolute right-8">
+                <button type="submit" onclick="openDeleteOfferModal(${param.sellOrderId}, ${param.buyerId})" class="px-5 py-2 rounded-md text-white transition duration-300 shadow-md hover:shadow-xl bg-red-500 hover:bg-red-900 z-10 absolute right-8">
                     <spring:message code="buyoffer.delete" />
                 </button>
             </c:when>

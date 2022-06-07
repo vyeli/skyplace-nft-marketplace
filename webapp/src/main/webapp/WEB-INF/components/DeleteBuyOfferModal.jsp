@@ -11,7 +11,7 @@
     <form action="${deleteBuyOrder}" method="post" class="mb-0">
         <input type="hidden" name="sellOrderId" value="${param.sellOrderId}" />
         <input type="hidden" name="buyerId" value="${param.buyerId}" />
-        <button class="px-4 py-2 rounded-md text-white bg-red-500 transition duration-300 shadow-md hover:shadow-xl hover:bg-red-800" type="submit">
+        <button class="px-4 py-2 rounded-md text-white bg-red-500 transition duration-300 shadow-md hover:shadow-xl hover:bg-red-900" type="submit">
             <spring:message code="offerModal.reject"/>
         </button>
     </form>

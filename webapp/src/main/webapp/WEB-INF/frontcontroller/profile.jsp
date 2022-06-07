@@ -115,7 +115,7 @@
         </c:if>
         <c:if test="${activeTab.name == 'buyorders'}">
             <form:form class="flex flex-row gap-2 mb-0" modelAttribute="profileFilter" action="${profilePath}" method="get">
-                <c:set var="inactiveTagClasses" value="block px-4 py-2 bg-slate-100 hover:bg-slate-400 hover:text-white rounded-lg flex w-full text-slate-700 border border-slate-400"/>
+                <c:set var="inactiveTagClasses" value="block px-4 py-2 bg-slate-100 hover:bg-slate-400 hover:text-white rounded-lg flex w-full text-slate-700 border border-slate-400 transition duration-300 hover:shadow-xl"/>
                 <c:set var="activeTagClasses" value="block px-4 py-2 bg-slate-400 rounded-lg flex w-full text-white border border-slate-400"/>
                 <input type="hidden" name="tab" value="${activeTab.name}"/>
                 <form:hidden path="page" value="1" />

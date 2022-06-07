@@ -39,7 +39,7 @@
             <p class="py-6 text-slate-600"><c:out value="${deleteReviewDesc}"/></p>
             <form class="mb-0" action='<c:out value="${deletePath}"/>' method="post">
                 <input type="hidden" name="reviewId" value='<c:out value="${param.reviewId}"/>'>
-                <button class="px-4 py-2 rounded-md text-white bg-red-500 transition duration-300 hover:bg-red-800 text-white hover:shadow-xl" type="submit"><spring:message code="deleteModal.delete"/></button>
+                <button class="px-4 py-2 rounded-md text-white bg-red-500 transition duration-300 hover:bg-red-900 text-white shadow-md hover:shadow-xl" type="submit"><spring:message code="deleteModal.delete"/></button>
             </form>
         </dialog>
     </c:if>
