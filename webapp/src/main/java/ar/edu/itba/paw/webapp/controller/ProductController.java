@@ -5,12 +5,14 @@ import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.service.*;
 import ar.edu.itba.paw.webapp.form.PriceForm;
 import ar.edu.itba.paw.webapp.form.SellNftForm;
+import ar.edu.itba.paw.webapp.helpers.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
@@ -18,8 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static ar.edu.itba.paw.webapp.helpers.Utils.parseInt;
-import static ar.edu.itba.paw.webapp.helpers.Utils.setEncodingToUTF;
+import static ar.edu.itba.paw.webapp.helpers.Utils.*;
 
 // FIXME: Agregar chequeos de ser dueño de la oferta, pending, etc. por si bypasean el frontend, principalmente en /product/id
 @Controller
@@ -105,7 +106,7 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) {
+    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request, @RequestParam(value = "alert", required = false) String alert) {
         setEncodingToUTF(request);
 
         int parsedProductId = parseInt(productId);
@@ -147,6 +148,7 @@ public class ProductController {
         mav.addObject("buyOffer", buyOffers);
         mav.addObject("owner", owner);
         mav.addObject("productId", parsedProductId);
+        mav.addObject("alert", Alert.getAlert(alert));
         return mav;
     }
 
@@ -155,7 +157,7 @@ public class ProductController {
         setEncodingToUTF(request);
 
         if (errors.hasErrors()) {
-            return product(form, productId, offerPage, request);
+            return product(form, productId, offerPage, request, null);
         }
         int parsedProductId = parseInt(productId);
 
@@ -165,7 +167,7 @@ public class ProductController {
 
         buyOrderService.create(sellOrder.getId(), form.getPrice(), currentUser.getId());
 
-        ModelAndView mav = product(form, productId, offerPage, request);
+        ModelAndView mav = product(form, productId, offerPage, request, null);
         mav.addObject("emailSent", true);
         return mav;
     }
@@ -207,7 +209,8 @@ public class ProductController {
         int parsedBuyerId = parseInt(buyerId);
         // TODO: show if failed to user
         boolean validated = buyOrderService.validateTransaction(txHash, parsedSellOrderId, parsedBuyerId);
-        return new ModelAndView("redirect:/product/" + productId);
+        Alert returnAlert = validated ? Alert.SUCCESS : Alert.FAILURE;
+        return new ModelAndView("redirect:/product/" + productId + "?alert=" + returnAlert.getName());
     }
 
 }

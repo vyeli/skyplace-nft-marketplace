@@ -69,7 +69,6 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         changeBuyOrderStatus(sellOrderId, buyerId, StatusBuyOrder.NEW);
     }
 
-
     @Override
     public boolean sellOrderPendingBuyOrder(int sellOrderId) {
         final Query query = em.createNativeQuery("SELECT count(*) > 0 AS v FROM buyorders WHERE id_sellorder = :sellOrderId AND status LIKE :statusPending");
@@ -99,12 +98,20 @@ public class BuyOrderJpaDao implements BuyOrderDao {
     }
 
     @Override
-    public List<BuyOrder> getBuyOrdersForUser(User user, int page, int pageSize) {
-        final Query idQuery = em.createNativeQuery("SELECT id_sellorder FROM buyorders WHERE id_buyer = :buyerId LIMIT :pageSize OFFSET :pageOffset");
+    public List<BuyOrder> getBuyOrdersForUser(User user, int page, String status, int pageSize) {
+        final StringBuilder nativeQueryText = new StringBuilder("SELECT id_sellorder FROM buyorders WHERE id_buyer = :buyerId");
+        boolean hasStatusOnQuery = false;
+        if(StatusBuyOrder.hasStatus(status)){
+            nativeQueryText.append(" AND status = :status");
+            hasStatusOnQuery = true;
+        }
+        nativeQueryText.append(" LIMIT :pageSize OFFSET :pageOffset");
+        final Query idQuery = em.createNativeQuery(nativeQueryText.toString());
         idQuery.setParameter("buyerId", user.getId());
         idQuery.setParameter("pageSize", pageSize);
         idQuery.setParameter("pageOffset", (page-1) * pageSize);
-
+        if(hasStatusOnQuery)
+            idQuery.setParameter("status", status);
         @SuppressWarnings("unchecked")
         final List<Integer> ids = (List<Integer>) idQuery.getResultList().stream().collect(Collectors.toList());
 

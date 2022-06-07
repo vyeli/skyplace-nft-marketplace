@@ -77,9 +77,9 @@ public class BuyOrderServiceImpl implements BuyOrderService {
 
     @Transactional
     @Override
-    public List<BuyOrder> getBuyOrdersForUser(User user, int page) {
+    public List<BuyOrder> getBuyOrdersForUser(User user, int page, String status) {
         checkPendingOrdersDateForUser(user);
-        return buyOrderDao.getBuyOrdersForUser(user, page, getPageSize());
+        return buyOrderDao.getBuyOrdersForUser(user, page, status, getPageSize());
     }
 
     @Override
@@ -187,5 +187,15 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         if(!sellOrder.isPresent() || !buyer.isPresent())
             return false;
         return etherscanService.isTransactionValid(txHash,buyer.get().getWallet(),sellOrder.get().getNft().getOwner().getWallet(),price);
+    }
+
+    @Override
+    public List<String> getBuyOrderStatusNames() {
+        return StatusBuyOrder.getStatusNames();
+    }
+
+    @Override
+    public boolean hasBuyOrderStatusName(String status) {
+        return StatusBuyOrder.hasStatus(status);
     }
 }

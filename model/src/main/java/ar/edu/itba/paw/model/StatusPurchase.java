@@ -4,7 +4,7 @@ public enum StatusPurchase {
     SUCCESS,
     CANCELLED;
 
-    private String statusName = this.name();
+    private final String statusName = toString();
 
     public String getStatusName() {
         return statusName;

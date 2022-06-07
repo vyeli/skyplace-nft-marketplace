@@ -16,7 +16,7 @@ public interface BuyOrderService {
 
     int getAmountPagesBySellOrderId(SellOrder sellOrder);
 
-    List<BuyOrder> getBuyOrdersForUser(User user, int page);
+    List<BuyOrder> getBuyOrdersForUser(User user, int page, String status);
 
     int getAmountPagesForUser(User user);
 
@@ -33,4 +33,8 @@ public interface BuyOrderService {
     Optional<BuyOrder> getPendingBuyOrder(int sellOrderId);
 
     boolean validateTransaction(String txHash, int sellOrderId, int buyerId);
+
+    List<String> getBuyOrderStatusNames();
+
+    boolean hasBuyOrderStatusName(String status);
 }

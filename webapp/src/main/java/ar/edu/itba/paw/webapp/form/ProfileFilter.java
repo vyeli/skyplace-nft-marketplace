@@ -5,6 +5,8 @@ public class ProfileFilter {
 
     private String sort = "Name";
 
+    private String items = "all";
+
     public String getPage() {
         return page;
     }
@@ -19,5 +21,13 @@ public class ProfileFilter {
 
     public void setSort(String sort) {
         this.sort = sort;
+    }
+
+    public String getItems() {
+        return items;
+    }
+
+    public void setItems(String items) {
+        this.items = items;
     }
 }

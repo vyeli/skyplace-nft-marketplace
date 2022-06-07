@@ -23,7 +23,7 @@ public interface BuyOrderDao {
 
     Optional<BuyOrder> getBuyOrder(int sellOrderId, int buyerId);
 
-    List<BuyOrder> getBuyOrdersForUser(User user, int page, int pageSize);
+    List<BuyOrder> getBuyOrdersForUser(User user, int page, String status, int pageSize);
 
     List<BuyOrder> getOrdersBySellOrderId(int page, int sellOrderId, int pageSize);
 

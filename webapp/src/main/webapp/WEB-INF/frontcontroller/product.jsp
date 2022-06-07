@@ -6,7 +6,25 @@
 <%@ include file="Head.jsp" %>
 <body class=" font-body overflow-x-hidden">
 <%@ include file="../components/navbar.jsp" %>
-<main class="mt-12 mb-8">
+<c:if test="${alert.name != 'none'}">
+    <div class="absolute flex justify-center w-full">
+        <c:choose>
+            <c:when test="${alert.name == 'success'}">
+                <spring:message var="message" code="product.transactionSuccess"/>
+                <jsp:include page="../components/alerts/success.jsp">
+                    <jsp:param name="message" value="${message}"/>
+                </jsp:include>
+            </c:when>
+            <c:when test="${alert.name == 'failure'}">
+                <spring:message var="message" code="product.transactionFailure"/>
+                <jsp:include page="../components/alerts/failure.jsp">
+                    <jsp:param name="message" value="${message}"/>
+                </jsp:include>
+            </c:when>
+        </c:choose>
+    </div>
+</c:if>
+<main class="mt-16 mb-8">
     <section class="flex justify-around">
         <div class="container">
             <div class="flex flex-row ">

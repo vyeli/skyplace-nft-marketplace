@@ -88,7 +88,7 @@
         </div>
 
         <!-- Dropdown menu -->
-        <c:if test="${activeTab.name != 'history' && activeTab.name != 'reviews'}">
+        <c:if test="${activeTab.name == 'inventory' || activeTab.name == 'selling' || activeTab.name == 'favorited'}">
             <div class="flex flex-row text-2xl">
                 <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button">
                     <c:out value="${sortName}" />
@@ -112,6 +112,27 @@
                     </form:form>
                 </div>
             </div>
+        </c:if>
+        <c:if test="${activeTab.name == 'buyorders'}">
+            <form:form class="flex flex-row gap-2 mb-0" modelAttribute="profileFilter" action="${profilePath}" method="get">
+                <c:set var="inactiveTagClasses" value="block px-4 py-2 bg-zinc-100 hover:bg-zinc-400 hover:text-white rounded-lg flex w-full text-zinc-700 border border-zinc-400"/>
+                <c:set var="activeTagClasses" value="block px-4 py-2 bg-zinc-400 rounded-lg flex w-full text-white border border-zinc-400"/>
+                <input type="hidden" name="tab" value="${activeTab.name}"/>
+                <form:hidden path="page" value="1" />
+                    <c:forEach items="${buyOrderItemTypes}" var="item">
+                        <c:choose>
+                            <c:when test="${item.active}">
+                                <c:set var="itemClasses" value="${activeTagClasses}"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="itemClasses" value="${inactiveTagClasses}"/>
+                            </c:otherwise>
+                        </c:choose>
+                        <form:button type="submit" path="items" name="items" value="${item.name}" class="${itemClasses}">
+                            <spring:message code="buyorders.${item.name}"/>
+                        </form:button>
+                    </c:forEach>
+            </form:form>
         </c:if>
     </div>
 

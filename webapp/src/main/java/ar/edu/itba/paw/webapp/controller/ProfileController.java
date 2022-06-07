@@ -5,6 +5,7 @@ import ar.edu.itba.paw.exceptions.UserNotLoggedInException;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.service.*;
 import ar.edu.itba.paw.webapp.form.ProfileFilter;
+import ar.edu.itba.paw.webapp.helpers.BuyOrderItemType;
 import ar.edu.itba.paw.webapp.helpers.Tab;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,10 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ar.edu.itba.paw.webapp.helpers.Utils.*;
@@ -96,10 +94,14 @@ public class ProfileController {
                 mav.addObject("pages", purchaseService.getAmountPagesByUserId(parsedUserId));
                 break;
             case "buyorders":
-                List<BuyOrder> buyOrders = buyOrderService.getBuyOrdersForUser(user, Integer.parseInt(profileFilter.getPage()));
+                String itemsTypeName = buyOrderService.hasBuyOrderStatusName(profileFilter.getItems()) ? profileFilter.getItems() : "ALL";
+                List<BuyOrder> buyOrders = buyOrderService.getBuyOrdersForUser(user, Integer.parseInt(profileFilter.getPage()), itemsTypeName);
                 mav.addObject("buyOrderItems", buyOrders);
                 mav.addObject("buyOrderItemsSize", buyOrders.size());
                 mav.addObject("pages", buyOrderService.getAmountPagesForUser(user));
+                Map<String, BuyOrderItemType> itemTypes = getBuyOrderItemTypes();
+                itemTypes.get(itemsTypeName).setActive(true);
+                mav.addObject("buyOrderItemTypes", itemTypes.values());
                 break;
             default:
                 List<Publication> publications = nftService.getAllPublicationsByUser(Integer.parseInt(profileFilter.getPage()), user, tabName, profileFilter.getSort());
@@ -131,5 +133,13 @@ public class ProfileController {
         userTabs.put("history", new Tab(4, "history", false, false));
         userTabs.put("reviews", new Tab(5, "reviews", true, false));
         return userTabs;
+    }
+
+    private Map<String, BuyOrderItemType> getBuyOrderItemTypes(){
+        Map<String, BuyOrderItemType> buyOrderItemTypes = new HashMap<>();
+        buyOrderItemTypes.put("ALL", new BuyOrderItemType("ALL", false));
+        for(String s : buyOrderService.getBuyOrderStatusNames())
+            buyOrderItemTypes.put(s, new BuyOrderItemType(s, false));
+        return buyOrderItemTypes;
     }
 }
