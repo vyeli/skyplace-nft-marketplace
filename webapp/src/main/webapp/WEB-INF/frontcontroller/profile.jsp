@@ -38,8 +38,8 @@
                 </c:choose>
                 <li class="${tabClass}">
                     <form:form modelAttribute="profileFilter" action="${profilePath}" method="get" class="flex flex-row gap-2">
-                        <img class="h-6 w-6" src='<c:out value="${iconUrl}"/>' alt="tab_icon"/>
                         <form:button type="submit" name="tab" value="${tab.name}" class="flex">
+                            <img class="h-6 w-6 mr-2" src='<c:out value="${iconUrl}"/>' alt="tab_icon"/>
                             <spring:message code="profile.${tab.name}"/>
                         </form:button>
                         <form:hidden path="sort" value="${sortValue}"/>

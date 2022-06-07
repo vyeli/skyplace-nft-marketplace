@@ -13,7 +13,7 @@
             <c:choose>
                 <c:when test="${param.isNftDeleted == true}">
                     <c:out value="${param.nftName}" /> #<c:out value="${param.nftId}" />
-                    <span class="font-normal text-sm text-red-700 ml-4">(removed from skyplace)</span>
+                    <span class="font-normal text-sm text-red-700 ml-4"><spring:message code="history.removed" /></span>
                 </c:when>
                 <c:otherwise>
                     <a href="<c:url value="/product/${param.id}" />">
