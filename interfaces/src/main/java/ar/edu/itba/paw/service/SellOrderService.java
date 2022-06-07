@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.model.BuyOrder;
 import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
 
@@ -15,6 +16,8 @@ public interface SellOrderService {
     boolean update(int id, String category, BigDecimal price);
 
     void delete(int id);
+
+    void delete(int sellOrderId, BuyOrder buyOrder);
 
     int getNftWithOrder(int id);
 

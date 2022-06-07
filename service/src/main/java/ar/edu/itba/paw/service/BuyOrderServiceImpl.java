@@ -100,7 +100,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         sellOrder.getNft().setOwner(buyer);
         mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), seller.getId(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), buyOrder.get().getAmount(), image.getImage(), LocaleContextHolder.getLocale());
 
-        sellOrderService.delete(sellOrder.getId());
+        sellOrderService.delete(sellOrder.getId(), buyOrder.get());
         purchaseService.createPurchase(buyerId, seller.getId(), nft.getId(), buyOrder.get().getAmount(), txHash, StatusPurchase.SUCCESS);
         return true;
     }
@@ -169,7 +169,6 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         User seller = buyOrder.get().getOfferedFor().getNft().getOwner();
         User buyer = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
         boolean isValid = etherscanService.isTransactionValid(txHash, buyer.getWallet(), seller.getWallet(), buyOrder.get().getAmount());
-        System.out.println("isValid: "+isValid);
         if(!isValid)
             return false;
 

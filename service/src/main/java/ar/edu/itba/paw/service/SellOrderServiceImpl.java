@@ -68,20 +68,37 @@ public class SellOrderServiceImpl implements SellOrderService {
         return sellOrderDao.update(id, Category.valueOf(category), price);
     }
 
-    @Transactional
-    @Override
-    public void delete(int id) {
-        if (!currentUserOwnsSellOrder(id) && !userService.isAdmin())
-            throw new UserNoPermissionException();
+    private boolean hasPermission(int sellOrderId) {
+        return currentUserOwnsSellOrder(sellOrderId) || userService.isAdmin();
+    }
 
-        Optional<SellOrder> sellOrder = getOrderById(id);
-        Nft nft = sellOrder.get().getNft();
-        User owner = sellOrder.get().getNft().getOwner();
+    private void delete(SellOrder sellOrder) {
+        Nft nft = sellOrder.getNft();
+        User owner = sellOrder.getNft().getOwner();
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
 
-        sellOrderDao.delete(id);
-        mailingService.sendSellOrderDeletedMail(owner.getEmail(), owner.getUsername(),nft.getNftId(), nft.getNftName(), nft.getContractAddr(), image.getImage(), new BigDecimal(sellOrder.get().getPrice().stripTrailingZeros()
+        sellOrderDao.delete(sellOrder.getId());
+        mailingService.sendSellOrderDeletedMail(owner.getEmail(), owner.getUsername(),nft.getNftId(), nft.getNftName(), nft.getContractAddr(), image.getImage(), new BigDecimal(sellOrder.getPrice().stripTrailingZeros()
                 .toPlainString()),  LocaleContextHolder.getLocale());
+    }
+
+    @Transactional
+    @Override
+    public void delete(int sellOrderId) {
+        if (!hasPermission(sellOrderId))
+            throw new UserNoPermissionException();
+
+        getOrderById(sellOrderId).ifPresent(this::delete);
+    }
+
+    @Transactional
+    @Override
+    public void delete(int sellOrderId, BuyOrder buyOrder) {
+        User currentUser = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
+        if(!hasPermission(sellOrderId) && (buyOrder == null || buyOrder.getOfferedBy().getId() != currentUser.getId()))
+            throw new UserNoPermissionException();
+
+        getOrderById(sellOrderId).ifPresent(this::delete);
     }
 
     @Override

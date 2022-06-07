@@ -101,7 +101,6 @@ public class EtherscanServiceImpl implements EtherscanService {
             LOGGER.error("Error connecting to API: {}",e.getMessage());
             return false;
         }
-
         JsonObject obj, res;
         try {
             obj = (JsonObject) getResult(con);
@@ -112,6 +111,10 @@ public class EtherscanServiceImpl implements EtherscanService {
             res = (JsonObject) obj.get("result");
         } catch (IOException e) {
             LOGGER.error("Error adding arguments: {}",e.getMessage());
+            con.disconnect();
+            return false;
+        } catch (ClassCastException e) {
+            LOGGER.error("Error getting JSON: {}",e.getMessage());
             con.disconnect();
             return false;
         }
@@ -129,7 +132,9 @@ public class EtherscanServiceImpl implements EtherscanService {
             con.disconnect();
             return false;
         }
-        boolean valid = from.equals(walletBuyer) && to.equals(walletSeller) && value.equals(price.stripTrailingZeros());
+
+        boolean valid = from.equalsIgnoreCase(walletBuyer) && to.equalsIgnoreCase(walletSeller) && value.equals(price.stripTrailingZeros());
+        System.out.println(valid);
 
         con.disconnect();
         return valid;
