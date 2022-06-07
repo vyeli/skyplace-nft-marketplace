@@ -2,12 +2,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<dialog class="relative p-4 rounded-lg text-center w-[45rem]" id="confirm-modal">
+<dialog class="relative p-3 2xl:p-4 rounded-lg text-center w-[45rem]" id="confirm-modal">
     <button class="absolute top-4 right-6 font-bold text-slate-600" id="close-confirm-modal">X</button>
     <div class="flex flex-col items-start divide-y w-full">
-        <h1 class="text-xl font-bold pb-3"><spring:message code="buyoffer.txDetails" /></h1>
-        <div class="flex flex-col items-start py-3 w-full">
-            <span class="text-lg font-semibold pb-1"><spring:message code="buyoffer.from" /></span>
+        <h1 class="text-xl font-bold pb-1.5 2xl:pb-3"><spring:message code="buyoffer.txDetails" /></h1>
+        <div class="flex flex-col items-start py-1.5 2xl:py-3 w-full">
+            <span class="text-lg font-semibold pb-0.5 2xl:pb-1"><spring:message code="buyoffer.from" /></span>
             <div class="flex flex-row items-center gap-2">
                 <img class="h-9 w-9 pb-1" src="<c:url value='/resources/user.svg'/>" alt="profile_image"/>
                 <span id="buyerUsername"></span>
@@ -17,8 +17,8 @@
                 <span id="buyerWallet"></span>
             </div>
         </div>
-        <div class="flex flex-col items-start py-3 w-full">
-            <span class="text-lg font-semibold pb-1"><spring:message code="buyoffer.to" /></span>
+        <div class="flex flex-col items-start py-1.5 2xl:py-3 w-full">
+            <span class="text-lg font-semibold pb-0.5 2xl:pb-1"><spring:message code="buyoffer.to" /></span>
             <div class="flex flex-row items-center gap-2">
                 <img class="h-9 w-9 pb-1" src="<c:url value='/resources/user.svg'/>" alt="profile_image"/>
                 <span id="sellerUsername"></span>
@@ -28,28 +28,28 @@
                 <span id="sellerWallet"></span>
             </div>
         </div>
-        <div class="flex flex-col items-start py-3 w-full">
-            <span class="text-lg font-semibold pb-2"><spring:message code="buyoffer.nftTransferred" /></span>
-            <div class="flex flex-row items-center gap-2">
-                <img class="h-9 w-9" src="<c:url value='/resources/box.svg'/>" alt="profile_image"/>
-                <span id="nftName"></span>#<span id="nftCollectionId"></span>
+        <div class="flex flex-col items-start py-1.5 2xl:py-3 w-full">
+            <span class="text-lg font-semibold pb-0.5 2xl:pb-1"><spring:message code="buyoffer.nftTransferred" /></span>
+            <div class="flex flex-row items-center">
+                <img class="h-9 w-9 mr-2" src="<c:url value='/resources/box.svg'/>" alt="profile_image"/>
+                <span id="nftName" class="mr-1"></span>#<span id="nftCollectionId"></span>
             </div>
             <div class="flex flex-row items-center gap-2">
                 <img class="h-9 w-9" src="<c:url value='/resources/chain.svg'/>" alt="wallet_image"/>
                 <span id="nftContractAddr"></span>
             </div>
         </div>
-        <div class="flex flex-col items-start py-3 w-full">
-            <span class="text-lg font-semibold pb-1"><spring:message code="buyoffer.value" /></span>
-            <div class="flex flex-row items-center gap-2">
-                <img class="h-9 w-9" src="<c:url value='/resources/price.svg'/>" alt="eth_logo">
-                <span id="price"> </span>ETH
+        <div class="flex flex-col items-start py-1.5 2xl:py-3 w-full">
+            <span class="text-lg font-semibold pb-0.5 2xl:pb-1"><spring:message code="buyoffer.value" /></span>
+            <div class="flex flex-row items-center">
+                <img class="h-9 w-9 mr-2" src="<c:url value='/resources/price.svg'/>" alt="eth_logo">
+                <span id="price" class="mr-1"></span>ETH
             </div>
         </div>
         <!-- FIXME: Capaz ver de hacer que esto y mas modales puedan mostrar mensajes de error y bindaerlos a un form:form -->
-        <form class="flex flex-col items-start pt-3 mb-0 w-full" action='<c:url value="/buyorder/validate" />' method="post">
-            <label for="transactionHash" class="text-lg font-semibold pb-1"><spring:message code="buyoffer.txHash" /></label>
-            <div class="flex flex-row items-center gap-2 pb-3 w-full">
+        <form class="flex flex-col items-start pt-1.5 2xl:pt-3 mb-0 w-full" action='<c:url value="/buyorder/validate" />' method="post">
+            <label for="transactionHash" class="text-lg font-semibold pb-0.5 2xl:pb-1"><spring:message code="buyoffer.txHash" /></label>
+            <div class="flex flex-row items-center gap-2 pb-1.5 2xl:pb-3 w-full">
                 <img class="h-9 w-9" src="<c:url value='/resources/hashtag.svg'/>" alt="eth_logo">
                 <input type="hidden" id="productId" name="productId" value=""/>
                 <input type="hidden" id="sellOrderId" name="sellOrderId" value=""/>
