@@ -24,18 +24,16 @@ public class FavoriteController {
         this.favoriteService = favoriteService;
     }
 
-    @RequestMapping(value = "/favorite/{productId}/add", method = RequestMethod.POST)
-    public String addFavorite(@PathVariable String productId, HttpServletRequest request){
-        int parsedProductId = parseInt(productId);
-        userService.getCurrentUser().ifPresent(user -> favoriteService.addNftFavorite(parsedProductId, user));
+    @RequestMapping(value = "/favorite/{productId:\\d+}/add", method = RequestMethod.POST)
+    public String addFavorite(@PathVariable int productId, HttpServletRequest request){
+        userService.getCurrentUser().ifPresent(user -> favoriteService.addNftFavorite(productId, user));
         String referer = request.getHeader("Referer");
         return "redirect:"+ referer;
     }
 
-    @RequestMapping(value = "/favorite/{productId}/remove", method = RequestMethod.POST)
-    public String removeFavorite(@PathVariable String productId, HttpServletRequest request){
-        int parsedProductId = parseInt(productId);
-        userService.getCurrentUser().ifPresent(user -> favoriteService.removeNftFavorite(parsedProductId, user));
+    @RequestMapping(value = "/favorite/{productId:\\d+}/remove", method = RequestMethod.POST)
+    public String removeFavorite(@PathVariable int productId, HttpServletRequest request){
+        userService.getCurrentUser().ifPresent(user -> favoriteService.removeNftFavorite(productId, user));
         String referer = request.getHeader("Referer");
         return "redirect:"+ referer;
     }

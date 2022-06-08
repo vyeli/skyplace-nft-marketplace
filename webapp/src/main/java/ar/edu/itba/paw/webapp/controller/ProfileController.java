@@ -50,19 +50,18 @@ public class ProfileController {
         return new ModelAndView(redirectUrl.toString());
     }
 
-    @RequestMapping("/profile/{userId}")
-    public ModelAndView getUser(@ModelAttribute("profileFilter") @Valid ProfileFilter profileFilter, @PathVariable String userId, @RequestParam(name = "tab", required = false) String userTab){
-        int parsedUserId = parseInt(userId);
+    @RequestMapping("/profile/{userId:\\d+}")
+    public ModelAndView getUser(@ModelAttribute("profileFilter") @Valid ProfileFilter profileFilter, @PathVariable int userId, @RequestParam(name = "tab", required = false) String userTab){
         int parsedPage = parseInt(profileFilter.getPage());
 
         ModelAndView mav = new ModelAndView("frontcontroller/profile");
 
-        final User user = userService.getUserById(parsedUserId).orElseThrow(UserNotFoundException::new);
+        final User user = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
         Optional<User> currentUser = userService.getCurrentUser();
 
         boolean isOwner = false;
         if(currentUser.isPresent()) {
-            isOwner = currentUser.get().getId() == parsedUserId;
+            isOwner = currentUser.get().getId() == userId;
             mav.addObject("isOwner", isOwner);
             mav.addObject("currentUserId", currentUser.get().getId());
         }
@@ -80,18 +79,18 @@ public class ProfileController {
 
         switch(tabName) {
             case "reviews":
-                mav.addObject("reviews", reviewService.getUserReviews(parsedPage, parsedUserId));
-                mav.addObject("canReview", currentUser.isPresent() && reviewService.purchaseExists(currentUser.get().getId(), parsedUserId) && !reviewService.hasReviewByUser(currentUser.get().getId(), parsedUserId));
-                mav.addObject("pages", reviewService.getUserReviewsPageAmount(parsedUserId));
-                mav.addObject("ratings", reviewService.getUserReviewsRatingsListSorted(parsedUserId, "desc"));
+                mav.addObject("reviews", reviewService.getUserReviews(parsedPage, userId));
+                mav.addObject("canReview", currentUser.isPresent() && reviewService.purchaseExists(currentUser.get().getId(), userId) && !reviewService.hasReviewByUser(currentUser.get().getId(), userId));
+                mav.addObject("pages", reviewService.getUserReviewsPageAmount(userId));
+                mav.addObject("ratings", reviewService.getUserReviewsRatingsListSorted(userId, "desc"));
                 mav.addObject("minScore", reviewService.getMinScore());
                 mav.addObject("maxScore", reviewService.getMaxScore());
                 break;
             case "history":
-                List<Purchase> transactions = purchaseService.getAllTransactions(parsedUserId, Integer.parseInt(profileFilter.getPage()));
+                List<Purchase> transactions = purchaseService.getAllTransactions(userId, Integer.parseInt(profileFilter.getPage()));
                 mav.addObject("historyItems", transactions);
                 mav.addObject("historyItemsSize", transactions.size());
-                mav.addObject("pages", purchaseService.getAmountPagesByUserId(parsedUserId));
+                mav.addObject("pages", purchaseService.getAmountPagesByUserId(userId));
                 break;
             case "buyorders":
                 String itemsTypeName = buyOrderService.hasBuyOrderStatusName(profileFilter.getItems()) ? profileFilter.getItems() : "ALL";
@@ -114,8 +113,8 @@ public class ProfileController {
 
         String sortFormat = getSortStringFormat(profileFilter.getSort());
 
-        mav.addObject("userScore", round(reviewService.getUserScore(parsedUserId), 2));
-        mav.addObject("reviewAmount", reviewService.getUserReviewsAmount(parsedUserId));
+        mav.addObject("userScore", round(reviewService.getUserScore(userId), 2));
+        mav.addObject("reviewAmount", reviewService.getUserReviewsAmount(userId));
         mav.addObject("tabs", tabList);
         mav.addObject("sortName", sortFormat);
         mav.addObject("sortValue", profileFilter.getSort());

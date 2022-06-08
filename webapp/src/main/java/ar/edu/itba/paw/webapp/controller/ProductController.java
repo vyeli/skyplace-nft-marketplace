@@ -41,12 +41,11 @@ public class ProductController {
         this.buyOrderService = buyOrderService;
     }
 
-    @RequestMapping(value = "/sell/{productId}", method = RequestMethod.GET)
-    public ModelAndView createSellOrderForm(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
-        int parsedProductId = parseInt(productId);
+    @RequestMapping(value = "/sell/{productId:\\d+}", method = RequestMethod.GET)
+    public ModelAndView createSellOrderForm(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable int productId) {
 
         final ModelAndView mav = new ModelAndView("frontcontroller/sell");
-        Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
+        Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
         User user = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
 
         if (nft.getOwner().getId() != user.getId())
@@ -58,61 +57,55 @@ public class ProductController {
         return mav;
     }
 
-    @RequestMapping(value = "/sell/{productId}", method = RequestMethod.POST)
-    public ModelAndView createSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors, @PathVariable String productId) {
+    @RequestMapping(value = "/sell/{productId:\\d+}", method = RequestMethod.POST)
+    public ModelAndView createSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors, @PathVariable int productId) {
         if(errors.hasErrors())
             return createSellOrderForm(form, productId);
 
-        int parsedProductId = parseInt(productId);
-        SellOrder sellOrder = sellOrderService.create(form.getPrice(), parsedProductId, form.getCategory());
+        SellOrder sellOrder = sellOrderService.create(form.getPrice(), productId, form.getCategory());
         return new ModelAndView("redirect:/product/" + sellOrder.getNft().getId());
     }
 
-    @RequestMapping(value = "/sellOrder/{productId}/update", method = RequestMethod.GET)
-    public ModelAndView getUpdateSellOrder(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable String productId) {
-        int parsedProductId = parseInt(productId);
-
-        if (!userService.currentUserOwnsNft(parsedProductId))
+    @RequestMapping(value = "/sellOrder/{productId:\\d+}/update", method = RequestMethod.GET)
+    public ModelAndView getUpdateSellOrder(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable int productId) {
+        if (!userService.currentUserOwnsNft(productId))
             throw new UserNoPermissionException();
 
         final ModelAndView mav = new ModelAndView("frontcontroller/updateSellOrder");
         List<String> categories = Category.getCategories();
         mav.addObject("categories", categories);
-        Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
+        Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
         mav.addObject(  "nft", nft);
         SellOrder order = sellOrderService.getOrderById(nft.getSellOrder().getId()).orElseThrow(SellOrderNotFoundException::new);
         mav.addObject("order",order);
         return mav;
     }
 
-    @RequestMapping(value = "/sellOrder/{productId}/update", method = RequestMethod.POST)
-    public ModelAndView updateSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors, @PathVariable String productId) {
-        int parsedProductId = parseInt(productId);
+    @RequestMapping(value = "/sellOrder/{productId:\\d+}/update", method = RequestMethod.POST)
+    public ModelAndView updateSellOrder(@Valid @ModelAttribute("sellNftForm") final SellNftForm form, final BindingResult errors, @PathVariable int productId) {
         if (errors.hasErrors())
             return getUpdateSellOrder(form, productId);
 
-        Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
+        Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
         boolean updated = sellOrderService.update(nft.getSellOrder().getId(), form.getCategory(), form.getPrice());
         return updated ? new ModelAndView("redirect:/product/" + nft.getId()) : getUpdateSellOrder(form, productId);
     }
 
-    @RequestMapping(value = "/sellOrder/{productId}/delete", method = RequestMethod.POST)
-    public ModelAndView deleteSellOrder(@PathVariable String productId) {
-        int parsedProductId = parseInt(productId);
-        Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
+    @RequestMapping(value = "/sellOrder/{productId:\\d+}/delete", method = RequestMethod.POST)
+    public ModelAndView deleteSellOrder(@PathVariable int productId) {
+        Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
 
         sellOrderService.delete(nft.getSellOrder().getId());
-        return new ModelAndView("redirect:/product/" + parsedProductId);
+        return new ModelAndView("redirect:/product/" + productId);
     }
 
-    @RequestMapping(value = "/product/{productId}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request, @RequestParam(value = "alert", required = false) String alert) {
+    @RequestMapping(value = "/product/{productId:\\d+}", method = RequestMethod.GET)
+    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable int productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request, @RequestParam(value = "alert", required = false) String alert) {
         setEncodingToUTF(request);
 
-        int parsedProductId = parseInt(productId);
         int parsedOfferPage = offerPage == null ? 1 : parseInt(offerPage);
 
-        Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
+        Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
         User owner = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
         Optional<User> currentUser = userService.getCurrentUser();
         List<BuyOrder> buyOffers = new ArrayList<>();
@@ -130,7 +123,7 @@ public class ProductController {
             mav.addObject("sellOrder", sellOrder);
         }
 
-        int favorites = favoriteService.getNftFavorites(parsedProductId);
+        int favorites = favoriteService.getNftFavorites(productId);
         boolean isFaved = false;
 
         if(currentUser.isPresent()) {
@@ -147,34 +140,29 @@ public class ProductController {
         mav.addObject("amountOfferPages", amountOfferPages);
         mav.addObject("buyOffer", buyOffers);
         mav.addObject("owner", owner);
-        mav.addObject("productId", parsedProductId);
+        mav.addObject("productId", productId);
         mav.addObject("alert", Alert.getAlert(alert));
         return mav;
     }
 
-    @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable String productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) {
+    @RequestMapping(value = "/product/{productId:\\d+}", method = RequestMethod.POST)
+    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable int productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) {
         setEncodingToUTF(request);
-
-        if (errors.hasErrors()) {
+        if (errors.hasErrors())
             return product(form, productId, offerPage, request, null);
-        }
-        int parsedProductId = parseInt(productId);
 
-        Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
+        Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
         SellOrder sellOrder = sellOrderService.getOrderById(nft.getSellOrder().getId()).orElseThrow(SellOrderNotFoundException::new);
         User currentUser = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
 
         buyOrderService.create(sellOrder.getId(), form.getPrice(), currentUser.getId());
 
-        ModelAndView mav = product(form, productId, offerPage, request, null);
-        return mav;
+        return product(form, productId, offerPage, request, null);
     }
 
-    @RequestMapping(value = "/product/{productId}/delete", method = RequestMethod.POST)
-    public ModelAndView deleteNft(@PathVariable String productId) {
-        int parsedProductId = parseInt(productId);
-        Nft nft = nftService.getNFTById(parsedProductId).orElseThrow(NftNotFoundException::new);
+    @RequestMapping(value = "/product/{productId:\\d+}/delete", method = RequestMethod.POST)
+    public ModelAndView deleteNft(@PathVariable int productId) {
+        Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
         nftService.delete(nft);
         return new ModelAndView("redirect:/explore");
     }

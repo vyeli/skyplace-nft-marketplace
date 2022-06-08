@@ -28,15 +28,14 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @RequestMapping(value = "/review/{userId}/create", method = RequestMethod.GET)
-    public ModelAndView getCreateReviewFormPage(@ModelAttribute("reviewForm") final ReviewForm form, @PathVariable final String userId){
-        final int parsedUserId = parseInt(userId);
+    @RequestMapping(value = "/review/{userId:\\d+}/create", method = RequestMethod.GET)
+    public ModelAndView getCreateReviewFormPage(@ModelAttribute("reviewForm") final ReviewForm form, @PathVariable final int userId){
         final ModelAndView mav = new ModelAndView("frontcontroller/createReview");
-        Optional<User> maybeReviewee = userService.getUserById(parsedUserId);
+        Optional<User> maybeReviewee = userService.getUserById(userId);
         Optional<User> maybeReviewer = userService.getCurrentUser();
         if(maybeReviewee.isPresent() && maybeReviewer.isPresent()) {
             mav.addObject("reviewerIdParam", maybeReviewer.get().getId());
-            mav.addObject("revieweeIdParam", parsedUserId);
+            mav.addObject("revieweeIdParam", userId);
             mav.addObject("revieweeUsername", maybeReviewee.get().getUsername());
         }
         mav.addObject("minScore", reviewService.getMinScore());
@@ -44,8 +43,8 @@ public class ReviewController {
         return mav;
     }
 
-    @RequestMapping(value = "/review/{userId}/create", method = RequestMethod.POST)
-    public ModelAndView createReview(@Valid @ModelAttribute("reviewForm") final ReviewForm form, final BindingResult errors, @PathVariable final String userId){
+    @RequestMapping(value = "/review/{userId:\\d+}/create", method = RequestMethod.POST)
+    public ModelAndView createReview(@Valid @ModelAttribute("reviewForm") final ReviewForm form, final BindingResult errors, @PathVariable final int userId){
         if(errors.hasErrors())
             return getCreateReviewFormPage(form, userId);
         int reviewerId = parseInt(form.getReviewerId());
@@ -55,8 +54,8 @@ public class ReviewController {
         return new ModelAndView("redirect:/profile/" + userId + "?tab=reviews");
     }
 
-    @RequestMapping(value="/review/{userId}/delete", method = RequestMethod.POST)
-    public ModelAndView deleteReview(@RequestParam String reviewId, @PathVariable String userId){
+    @RequestMapping(value="/review/{userId:\\d+}/delete", method = RequestMethod.POST)
+    public ModelAndView deleteReview(@RequestParam String reviewId, @PathVariable int userId){
         int parsedReviewId = parseInt(reviewId);
         reviewService.deleteReview(parsedReviewId);
         return new ModelAndView("redirect:/profile/" + userId + "?tab=reviews");

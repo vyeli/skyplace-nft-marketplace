@@ -21,11 +21,9 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @RequestMapping(value = "/images/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @RequestMapping(value = "/images/{id:\\d+}", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody
-    public byte[] getImage(@PathVariable String id) {
-        int parseId = parseInt(id);
-        Image image = imageService.getImage(parseId).orElseThrow(ImageNotFoundException::new);
-        return image.getImage();
+    public byte[] getImage(@PathVariable int id) {
+        return imageService.getImage(id).orElseThrow(ImageNotFoundException::new).getImage();
     }
 }
