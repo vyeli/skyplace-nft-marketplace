@@ -22,12 +22,16 @@ public class NftJpaDao implements NftDao {
     @Autowired
     private ImageDao imageDao;
 
+    private static final String COUNT_ID_QUERY = "SELECT COUNT(nfts.id) " +
+            "FROM nfts " +
+            "LEFT OUTER JOIN sellorders ON nfts.id=sellorders.id_nft " +
+            "JOIN users ON id_owner=users.id " +
+            "LEFT OUTER JOIN favorited ON favorited.id_nft=nfts.id ";
     private static final String SELECT_ID_QUERY = "SELECT nfts.id " +
                                                                 "FROM nfts " +
                                                                 "LEFT OUTER JOIN sellorders ON nfts.id=sellorders.id_nft " +
                                                                 "JOIN users ON id_owner=users.id " +
                                                                 "LEFT OUTER JOIN favorited ON favorited.id_nft=nfts.id ";
-
 
     @Override
     public Nft create(int nftId, String contractAddr, String nftName, Chain chain, MultipartFile image, User owner, String collection, String description) {
@@ -50,16 +54,24 @@ public class NftJpaDao implements NftDao {
         StringBuilder hqlQuery = new StringBuilder();
         Pair<String, Object> arg = null;
         String[] filterArray = filter.split(",");
+        List<String> filters = new ArrayList<>();
         nativeQuery.append(" AND ( ");
         for (int i = 0; i < filterArray.length; i++) {
-            nativeQuery.append(String.format("%s LOWER(%s) LIKE LOWER(:%s) ", i == 0 ? "" : "OR", columnNativeName, paramName));
-            arg = new Pair<>(paramName, filter);
+            if (i == 0)
+                nativeQuery.append(String.format(" LOWER(%s) LIKE LOWER(:%s) ", columnNativeName, paramName.concat(String.valueOf(i))));
+            else
+                nativeQuery.append(String.format(" OR LOWER(%s) LIKE LOWER(:%s) ", columnNativeName, paramName.concat(String.valueOf(i))));
+            //nativeQuery.append(String.format(" %s LOWER(%s) LIKE LOWER(:%s) ", i == 0 ? "" : "OR", columnNativeName, paramName));
+            filters.add(filterArray[i]);
+            if (i==filterArray.length-1)
+                arg = new Pair<>(paramName, filters);
         }
+
         nativeQuery.append(") ");
         return new Pair<>(new Pair<>(nativeQuery, hqlQuery), arg);
     }
 
-    protected Pair<Pair<StringBuilder,StringBuilder>,List<Pair<String,Object>>> buildFilterQuery(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
+    protected Pair<Pair<StringBuilder,StringBuilder>,List<Pair<String,Object>>> buildFilterQuery(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String search, String searchFor) {
         StringBuilder nativeQuery = new StringBuilder();
         StringBuilder hqlQuery = new StringBuilder();
         List<Pair<String,Object>> args = new ArrayList<>();
@@ -109,39 +121,16 @@ public class NftJpaDao implements NftDao {
             args.add(new Pair<>("search", search));
         }
 
-        switch (sort) { // ordenara bien esto?
-            case "priceAsc":
-                nativeQuery.append(" AND sellorders.id IS NOT NULL ");
-                hqlQuery.append(" ORDER BY nft.sellorder.price ");
-                nativeQuery.append(" ORDER BY sellorders.price ");
-                break;
-            case "priceDsc":
-                nativeQuery.append(" AND sellorders.id IS NOT NULL ");
-                hqlQuery.append(" ORDER BY nft.sellorder.price DESC ");
-                nativeQuery.append(" ORDER BY sellorders.price DESC ");
-                break;
-            case "noSort":
-                break;
-            case "collection":
-                hqlQuery.append(" ORDER BY nft.collection ");
-                nativeQuery.append(" ORDER BY nfts.collection ");
-                break;
-            default:
-                hqlQuery.append(" ORDER BY nft.nftName ");
-                nativeQuery.append(" ORDER BY nfts.nft_name ");
-                break;
-        }
-
         return new Pair<>(new Pair<>(nativeQuery, hqlQuery), args);
     }
 
     @Override
     public List<Nft> getAllPublications(int page, int pageSize, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
-        Pair<Pair<StringBuilder,StringBuilder>,List<Pair<String,Object>>> filterQuery = buildFilterQuery(status, category, chain, minPrice, maxPrice, sort, search, searchFor);
-        return executeQueries(filterQuery, pageSize, page);
+        Pair<Pair<StringBuilder,StringBuilder>,List<Pair<String,Object>>> filterQuery = buildFilterQuery(status, category, chain, minPrice, maxPrice, search, searchFor);
+        return executeQueries(filterQuery, pageSize, page, sort);
     }
 
-    private Pair<Pair<StringBuilder,StringBuilder>, List<Pair<String,Object>>> buildFilterQueryByUser(User user, boolean onlyFaved, boolean onlyOnSale, String sort) {
+    private Pair<Pair<StringBuilder,StringBuilder>, List<Pair<String,Object>>> buildFilterQueryByUser(User user, boolean onlyFaved, boolean onlyOnSale) {
         StringBuilder hqlQuery = new StringBuilder();
         StringBuilder nativeQuery = new StringBuilder();
         List<Pair<String,Object>> args = new ArrayList<>();
@@ -156,44 +145,48 @@ public class NftJpaDao implements NftDao {
         if(onlyOnSale)
             nativeQuery.append(" AND sellorders.id IS NOT NULL ");
 
+        return new Pair<>(new Pair<>(nativeQuery, hqlQuery), args);
+    }
+
+    private Pair<String, String> applySort(String sort) {
         switch (sort) {
             case "priceAsc":
-                hqlQuery.append(" ORDER BY nft.sellorder.price ");
-                nativeQuery.append(" ORDER BY sellorders.price ");
-                break;
+                return new Pair<>(" ORDER BY sellorders.price ", " ORDER BY nft.sellorder.price ");
             case "priceDsc":
-                hqlQuery.append(" ORDER BY nft.sellorder.price DESC ");
-                nativeQuery.append(" ORDER BY sellorders.price DESC ");
-                break;
+                return new Pair<>(" ORDER BY sellorders.price DESC ", " ORDER BY nft.sellorder.price DESC ");
             case "noSort":
-                break;
-            default:
-                hqlQuery.append(" ORDER BY nft.nftName ");
-                nativeQuery.append(" ORDER BY nfts.nft_name ");
-                break;
+                return new Pair<>(" "," ");
         }
-
-        return new Pair<>(new Pair<>(nativeQuery, hqlQuery), args);
+        return new Pair<>(" ORDER BY nfts.nft_name ", " ORDER BY nft.nftName ");
     }
 
     @Override
     public List<Nft> getAllPublicationsByUser(int page, int pageSize, User user, boolean onlyFaved, boolean onlyOnSale, String sort) {
-        Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery = buildFilterQueryByUser(user, onlyFaved, onlyOnSale, sort);
-        return executeQueries(filterQuery, pageSize, page);
+        Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery = buildFilterQueryByUser(user, onlyFaved, onlyOnSale);
+        return executeQueries(filterQuery, pageSize, page, sort);
     }
-
-    private List<Nft> executeQueries(Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery, int pageSize, int page) {
+    private List<Nft> executeQueries(Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery, int pageSize, int page, String sort) {
         String nativeQuery = filterQuery.getLeft().getLeft().toString();
         String hqlQuery = filterQuery.getLeft().getRight().toString();
+        Pair<String,String> sorts = applySort(sort);
         List<Pair<String,Object>> args = filterQuery.getRight();
 
         if(page <= 0)
             page = 1;
-        final Query idQuery = em.createNativeQuery(SELECT_ID_QUERY.concat(nativeQuery).concat(" LIMIT :pageSize OFFSET :pageOffset"));
+        StringBuilder queryString = new StringBuilder(SELECT_ID_QUERY);
+        queryString.append(nativeQuery).append(" GROUP BY nfts.id ").append(sorts.getLeft()).append(" LIMIT :pageSize OFFSET :pageOffset");
+        final Query idQuery = em.createNativeQuery(queryString.toString());
         idQuery.setParameter("pageSize", pageSize);
         idQuery.setParameter("pageOffset", pageSize*(page-1));
-        for(Pair<String,Object> arg:args)
-            idQuery.setParameter(arg.getLeft(), arg.getRight());
+        for(Pair<String,Object> arg:args) {
+            if(arg.getLeft().equals("category") || arg.getLeft().equals("chain")) {
+                @SuppressWarnings("unchecked")
+                List<String> els = (List<String>) arg.getRight();
+                for(int i = 0; i < els.size(); i++)
+                    idQuery.setParameter(arg.getLeft().concat(String.valueOf(i)), els.get(i));
+            } else
+                idQuery.setParameter(arg.getLeft(), arg.getRight());
+        }
 
         @SuppressWarnings("unchecked")
         final List<Integer> ids = (List<Integer>) idQuery.getResultList().stream().collect(Collectors.toList());
@@ -201,17 +194,27 @@ public class NftJpaDao implements NftDao {
         if(ids.size() == 0)
             return Collections.emptyList();
 
-        final TypedQuery<Nft> query = em.createQuery("FROM Nft AS nft WHERE nft.id IN :ids ".concat(hqlQuery), Nft.class);
+        final TypedQuery<Nft> query = em.createQuery("FROM Nft AS nft WHERE nft.id IN :ids ".concat(hqlQuery).concat(sorts.getRight()), Nft.class);
         query.setParameter("ids", ids);
         return query.getResultList();
     }
 
-    private List<Integer> getIds(Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery) {
+    private List<Integer> getIds(Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery, String sort) {
         String nativeQuery = filterQuery.getLeft().getLeft().toString();
+        Pair<String, String> sorts = applySort(sort);
         List<Pair<String,Object>> args = filterQuery.getRight();
-        final Query countQuery = em.createNativeQuery(SELECT_ID_QUERY.concat(nativeQuery));
-        for(Pair<String,Object> arg:args)
-            countQuery.setParameter(arg.getLeft(), arg.getRight());
+
+        StringBuilder queryString = new StringBuilder(COUNT_ID_QUERY).append(nativeQuery).append(" GROUP BY nfts.id ").append(sorts.getLeft());
+        final Query countQuery = em.createNativeQuery(queryString.toString());
+        for(Pair<String,Object> arg:args) {
+            if(arg.getLeft().equals("category") || arg.getLeft().equals("chain")) {
+                @SuppressWarnings("unchecked")
+                List<String> els = (List<String>) arg.getRight();
+                for(int i = 0; i < els.size(); i++)
+                    countQuery.setParameter(arg.getLeft().concat(String.valueOf(i)), els.get(i));
+            } else
+                countQuery.setParameter(arg.getLeft(), arg.getRight());
+        }
 
         @SuppressWarnings("unchecked")
         final List<Integer> ids = (List<Integer>) countQuery.getResultList().stream().collect(Collectors.toList());
@@ -220,14 +223,14 @@ public class NftJpaDao implements NftDao {
 
     @Override
     public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
-        Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery = buildFilterQuery(status, category, chain, minPrice, maxPrice, sort, search, searchFor);
-        return getIds(filterQuery).size();
+        Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery = buildFilterQuery(status, category, chain, minPrice, maxPrice, search, searchFor);
+        return getIds(filterQuery, sort).size();
     }
 
     @Override
     public int getAmountPublicationPagesByUser(int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
-        Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery = buildFilterQueryByUser(user, onlyFaved, onlyOnSale, "noSort");
-        return (getIds(filterQuery).size()-1)/pageSize+1;
+        Pair<Pair<StringBuilder, StringBuilder>, List<Pair<String,Object>>> filterQuery = buildFilterQueryByUser(user, onlyFaved, onlyOnSale);
+        return (getIds(filterQuery, "noSort").size()-1)/pageSize+1;
     }
 
     @Override

@@ -194,16 +194,16 @@
                             <form:hidden path="status" value="${statusValue}"/>
                             <ul class="py-1 text-sm text-gray-700" aria-labelledby="sortDropdownDefault">
                                 <li>
-                                    <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.name"/></form:button>
+                                    <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-2 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.name"/></form:button>
                                 </li>
                                 <li>
-                                    <form:button type="submit" path="sort" name="sort" value="priceAsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.PriceAs"/></form:button>
+                                    <form:button type="submit" path="sort" name="sort" value="priceAsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.PriceAs"/></form:button>
                                 </li>
                                 <li>
-                                    <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.PriceDe"/></form:button>
+                                    <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.PriceDe"/></form:button>
                                 </li>
                                 <li>
-                                    <form:button type="submit" path="sort" name="sort" value="collection" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.collection"/></form:button>
+                                    <form:button type="submit" path="sort" name="sort" value="collection" class="block px-4 py-2 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.collection"/></form:button>
                                 </li>
                             </ul>
                         </form:form>
