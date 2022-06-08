@@ -5,6 +5,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.net.URLConnection;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Properties;
 
 
 @Service
@@ -53,10 +55,13 @@ public class MailingServiceImpl implements MailingService{
 
     private final SpringTemplateEngine templateEngine;
 
+    private final MessageSource messageSource;
+
     @Autowired
-    public MailingServiceImpl(SpringTemplateEngine templateEngine, JavaMailSender emailSender) {
+    public MailingServiceImpl(SpringTemplateEngine templateEngine, JavaMailSender emailSender, MessageSource messageSource) {
         this.templateEngine = templateEngine;
         this.emailSender = emailSender;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -68,12 +73,7 @@ public class MailingServiceImpl implements MailingService{
             helper.setFrom(env.get(MAIL_USERNAME_PARAMETER));
             helper.setTo(userEmail);
 
-            if(!Objects.equals(locale.getLanguage(), "es")) {
-                helper.setSubject("Welcome to Skyplace");
-            }
-            else {
-                helper.setSubject("Bienvenido a Skyplace");
-            }
+            helper.setSubject(messageSource.getMessage("email.register.welcomeSubject", null, locale));
 
             Context context = new Context(locale);
 
@@ -105,13 +105,7 @@ public class MailingServiceImpl implements MailingService{
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
             helper.setFrom(env.get(MAIL_USERNAME_PARAMETER));
             helper.setTo(sellerMail);
-
-            if(!Objects.equals(locale.getLanguage(), "es")) {
-                helper.setSubject("Bid placed for your NFT");
-            }
-            else {
-                helper.setSubject("Oferta realizada a su NFT");
-            }
+            helper.setSubject(messageSource.getMessage("email.bid.title", null, locale));
 
             Context context = new Context(locale);
             context.setVariable("sellerMail", sellerMail);
@@ -154,13 +148,7 @@ public class MailingServiceImpl implements MailingService{
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
             helper.setFrom(env.get(MAIL_USERNAME_PARAMETER));
             helper.setTo(userEmail);
-
-            if(!Objects.equals(locale.getLanguage(), "es")) {
-                helper.setSubject("\uD83C\uDF8A Your nft has been created in our page!");
-            }
-            else {
-                helper.setSubject("\uD83C\uDF8A ¡Su nft ha sido creado en nuestra página!");
-            }
+            helper.setSubject(messageSource.getMessage("email.nftCreated.subject", null, locale));
 
             Context context = new Context(locale);
             context.setVariable("userEmail", userEmail);
@@ -201,13 +189,7 @@ public class MailingServiceImpl implements MailingService{
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
             helper.setFrom(env.get(MAIL_USERNAME_PARAMETER));
             helper.setTo(userEmail);
-
-            if(!Objects.equals(locale.getLanguage(), "es")) {
-                helper.setSubject("\uD83C\uDF8A Your sell order has been created in our page!");
-            }
-            else {
-                helper.setSubject("\uD83C\uDF8A ¡Su orden de venta ha sido creada en nuestra página!");
-            }
+            helper.setSubject(messageSource.getMessage("email.sellOrderCreated.subject", null, locale));
 
             Context context = new Context(locale);
             context.setVariable("userEmail", userEmail);
@@ -250,13 +232,7 @@ public class MailingServiceImpl implements MailingService{
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
             helper.setFrom(env.get(MAIL_USERNAME_PARAMETER));
             helper.setTo(bidderMail);
-
-            if(!Objects.equals(locale.getLanguage(), "es")) {
-                helper.setSubject("Your offer to an NFT has been accepted!");
-            }
-            else {
-                helper.setSubject("¡Tu oferta a un NFT ha sido aceptada!");
-            }
+            helper.setSubject(messageSource.getMessage("email.accepted.title", null, locale));
 
             Context context = new Context(locale);
             context.setVariable("sellerMail", sellerMail);
@@ -300,13 +276,7 @@ public class MailingServiceImpl implements MailingService{
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
             helper.setFrom(env.get(MAIL_USERNAME_PARAMETER));
             helper.setTo(bidderMail);
-
-            if(!Objects.equals(locale.getLanguage(), "es")) {
-                helper.setSubject("Your offer to an NFT has been rejected");
-            }
-            else {
-                helper.setSubject("Tu oferta a un NFT ha sido rechazada");
-            }
+            helper.setSubject(messageSource.getMessage("email.rejected.title", null, locale));
 
             Context context = new Context(locale);
             context.setVariable("sellerMail", sellerMail);
@@ -351,13 +321,7 @@ public class MailingServiceImpl implements MailingService{
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
             helper.setFrom(env.get(MAIL_USERNAME_PARAMETER));
             helper.setTo(userEmail);
-
-            if(!Objects.equals(locale.getLanguage(), "es")) {
-                helper.setSubject("Your nft has been deleted in our page");
-            }
-            else {
-                helper.setSubject("Su nft ha sido eliminado en nuestra página");
-            }
+            helper.setSubject(messageSource.getMessage("email.nftDeleted.title", null, locale));
 
             Context context = new Context(locale);
             context.setVariable("userEmail", userEmail);
@@ -398,13 +362,7 @@ public class MailingServiceImpl implements MailingService{
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
             helper.setFrom(env.get(MAIL_USERNAME_PARAMETER));
             helper.setTo(userEmail);
-
-            if(!Objects.equals(locale.getLanguage(), "es")) {
-                helper.setSubject("Your sell order has been deleted in our page");
-            }
-            else {
-                helper.setSubject("Su orden de venta ha sido eliminada en nuestra página");
-            }
+            helper.setSubject(messageSource.getMessage("email.sellOrderDeleted.title", null, locale));
 
             Context context = new Context(locale);
             context.setVariable("userEmail", userEmail);
@@ -442,30 +400,24 @@ public class MailingServiceImpl implements MailingService{
 
 
     @Override
-    public void sendNewReviewMail(Review review, Locale locale) {
+    public void sendNewReviewMail(String revieweeName, String revieweeEmail, int revieweeUserId, String reviewerName, String reviewerEmail, int score, String reviewTitle, String reviewComment, Locale locale) {
         final MimeMessage message = emailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
 
             helper.setFrom(env.get(MAIL_USERNAME_PARAMETER));
-            helper.setTo(review.getUsersByIdReviewee().getEmail());
-
-            if(!Objects.equals(locale.getLanguage(), "es")) {
-                helper.setSubject("New review in your profile!");
-            }
-            else {
-                helper.setSubject("¡Nueva reseña en tu perfil!");
-            }
+            helper.setTo(revieweeEmail);
+            helper.setSubject(messageSource.getMessage("email.newReview.title", null, locale));
 
             Context context = new Context(locale);
 
-            context.setVariable("revieweeName", review.getUsersByIdReviewee().getUsername());
-            context.setVariable("reviewerName", review.getUsersByIdReviewer().getUsername());
-            context.setVariable("reviewerEmail", review.getUsersByIdReviewer().getEmail());
-            context.setVariable("profileUrl", PROFILE_BASE_URL + review.getUsersByIdReviewee().getId());
-            context.setVariable("score", review.getScore());
-            context.setVariable("reviewTitle", review.getTitle());
-            context.setVariable("reviewComment", review.getComments());
+            context.setVariable("revieweeName", revieweeName);
+            context.setVariable("reviewerName", reviewerName);
+            context.setVariable("reviewerEmail", reviewerEmail);
+            context.setVariable("profileUrl", PROFILE_BASE_URL + revieweeUserId);
+            context.setVariable("score", score);
+            context.setVariable("reviewTitle", reviewTitle);
+            context.setVariable("reviewComment", reviewComment);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("userImageResourceName", "userImage");
             context.setVariable("reviewImageResourceName", "reviewImage");

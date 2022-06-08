@@ -27,7 +27,7 @@ public interface MailingService {
     void sendSellOrderDeletedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, byte[] imageBytes, BigDecimal nftPrice, Locale locale);
 
     @Async
-    void sendNewReviewMail(Review review, Locale locale);
+    void sendNewReviewMail(String revieweeName, String revieweeEmail, int revieweeUserId, String reviewerName, String reviewerEmail, int score, String reviewTitle, String reviewComment, Locale locale);
 
 
 }

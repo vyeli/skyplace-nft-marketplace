@@ -168,7 +168,6 @@ public class ProductController {
         buyOrderService.create(sellOrder.getId(), form.getPrice(), currentUser.getId());
 
         ModelAndView mav = product(form, productId, offerPage, request, null);
-        mav.addObject("emailSent", true);
         return mav;
     }
 

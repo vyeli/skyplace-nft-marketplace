@@ -41,7 +41,7 @@ public class ReviewServiceImpl implements ReviewService{
         User reviewer = userDao.getUserById(reviewerId).orElseThrow(UserNotFoundException::new);
         User reviewee = userDao.getUserById(revieweeId).orElseThrow(UserNotFoundException::new);
         Review newReview = reviewDao.addReview(reviewer, reviewee, score, title, comments);
-        mailingService.sendNewReviewMail(newReview, LocaleContextHolder.getLocale());
+        mailingService.sendNewReviewMail(reviewee.getUsername(), reviewee.getEmail(), revieweeId, reviewer.getUsername(), reviewer.getEmail(), newReview.getScore(), newReview.getTitle(), newReview.getComments(), LocaleContextHolder.getLocale());
     }
 
     @Override

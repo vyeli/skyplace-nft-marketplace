@@ -7,6 +7,7 @@ import ar.edu.itba.paw.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +29,13 @@ public class FrontController {
 
     private final UserService userService;
     private final NftService nftService;
+    private final MessageSource messageSource;
 
     @Autowired
-    public FrontController(UserService userService, NftService nftService) {
+    public FrontController(UserService userService, NftService nftService, MessageSource messageSource) {
         this.userService = userService;
         this.nftService = nftService;
+        this.messageSource = messageSource;
     }
 
     @RequestMapping(value="/")
@@ -53,11 +56,10 @@ public class FrontController {
         final List<Publication> publications = nftService.getAllPublications(parsedPage, exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(),  exploreFilter.getSearch(), exploreFilter.getSearchFor());
         int publicationsAmount = nftService.getAmountPublications(exploreFilter.getStatus(), exploreFilter.getCategory(), exploreFilter.getChain(), exploreFilter.getMinPrice(), exploreFilter.getMaxPrice(), exploreFilter.getSort(), exploreFilter.getSearch(), exploreFilter.getSearchFor());
 
-        String lang = LocaleContextHolder.getLocale().getLanguage();
-        String categoryFormat = lang.equals("es") ? "Todos" : "All";
+        String categoryFormat = messageSource.getMessage("explore.categoryFormat.All", null, LocaleContextHolder.getLocale());
         if(exploreFilter.getCategory() != null && !exploreFilter.getCategory().equals(""))
             if(exploreFilter.getCategory().contains(","))
-                categoryFormat = lang.equals("es") ? "Varios" : "Various";
+                categoryFormat = messageSource.getMessage("explore.categoryFormat.Various", null, LocaleContextHolder.getLocale());
             else
                 categoryFormat = capitalizeString(exploreFilter.getCategory());
 
