@@ -10,10 +10,10 @@
 
     <c:url value="/buyorder/accept" var="confirmBuyOrder" />
     <form action="${confirmBuyOrder}" method="post" class="mb-0">
-        <input type="hidden" name="sellOrder" value="" />
-        <input type="hidden" name="idBuyer" value="" />
-        <input type="hidden" name="idNft" value="" />
-        <input type="hidden" name="idSeller" value="" />
+        <input type="hidden" name="sellOrderId" value="" />
+        <input type="hidden" name="buyerId" value="" />
+        <input type="hidden" name="productId" value="" />
+        <input type="hidden" name="sellerId" value="" />
         <button class="px-4 py-2 rounded-md text-white bg-cyan-600 shadow-md hover:shadow-xl hover:bg-cyan-800 transition duration-300" type="submit"><spring:message code="offerModal.accept"/></button>
     </form>
 </dialog>
@@ -26,9 +26,9 @@
 
   <c:url value="/buyorder/delete" var="deleteBuyOrder" />
   <form action="${deleteBuyOrder}" method="post" class="mb-0">
-      <input type="hidden" name="sellOrder" value="" />
-      <input type="hidden" name="idBuyer" value="" />
-      <input type="hidden" name="idNft" value="" />
+      <input type="hidden" name="sellOrderId" value="" />
+      <input type="hidden" name="buyerId" value="" />
+      <input type="hidden" name="productId" value="" />
       <button class="px-4 py-2 rounded-md text-white bg-red-500 shadow-md hover:shadow-xl transition duration-300 hover:bg-red-900" type="submit"><spring:message code="offerModal.reject"/></button>
   </form>
 </dialog>
@@ -43,19 +43,19 @@
     closeConfirmOfferModal.addEventListener("click", () => confirmOfferModal.close())
 
     function handleAccept(sellOrderId, buyerId, sellerId, productId) {
-      setInputData(confirmOfferModal, sellOrderId, buyerId, productId)
-      confirmOfferModal.querySelector("input[name='idSeller']").value = sellerId
+      setInputData(confirmOfferModal, sellOrderId, buyerId)
+      confirmOfferModal.querySelector("input[name='sellerId']").value = sellerId
+      confirmOfferModal.querySelector("input[name='productId']").value = productId
       confirmOfferModal.showModal()
     }
 
-    function handleReject(sellOrderId, buyerId, productId) {
-      setInputData(rejectOfferModal, sellOrderId, buyerId, productId)
+    function handleReject(sellOrderId, buyerId) {
+      setInputData(rejectOfferModal, sellOrderId, buyerId)
       rejectOfferModal.showModal()
     }
 
-    function setInputData(modal, sellOrderId, buyerId, productId) {
-      modal.querySelector("input[name='sellOrder']").value = sellOrderId
-      modal.querySelector("input[name='idBuyer']").value = buyerId
-      modal.querySelector("input[name='idNft']").value = productId
+    function setInputData(modal, sellOrderId, buyerId) {
+      modal.querySelector("input[name='sellOrderId']").value = sellOrderId
+      modal.querySelector("input[name='buyerId']").value = buyerId
     }
 </script>

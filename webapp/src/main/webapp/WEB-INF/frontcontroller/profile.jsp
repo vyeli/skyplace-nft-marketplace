@@ -143,7 +143,7 @@
                 <c:forEach items="${buyOrderItems}" var="buyOrderItem">
                     <jsp:include page="../components/BuyOrderItem.jsp">
                         <jsp:param name="nftName" value="${buyOrderItem.offeredFor.nft.nftName}"/>
-                        <jsp:param name="nftId" value="${buyOrderItem.offeredFor.nft.id}"/>
+                        <jsp:param name="productId" value="${buyOrderItem.offeredFor.nft.id}"/>
                         <jsp:param name="nftCollectionId" value="${buyOrderItem.offeredFor.nft.nftId}"/>
                         <jsp:param name="nftContractAddr" value="${buyOrderItem.offeredFor.nft.contractAddr}"/>
                         <jsp:param name="nftImg" value="${buyOrderItem.offeredFor.nft.idImage}"/>

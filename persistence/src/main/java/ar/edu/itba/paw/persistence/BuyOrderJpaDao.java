@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.*;
-import org.apache.commons.lang3.reflect.Typed;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -18,8 +17,6 @@ import java.util.stream.Collectors;
 
 @Repository
 public class BuyOrderJpaDao implements BuyOrderDao {
-
-    private final static long ONE_DAY_IN_SECONDS = 24*60*60;
 
     @PersistenceContext
     private EntityManager em;

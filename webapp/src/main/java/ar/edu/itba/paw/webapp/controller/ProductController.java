@@ -100,10 +100,13 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/product/{productId:\\d+}", method = RequestMethod.GET)
-    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable int productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request, @RequestParam(value = "alert", required = false) String alert) {
+    public ModelAndView product(@ModelAttribute("buyNftForm") final PriceForm form, @PathVariable int productId, @RequestParam(value = "offerPage", required = false) Integer offerPage, HttpServletRequest request, @RequestParam(value = "alert", required = false) String alert) {
         setEncodingToUTF(request);
 
-        int parsedOfferPage = offerPage == null ? 1 : parseInt(offerPage);
+        final ModelAndView mav = new ModelAndView("frontcontroller/product");
+        mav.addObject("showOfferTab", offerPage != null);
+
+        offerPage = offerPage == null ? 1 : offerPage;
 
         Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
         User owner = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
@@ -111,14 +114,12 @@ public class ProductController {
         List<BuyOrder> buyOffers = new ArrayList<>();
         long amountOfferPages = 0;
 
-        final ModelAndView mav = new ModelAndView("frontcontroller/product");
-
         if(nft.getSellOrder() != null) {
             SellOrder sellOrder = nft.getSellOrder();
             Optional<BuyOrder> pendingBuyOrder = buyOrderService.getPendingBuyOrder(sellOrder.getId());
             mav.addObject("isBuyPending", pendingBuyOrder.isPresent());
             pendingBuyOrder.ifPresent(buyOrder -> mav.addObject("pendingBuyOrder", buyOrder));
-            buyOffers = buyOrderService.getOrdersBySellOrderId(parsedOfferPage, sellOrder.getId());
+            buyOffers = buyOrderService.getOrdersBySellOrderId(offerPage, sellOrder.getId());
             amountOfferPages = buyOrderService.getAmountPagesBySellOrderId(sellOrder);
             mav.addObject("sellOrder", sellOrder);
         }
@@ -135,8 +136,7 @@ public class ProductController {
         mav.addObject("favorites", favorites);
         mav.addObject("nft", nft);
         mav.addObject("isFaved", isFaved);
-        mav.addObject("offerPage", parsedOfferPage);
-        mav.addObject("showOfferTab", offerPage != null);
+        mav.addObject("offerPage", offerPage);
         mav.addObject("amountOfferPages", amountOfferPages);
         mav.addObject("buyOffer", buyOffers);
         mav.addObject("owner", owner);
@@ -146,7 +146,7 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/product/{productId:\\d+}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable int productId, @RequestParam(value = "offerPage", required = false) String offerPage, HttpServletRequest request) {
+    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable int productId, @RequestParam(value = "offerPage", required = false) int offerPage, HttpServletRequest request) {
         setEncodingToUTF(request);
         if (errors.hasErrors())
             return product(form, productId, offerPage, request, null);
@@ -167,35 +167,23 @@ public class ProductController {
         return new ModelAndView("redirect:/explore");
     }
 
-    @RequestMapping(value="/buyorder/confirm", method = RequestMethod.POST)
-    @Deprecated
-    public ModelAndView confirmBuyOrder(@RequestParam(value = "sellOrder") String sellOrderId, @RequestParam(value = "idBuyer") String buyerId, @RequestParam(value = "idNft") String productId, @RequestParam(value = "idSeller") String seller, @RequestParam(value = "price") BigDecimal price) {
-        return new ModelAndView("redirect:/product/" + productId);
-    }
-
     @RequestMapping(value="/buyorder/accept", method = RequestMethod.POST)
-    public ModelAndView acceptBuyOrder(@RequestParam(value = "sellOrder") String sellOrderId, @RequestParam(value = "idBuyer") String buyerId, @RequestParam(value = "idNft") String productId) {
-        int parsedSellOrderId = parseInt(sellOrderId);
-        int parsedBuyerId = parseInt(buyerId);
-        buyOrderService.acceptBuyOrder(parsedSellOrderId, parsedBuyerId);
+    public ModelAndView acceptBuyOrder(@RequestParam(value = "sellOrderId") int sellOrderId, @RequestParam(value = "buyerId") int buyerId, @RequestParam(value = "productId") int productId) {
+        buyOrderService.acceptBuyOrder(sellOrderId, buyerId);
         return new ModelAndView("redirect:/product/" + productId);
     }
 
     @RequestMapping(value="/buyorder/delete", method = RequestMethod.POST)
-    public ModelAndView deleteBuyOrder(@RequestParam(value = "sellOrderId") String sellOrderId, @RequestParam(value = "buyerId") String buyerId, HttpServletRequest request) {
-        int parsedSellOrderId = parseInt(sellOrderId);
-        int parsedBuyerId = parseInt(buyerId);
-        buyOrderService.deleteBuyOrder(parsedSellOrderId, parsedBuyerId);
+    public ModelAndView deleteBuyOrder(@RequestParam(value = "sellOrderId") int sellOrderId, @RequestParam(value = "buyerId") int buyerId, HttpServletRequest request) {
+        buyOrderService.deleteBuyOrder(sellOrderId, buyerId);
         String referer = request.getHeader("Referer");
         return new ModelAndView("redirect:"+ referer);
     }
 
     @RequestMapping(value = "/buyorder/validate", method = RequestMethod.POST)
-    public ModelAndView validateTransaction(@RequestParam(value="productId") String productId, @RequestParam(value = "transactionHash") String txHash, @RequestParam(value = "sellOrderId") String sellOrderId, @RequestParam(value = "buyerId") String buyerId) {
-        int parsedSellOrderId = parseInt(sellOrderId);
-        int parsedBuyerId = parseInt(buyerId);
+    public ModelAndView validateTransaction(@RequestParam(value="productId") int productId, @RequestParam(value = "transactionHash") String txHash, @RequestParam(value = "sellOrderId") int sellOrderId, @RequestParam(value = "buyerId") int buyerId) {
         // TODO: show if failed to user
-        boolean validated = buyOrderService.validateTransaction(txHash, parsedSellOrderId, parsedBuyerId);
+        boolean validated = buyOrderService.validateTransaction(txHash, sellOrderId, buyerId);
         Alert returnAlert = validated ? Alert.SUCCESS : Alert.FAILURE;
         return new ModelAndView("redirect:/product/" + productId + "?alert=" + returnAlert.getName());
     }

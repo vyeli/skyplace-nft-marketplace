@@ -52,12 +52,7 @@ public class NftJpaDao implements NftDao {
         String[] filterArray = filter.split(",");
         nativeQuery.append(" AND ( ");
         for (int i = 0; i < filterArray.length; i++) {
-            String aux = filterArray[i].substring(0, 1).toUpperCase() + filterArray[i].substring(1);
-            if (i == 0) {
-                nativeQuery.append(String.format(" LOWER(%s) LIKE LOWER(:%s) ", columnNativeName, paramName));
-            } else {
-                nativeQuery.append(String.format(" OR LOWER(%s) LIKE LOWER(:%s) ", columnNativeName, paramName));
-            }
+            nativeQuery.append(String.format("%s LOWER(%s) LIKE LOWER(:%s) ", i == 0 ? "" : "OR", columnNativeName, paramName));
             arg = new Pair<>(paramName, filter);
         }
         nativeQuery.append(") ");

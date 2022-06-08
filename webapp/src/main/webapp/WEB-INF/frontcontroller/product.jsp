@@ -147,7 +147,7 @@
                                                 <c:if test="${isBuyPending == null || isBuyPending == false}">
                                                     <c:if test="${sellOrder != null && offer.offeredBy.id == currentUser.id}">
                                                         <div class="flex gap-2">
-                                                            <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400 transition duration-300 hover:border-slate-600 hover:bg-slate-600 hover:text-white hover:shadow-md">
+                                                            <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400 transition duration-300 hover:border-slate-600 hover:bg-slate-600 hover:text-white hover:shadow-md">
                                                                 <spring:message code="product.removeOffer"/>
                                                             </button>
                                                         </div>
@@ -157,7 +157,7 @@
                                                             <button onclick="handleAccept(${offer.offeredFor.id}, ${offer.offeredBy.id}, ${currentUser.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600 transition duration-300 hover:bg-cyan-900 hover:border-cyan-900 hover:shadow-md">
                                                                 <spring:message code="product.accept"/>
                                                             </button>
-                                                            <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400 transition duration-300 hover:border-slate-600 hover:bg-slate-600 hover:text-white hover:shadow-md">
+                                                            <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400 transition duration-300 hover:border-slate-600 hover:bg-slate-600 hover:text-white hover:shadow-md">
                                                                 <spring:message code="product.reject"/>
                                                             </button>
                                                         </div>
