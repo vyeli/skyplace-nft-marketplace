@@ -57,10 +57,7 @@ public class NftJpaDao implements NftDao {
         List<String> filters = new ArrayList<>();
         nativeQuery.append(" AND ( ");
         for (int i = 0; i < filterArray.length; i++) {
-            if (i == 0)
-                nativeQuery.append(String.format(" LOWER(%s) LIKE LOWER(:%s) ", columnNativeName, paramName.concat(String.valueOf(i))));
-            else
-                nativeQuery.append(String.format(" OR LOWER(%s) LIKE LOWER(:%s) ", columnNativeName, paramName.concat(String.valueOf(i))));
+            nativeQuery.append(String.format(" %s LOWER(%s) LIKE LOWER(:%s) ", i == 0 ? "" : "OR", columnNativeName, paramName.concat(String.valueOf(i))));
             //nativeQuery.append(String.format(" %s LOWER(%s) LIKE LOWER(:%s) ", i == 0 ? "" : "OR", columnNativeName, paramName));
             filters.add(filterArray[i]);
             if (i==filterArray.length-1)
