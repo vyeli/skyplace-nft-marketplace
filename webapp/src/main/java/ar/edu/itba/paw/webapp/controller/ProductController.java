@@ -146,7 +146,7 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/product/{productId:\\d+}", method = RequestMethod.POST)
-    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable int productId, @RequestParam(value = "offerPage", required = false) int offerPage, HttpServletRequest request) {
+    public ModelAndView createOrder(@Valid @ModelAttribute("buyNftForm") final PriceForm form, final BindingResult errors, @PathVariable int productId, @RequestParam(value = "offerPage", required = false) Integer offerPage, HttpServletRequest request) {
         setEncodingToUTF(request);
         if (errors.hasErrors())
             return product(form, productId, offerPage, request, null);
