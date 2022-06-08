@@ -85,24 +85,24 @@
                                  aria-labelledby="tabs-home-tab">
                                 <div class="flex flex-col gap-2">
                                     <div class="flex justify-between">
-                                        <p class="font-semibold"><spring:message code="product.contractAddress"/> </p>
-                                        <p class="w-3/5 break-words max-h-20 overflow-hidden text-right">
+                                        <p class="font-medium"><spring:message code="product.contractAddress"/> </p>
+                                        <p class="w-3/5 break-words max-h-20 overflow-hidden text-right font-light">
                                             <c:out value="${nft.contractAddr}" />
                                         </p>
                                     </div>
                                     <div class="flex justify-between">
-                                        <p class="font-semibold">Token ID</p>
-                                        <p class="w-3/5 overflow-hidden text-right"><c:out value="${nft.nftId}" /></p>
+                                        <p class="font-medium">Token ID</p>
+                                        <p class="w-3/5 overflow-hidden text-right font-light"><c:out value="${nft.nftId}" /></p>
                                     </div>
                                     <c:if test="${sellOrder != null}">
                                         <div class="flex justify-between">
-                                            <p class="font-semibold"><spring:message code="product.category"/></p>
-                                            <p><c:out value="${sellOrder.category}" /></p>
+                                            <p class="font-medium"><spring:message code="product.category"/></p>
+                                            <p class="font-light"><c:out value="${sellOrder.category}" /></p>
                                         </div>
                                     </c:if>
                                     <div class="flex justify-between">
-                                        <p class="font-semibold">Blockchain</p>
-                                        <p><c:out value="${nft.chain}" /></p>
+                                        <p class="font-medium">Blockchain</p>
+                                        <p class="font-light"><c:out value="${nft.chain}" /></p>
                                     </div>
                                 </div>
                             </div>
