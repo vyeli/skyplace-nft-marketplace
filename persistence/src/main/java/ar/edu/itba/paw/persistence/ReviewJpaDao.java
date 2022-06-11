@@ -46,6 +46,8 @@ public class ReviewJpaDao implements ReviewDao{
         return query.getResultList();
     }
 
+
+    // FIXME: Esto esta mal, no puede traer todas las reviews
     @Override
     public List<Review> getAllUserReviews(int userId) {
         final TypedQuery<Review> query = em.createQuery("FROM Review AS r WHERE r.usersByIdReviewee.id = :userId", Review.class);
@@ -55,10 +57,11 @@ public class ReviewJpaDao implements ReviewDao{
 
     @Override
     public boolean hasReviewByUser(int reviewerId, int revieweeId) {
-        final Query query = em.createNativeQuery("SELECT count(*) FROM reviews WHERE id_reviewer = :id_reviewer AND id_reviewee = :id_reviewee");
-        query.setParameter("id_reviewer", reviewerId);
-        query.setParameter("id_reviewee", revieweeId);
-        return ((BigInteger)query.getSingleResult()).longValue() > 0;
+        final TypedQuery<Review> query = em.createQuery("FROM Review r WHERE r.usersByIdReviewer = :idReviewer AND r.usersByIdReviewee = :idReviewee", Review.class);
+        //final Query query = em.createNativeQuery("SELECT count(*) FROM reviews WHERE id_reviewer = :id_reviewer AND id_reviewee = :id_reviewee");
+        query.setParameter("idReviewer", reviewerId);
+        query.setParameter("idReviewee", revieweeId);
+        return query.getResultList().size() > 0;
     }
 
     @Override

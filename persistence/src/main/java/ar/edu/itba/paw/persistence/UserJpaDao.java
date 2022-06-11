@@ -41,10 +41,4 @@ public class UserJpaDao implements UserDao {
     public Optional<User> getUserById(int id) {
         return Optional.ofNullable(em.find(User.class, id));
     }
-
-    @Override
-    public User merge(User user) {
-        return em.merge(user);
-    }
-
 }

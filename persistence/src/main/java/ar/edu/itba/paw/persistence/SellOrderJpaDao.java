@@ -48,13 +48,4 @@ public class SellOrderJpaDao implements SellOrderDao{
         return query.executeUpdate() == 1;
     }
 
-    // FIXME: Change return value to Optional<Integer>
-    @Override
-    public int getNftWithOrder(int id) {
-        final Query query = em.createQuery("select sellorder.idNft from SellOrder sellorder where sellorder.id = :id");
-        query.setParameter("id", id);
-        Optional<Integer> nftId;
-        nftId = (Optional<Integer>) query.getResultList().stream().findFirst();  // FIXME: hacer que en la interface devuelva un Optional de integer ?
-        return nftId.orElse(-1);
-    }
 }

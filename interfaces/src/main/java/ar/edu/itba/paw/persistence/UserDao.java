@@ -15,6 +15,4 @@ public interface UserDao {
 
     Optional<User> getUserById(int id);
 
-    User merge(User user);
-
 }

@@ -19,8 +19,6 @@ public interface SellOrderService {
 
     void delete(int sellOrderId, BuyOrder buyOrder);
 
-    int getNftWithOrder(int id);
-
     boolean userOwnsSellOrder(int productId, User user);
 
     boolean currentUserOwnsSellOrder(int productId);

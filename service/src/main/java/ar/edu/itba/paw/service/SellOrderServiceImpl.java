@@ -113,9 +113,4 @@ public class SellOrderServiceImpl implements SellOrderService {
         return userOwnsSellOrder(productId, currentUser);
     }
 
-    @Override
-    public int getNftWithOrder(int id) {
-        return sellOrderDao.getNftWithOrder(id);
-    }
-
 }
