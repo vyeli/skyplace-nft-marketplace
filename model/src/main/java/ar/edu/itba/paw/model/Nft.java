@@ -115,14 +115,6 @@ public class Nft {
         this.owner = newOwner;
     }
 
-    public Collection<Purchase> getPurchasesById() {
-        return purchasesById;
-    }
-
-    public Collection<Favorited> getFavoritedsById() {
-        return favoritedsById;
-    }
-
     public SellOrder getSellOrder() {
         return sellorder;
     }

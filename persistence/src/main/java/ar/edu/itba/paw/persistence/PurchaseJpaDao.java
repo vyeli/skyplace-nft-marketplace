@@ -24,6 +24,20 @@ public class PurchaseJpaDao implements PurchaseDao {
     private EntityManager em;
 
     @Override
+    public List<Purchase> getUserSales(int userId) {
+        final TypedQuery<Purchase> query = em.createQuery("FROM Purchase p WHERE p.buyer.id = :userId", Purchase.class);
+        query.setParameter("userId", userId);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Purchase> getUserPurchases(int userId) {
+        final TypedQuery<Purchase> query = em.createQuery("FROM Purchase p WHERE p.seller.id = :userId", Purchase.class);
+        query.setParameter("userId", userId);
+        return query.getResultList();
+    }
+
+    @Override
     public List<Purchase> getAllTransactions(int userId, int page, int pageSize) {
         final Query idQuery = em.createNativeQuery("SELECT id FROM purchases WHERE id_buyer = :userId OR id_seller = :userId ORDER BY buy_date DESC LIMIT :pageSize OFFSET :offset");
         idQuery.setParameter("userId", userId);

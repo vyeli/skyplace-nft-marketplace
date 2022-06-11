@@ -19,13 +19,15 @@ public class NftServiceImpl implements NftService {
     private final UserService userService;
     private final MailingService mailingService;
     private final ImageService imageService;
+    private final FavoriteService favoriteService;
 
     @Autowired
-    public NftServiceImpl(NftDao nftDao, UserService userService, MailingService mailingService, ImageService imageService) {
+    public NftServiceImpl(NftDao nftDao, UserService userService, MailingService mailingService, ImageService imageService, FavoriteService favoriteService) {
         this.nftDao = nftDao;
         this.userService = userService;
         this.mailingService = mailingService;
         this.imageService = imageService;
+        this.favoriteService = favoriteService;
     }
 
     @Transactional
@@ -69,21 +71,11 @@ public class NftServiceImpl implements NftService {
 
     private List<Publication> createPublicationsWithNfts(List<Nft> nfts, User user) {
         List<Publication> publications = new ArrayList<>();
-        for(Nft nft:nfts) {
+        for(Nft nft:nfts)
             if(user == null)
                 publications.add(new Publication(nft, null));
-            else {
-                boolean currentUserFavedNft = false;
-                for(Favorited favorite:nft.getFavoritedsById())
-                    if(favorite.getUser().getId() == user.getId()) {
-                        publications.add(new Publication(nft, favorite));
-                        currentUserFavedNft = true;
-                        break;
-                    }
-                if(!currentUserFavedNft)
-                    publications.add(new Publication(nft, null));
-            }
-        }
+            else
+                publications.add(new Publication(nft, favoriteService.userFavedNft(user.getId(), nft.getId()).orElse(null)));
         return publications;
     }
 

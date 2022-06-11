@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,6 +68,21 @@ public class BuyOrderJpaDao implements BuyOrderDao {
     @Override
     public void stopPendingBuyOrder(int sellOrderId, int buyerId) {
         changeBuyOrderStatus(sellOrderId, buyerId, StatusBuyOrder.NEW);
+    }
+
+    @Override
+    public int getAmountBuyOrdersForUser(User user) {
+        final Query query = em.createNativeQuery("SELECT count(*) FROM buyorders WHERE id_buyer = :buyerId");
+        query.setParameter("buyerId",user.getId());
+        return ((BigInteger)query.getSingleResult()).intValue();
+    }
+
+    @Override
+    public void deleteBuyOrder(int sellOrderId, int buyerId) {
+        final Query query = em.createQuery("DELETE FROM BuyOrder b WHERE b.offeredFor.id = :sellOrderId AND b.offeredBy.id = :buyerId ");
+        query.setParameter("sellOrderId", sellOrderId);
+        query.setParameter("buyerId",buyerId);
+        query.executeUpdate();
     }
 
     @Override

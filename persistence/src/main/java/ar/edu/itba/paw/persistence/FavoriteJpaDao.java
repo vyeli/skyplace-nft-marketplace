@@ -13,7 +13,9 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.math.BigInteger;
+import java.util.Optional;
 
 @Repository
 public class FavoriteJpaDao implements FavoriteDao{
@@ -41,11 +43,11 @@ public class FavoriteJpaDao implements FavoriteDao{
     }
 
     @Override
-    public boolean userFavedNft(int userId, int idNft) {
-        final Query query = em.createNativeQuery("SELECT * FROM favorited WHERE user_id = :user_id AND id_nft = :id_nft ");
-        query.setParameter("user_id", userId);
-        query.setParameter("id_nft", idNft);
-        return query.getResultList().size() > 0;
+    public Optional<Favorited> userFavedNft(int userId, int idNft) {
+        final TypedQuery<Favorited> query = em.createQuery("FROM Favorited f WHERE f.user.id = :userId AND f.nft.id = :nftId", Favorited.class);
+        query.setParameter("userId", userId);
+        query.setParameter("nftId", idNft);
+        return Optional.ofNullable(query.getSingleResult());
     }
 
     @Override

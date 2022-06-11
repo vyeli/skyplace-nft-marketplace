@@ -112,28 +112,4 @@ public class User {
         return role;
     }
 
-    public List<BuyOrder> getBuyOrders() {
-        return buyOrders;
-    }
-
-    public Collection<Favorited> getFavorited() {
-        return favorited;
-    }
-
-    public Collection<Nft> getNftsOwned() {
-        return nftsOwned;
-    }
-
-    public List<Purchase> getPurchaseHistory() {
-        return purchaseHistory;
-    }
-
-    public List<Purchase> getSaleHistory() {
-        return saleHistory;
-    }
-
-    public Collection<Review> getReviewsReceived() {
-        return reviewsReceived;
-    }
-
 }

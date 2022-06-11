@@ -35,18 +35,12 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public List<Purchase> getUserSales(int userId) {
-        Optional<User> maybeUser = userService.getUserById(userId);
-        if (maybeUser.isPresent())
-            return maybeUser.get().getSaleHistory();
-        return Collections.emptyList();
+        return purchaseDao.getUserSales(userId);
     }
 
     @Override
     public List<Purchase> getUserPurchases(int userId) {
-        Optional<User> maybeUser = userService.getUserById(userId);
-        if (maybeUser.isPresent())
-            return maybeUser.get().getPurchaseHistory();
-        return Collections.emptyList();
+        return purchaseDao.getUserPurchases(userId);
     }
 
     @Override

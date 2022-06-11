@@ -62,20 +62,10 @@ public class SellOrder {
         this.category = category;
     }
 
-    public List<BuyOrder> getOffers() {
-        return offers;
-    }
 
     public Nft getNft() {
         return nft;
     }
 
-    public void deleteBuyOrder(User buyer) {
-        offers.removeIf(order -> order.getOfferedBy().getId() == buyer.getId());
-    }
-
-    public Optional<BuyOrder> getBuyOrder(User buyer) {
-         return offers.stream().filter(buyOrder -> buyOrder.getOfferedBy().getId() == buyer.getId()).findFirst();
-    }
 
 }

@@ -1,6 +1,9 @@
 package ar.edu.itba.paw.service;
 
+import ar.edu.itba.paw.model.Favorited;
 import ar.edu.itba.paw.model.User;
+
+import java.util.Optional;
 
 public interface FavoriteService {
     void addNftFavorite(int productId, User user);
@@ -9,5 +12,7 @@ public interface FavoriteService {
 
     int getNftFavorites(int productId);
 
-    boolean userFavedNft(int userId, int nftId);
+    Optional<Favorited> userFavedNft(int userId, int nftId);
+
+    boolean isNftFavedByUser(int userId, int nftId);
 }

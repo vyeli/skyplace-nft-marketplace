@@ -84,7 +84,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
 
     @Override
     public int getAmountPagesForUser(User user) {
-        return (user.getBuyOrders().size() - 1) / getPageSize() + 1;
+        int size = buyOrderDao.getAmountBuyOrdersForUser(user);
+        return (size - 1) / getPageSize() + 1;
     }
 
     private boolean confirmBuyOrder(int sellOrderId, int buyerId, String txHash) {
@@ -133,16 +134,22 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     @Transactional
     @Override
     public void deleteBuyOrder(int sellOrderId, int buyerId) {
-        if (!sellOrderService.currentUserOwnsSellOrder(sellOrderId) && buyerId != userService.getCurrentUser().get().getId())
-            throw new UserIsNotNftOwnerException();
+        Optional<User> currentUser = userService.getCurrentUser();
+        if(!currentUser.isPresent())
+            throw new UserNotLoggedInException();
 
-        SellOrder sellOrder = sellOrderService.getOrderById(sellOrderId).orElseThrow(SellOrderNotFoundException::new);
-        User buyer = userService.getUserById(buyerId).orElseThrow(UserNotFoundException::new);
+        if (!sellOrderService.currentUserOwnsSellOrder(sellOrderId) && buyerId != currentUser.get().getId())
+            throw new UserIsNotNftOwnerException();
+        Optional<BuyOrder> buyOrder = buyOrderDao.getBuyOrder(sellOrderId, buyerId);
+        if(!buyOrder.isPresent())
+            return;
+        SellOrder sellOrder = buyOrder.get().getOfferedFor();
+        User buyer = buyOrder.get().getOfferedBy();
         Nft nft = sellOrder.getNft();
-        User seller = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
+        User seller = nft.getOwner();
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
-        BigDecimal offerAmount = sellOrder.getBuyOrder(buyer).get().getAmount();
-        sellOrder.deleteBuyOrder(buyer);
+        BigDecimal offerAmount = buyOrder.get().getAmount();
+        buyOrderDao.deleteBuyOrder(sellOrderId, buyerId);
         mailingService.sendOfferRejectedMail(buyer.getEmail(), seller.getEmail(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), new BigDecimal(offerAmount.stripTrailingZeros()
                 .toPlainString()), image.getImage(),  LocaleContextHolder.getLocale());
     }

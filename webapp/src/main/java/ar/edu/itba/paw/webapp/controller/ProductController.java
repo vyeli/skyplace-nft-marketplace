@@ -128,7 +128,7 @@ public class ProductController {
         boolean isFaved = false;
 
         if(currentUser.isPresent()) {
-            isFaved = favoriteService.userFavedNft(currentUser.get().getId(), nft.getId());
+            isFaved = favoriteService.isNftFavedByUser(currentUser.get().getId(), nft.getId());
             mav.addObject("isAdmin", userService.isAdmin());
             mav.addObject("currentUser", currentUser.get());
         }

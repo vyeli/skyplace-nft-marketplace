@@ -10,6 +10,10 @@ import java.util.List;
 
 public interface PurchaseDao {
 
+    List<Purchase> getUserSales(int userId);
+
+    List<Purchase> getUserPurchases(int userId);
+
     List<Purchase> getAllTransactions(int userId, int page, int pageSize);
 
     Purchase createPurchase(User buyer, User seller, Nft nft, BigDecimal price, String txHash, StatusPurchase statusPurchase);
