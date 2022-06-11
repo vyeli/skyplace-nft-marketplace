@@ -48,8 +48,6 @@ public class FavoriteJpaDao implements FavoriteDao{
         return query.getResultList().size() > 0;
     }
 
-    // TODO: Change return type to long -> Postgres int is java long, thus SELECT count(*) returns a long
-    // NOTA: si eso es asi y lo cambiamos, deberiamos cambiar TODOS los ids de la app que son int
     @Override
     public int getNftFavorites(int productId) {
         final Query query = em.createNativeQuery("SELECT count(*) FROM Favorited WHERE id_nft = :id_nft");

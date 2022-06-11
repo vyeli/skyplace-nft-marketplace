@@ -9,10 +9,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -21,13 +18,19 @@ public class BuyOrderJpaDao implements BuyOrderDao {
     @PersistenceContext
     private EntityManager em;
 
+    private Optional<BuyOrder> getBuyOrderForUserInSellOrder(int sellOrderId, int buyerId) {
+        final TypedQuery<BuyOrder> buyOrder = em.createQuery("FROM BuyOrder b WHERE b.buyOrderId.sellOrderId = :sellOrderId AND b.buyOrderId.buyerId = :buyerId ",BuyOrder.class);
+        buyOrder.setParameter("sellOrderId", sellOrderId);
+        buyOrder.setParameter("buyerId", buyerId);
+        return Optional.ofNullable(buyOrder.getSingleResult());
+    }
+
     @Override
     public BuyOrder create(SellOrder sellOrder, BigDecimal price, User bidder) {
-        for(BuyOrder buyorder:bidder.getBuyOrders()) {
-            if (buyorder.getOfferedFor().getId() == sellOrder.getId()) {
-                buyorder.setAmount(price);
-                return buyorder;
-            }
+        Optional<BuyOrder> existBuyOrder = getBuyOrderForUserInSellOrder(sellOrder.getId(), bidder.getId());
+        if(existBuyOrder.isPresent()) {
+            existBuyOrder.get().setAmount(price);
+            return existBuyOrder.get();
         }
         final BuyOrder buyOrder = new BuyOrder(price, sellOrder, bidder, StatusBuyOrder.NEW, null);
         em.persist(buyOrder);
@@ -130,7 +133,6 @@ public class BuyOrderJpaDao implements BuyOrderDao {
 
         @SuppressWarnings("unchecked")
         final List<Integer> ids = (List<Integer>) idQuery.getResultList().stream().collect(Collectors.toList());
-
         if(ids.size() == 0)
             return Collections.emptyList();
 

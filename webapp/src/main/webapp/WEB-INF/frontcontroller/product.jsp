@@ -435,7 +435,7 @@
                                         <path fill="#8A92B2" d="M420.1 1078.7l539.7 760.6v-441.7z"></path>
                                         <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
                                     </svg>
-                                    <form:input id="offerInput" type="number" value="0" class="rounded-lg border-slate-300" min="0" step="0.000000000000000001" path="price" />
+                                    <form:input id="offerInput" type="number" placeholder="0" class="rounded-lg border-slate-300" min="0.000000000000000001" step="0.000000000000000001" path="price" required="true" />
                                 </label>
                                 <input type="submit" class="bg-cyan-600 shadow-accent-volume hover:bg-cyan-700 inline-block w-1/2 rounded-lg py-3 px-8 text-center font-semibold text-white transition-all cursor-pointer" value="<spring:message code="product.makeOffer"/>">
                                 <span id="offerDisplay" class="ml-4 text-slate-500 text-base"></span>
