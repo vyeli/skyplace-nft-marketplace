@@ -47,13 +47,13 @@ public class FavoriteJpaDao implements FavoriteDao{
         final TypedQuery<Favorited> query = em.createQuery("FROM Favorited f WHERE f.user.id = :userId AND f.nft.id = :nftId", Favorited.class);
         query.setParameter("userId", userId);
         query.setParameter("nftId", idNft);
-        return Optional.ofNullable(query.getSingleResult());
+        return query.getResultList().stream().findFirst();
     }
 
     @Override
     public int getNftFavorites(int productId) {
         final Query query = em.createNativeQuery("SELECT count(*) FROM Favorited WHERE id_nft = :id_nft");
         query.setParameter("id_nft", productId);
-        return ((BigInteger) query.getSingleResult()).intValue();
+        return ((BigInteger)query.getSingleResult()).intValue();
     }
 }

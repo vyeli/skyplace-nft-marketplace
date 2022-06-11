@@ -23,7 +23,7 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         final TypedQuery<BuyOrder> buyOrder = em.createQuery("FROM BuyOrder b WHERE b.buyOrderId.sellOrderId = :sellOrderId AND b.buyOrderId.buyerId = :buyerId ",BuyOrder.class);
         buyOrder.setParameter("sellOrderId", sellOrderId);
         buyOrder.setParameter("buyerId", buyerId);
-        return Optional.ofNullable(buyOrder.getSingleResult());
+        return buyOrder.getResultList().stream().findFirst();
     }
 
     @Override
