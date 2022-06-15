@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.IntPredicate;
 
 @Service
 public class NftServiceImpl implements NftService {
@@ -20,6 +21,8 @@ public class NftServiceImpl implements NftService {
     private final MailingService mailingService;
     private final ImageService imageService;
     private final FavoriteService favoriteService;
+
+    private final int RECOMMENDED_AMOUNT = 6;
 
     @Autowired
     public NftServiceImpl(NftDao nftDao, UserService userService, MailingService mailingService, ImageService imageService, FavoriteService favoriteService) {
@@ -137,4 +140,133 @@ public class NftServiceImpl implements NftService {
         return nftDao.isNftCreated(contractNftId, contractAddr, chain);
     }
 
+    private Optional<Nft> getRandomNftFromCollection(int productId, String collection, int tableSize) {
+        return nftDao.getRandomNftFromCollection(productId, collection, tableSize);
+    }
+
+    private Optional<Nft> getRandomNftFromCategory(int productId, Category category, int tableSize) {
+        return nftDao.getRandomNftFromCategory(productId, category, tableSize);
+    }
+
+    private Optional<Nft> getRandomNftFromOwner(int productId, User owner, int tableSize) {
+        return nftDao.getRandomNftFromOwner(productId, owner, tableSize);
+    }
+
+    private Optional<Nft> getRandomNftFromChain(int productId, Chain chain, int tableSize) {
+        return nftDao.getRandomNftFromChain(productId, chain, tableSize);
+    }
+
+    private Optional<Nft> getRandomNftFromOtherBuyer(int productId, Nft nft, int tableSize) {
+        return nftDao.getRandomNftFromOtherBuyer(productId, nft, userService.getCurrentUser().map(User::getId).orElse(0),tableSize);
+    }
+
+    private Optional<Nft> getRandomNft(int productId, int tableSize) {
+        return nftDao.getRandomNft(productId, tableSize);
+    }
+
+    private boolean nftAlreadyRecommended(int[] productIds, int productId) {
+        return Arrays.stream(productIds).noneMatch(value -> value == productId);
+    }
+
+    private Publication createPublicationFromNft(Nft nft, Optional<User> user) {
+        Favorited f = favoriteService.userFavedNft(user.map(User::getId).orElse(0), nft.getId()).orElse(null);
+        return new Publication(nft, f);
+    }
+
+    @Override
+    public List<Publication> getRecommended(int productId) {
+        Optional<User> currentUser = userService.getCurrentUser();
+        Nft nft = getNFTById(productId).orElseThrow(NftNotFoundException::new);
+        List<Publication> recommended = new ArrayList<>();
+        int[] productIds = new int[RECOMMENDED_AMOUNT];
+        int[] randomSizes = nftDao.getRandomNftTableSizes(nft, currentUser.map(User::getId).orElse(0));
+        for(int i = 0; i < RECOMMENDED_AMOUNT; i++) {
+            RecommendedLabel randToString = RecommendedLabel.getRandomLabel();
+            Optional<Nft> nftToAdd;
+            switch(randToString) {
+                case COLLECTION:
+                    nftToAdd = getRandomNftFromCollection(productId, nft.getCollection(), randomSizes[0]);
+                    if(nftToAdd.isPresent() && nftAlreadyRecommended(productIds,nftToAdd.get().getId())) {
+                        recommended.add(createPublicationFromNft(nftToAdd.get(), currentUser));
+                        productIds[i] = nftToAdd.get().getId();
+                        break;
+                    }
+                case CATEGORY:
+                    if(nft.getSellOrder() != null) {
+                        nftToAdd = getRandomNftFromCategory(productId, nft.getSellOrder().getCategory(), randomSizes[1]);
+                        if (nftToAdd.isPresent() && nftAlreadyRecommended(productIds, nftToAdd.get().getId())) {
+                            recommended.add(createPublicationFromNft(nftToAdd.get(), currentUser));
+                            productIds[i] = nftToAdd.get().getId();
+                            break;
+                        }
+                    }
+                case SELLER:
+                    nftToAdd = getRandomNftFromOwner(productId, nft.getOwner(), randomSizes[2]);
+                    if (nftToAdd.isPresent() && nftAlreadyRecommended(productIds, nftToAdd.get().getId())) {
+                        recommended.add(createPublicationFromNft(nftToAdd.get(), currentUser));
+                        productIds[i] = nftToAdd.get().getId();
+                        break;
+                    }
+                case OTHER_BUYER:
+                    nftToAdd = getRandomNftFromOtherBuyer(productId, nft, randomSizes[3]);
+                    if (nftToAdd.isPresent() && nftAlreadyRecommended(productIds, nftToAdd.get().getId())) {
+                        recommended.add(createPublicationFromNft(nftToAdd.get(), currentUser));
+                        productIds[i] = nftToAdd.get().getId();
+                        break;
+                    }
+                case CHAIN:
+                    nftToAdd = getRandomNftFromChain(productId, nft.getChain(), randomSizes[4]);
+                    if (nftToAdd.isPresent() && nftAlreadyRecommended(productIds, nftToAdd.get().getId())) {
+                        recommended.add(createPublicationFromNft(nftToAdd.get(), currentUser));
+                        productIds[i] = nftToAdd.get().getId();
+                        break;
+                    }
+                default:
+                    nftToAdd = getRandomNft(productId, randomSizes[5]);
+                    if (nftToAdd.isPresent() && nftAlreadyRecommended(productIds, nftToAdd.get().getId())) {
+                        recommended.add(createPublicationFromNft(nftToAdd.get(), currentUser));
+                        productIds[i] = nftToAdd.get().getId();
+                        break;
+                    }
+            }
+
+        }
+
+        return recommended;
+    }
+
+
+    private enum RecommendedLabel {
+        COLLECTION,
+        CATEGORY,
+        OTHER_BUYER,
+        SELLER,
+        CHAIN,
+        RANDOM;
+        /*
+            [0:50): nft de esa coleccion
+            [50:70): nft de esa categoria
+            [70:80): un comprador de esa coleccion, nfts random de otra coleccion que haya comprado
+            [80:90): nft del mismo vendedor
+            [90:98): nft de esa chain
+            [98:100]: nft completamente random
+         */
+
+        public static RecommendedLabel getRandomLabel() {
+            double rand = Math.random()*100;
+            if(rand < 50)
+                return COLLECTION;
+            else if(rand < 70)
+                return CATEGORY;
+            else if(rand < 80)
+                return OTHER_BUYER;
+            else if(rand < 90)
+                return SELLER;
+            else if(rand < 98)
+                return CHAIN;
+            else
+                return RANDOM;
+        }
+
+    }
 }

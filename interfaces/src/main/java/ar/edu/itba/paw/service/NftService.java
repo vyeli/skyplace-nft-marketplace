@@ -27,4 +27,6 @@ public interface NftService {
     void delete(Nft nft);
 
     boolean isNftCreated(int nftId, String contractAddr, String chain);
+
+    List<Publication> getRecommended(int productId);
 }

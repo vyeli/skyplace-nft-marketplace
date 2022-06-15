@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!-- Card -->
-<div class="relative rounded-lg group shadow-sm hover:shadow-xl w-full max-w-sm">
+<div class="relative rounded-lg group shadow-sm hover:shadow-xl w-full max-w-xs">
     <!-- NFT image -->
     <img src="<c:url value="/images/${param.img}" />" alt="<c:out value="${param.name}" />" class="aspect-[4/3] w-full rounded-t-lg object-center object-cover group-hover:opacity-80 border-slate-300 border-x border-t" />
     <!-- Name and price -->

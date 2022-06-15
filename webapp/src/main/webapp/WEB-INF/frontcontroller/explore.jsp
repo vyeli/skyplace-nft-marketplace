@@ -231,7 +231,6 @@
                         <jsp:param name="category" value="${sellCategory}"/>
                         <jsp:param name="sellerUsername" value="${publication.nft.owner.username}"/>
                         <jsp:param name="idProduct" value="${publication.nft.id}"/>
-                        <jsp:param name="isFaved" value="false" />
                     </jsp:include>
                 </c:forEach>
             </div>

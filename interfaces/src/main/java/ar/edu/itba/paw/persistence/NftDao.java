@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.model.Chain;
-import ar.edu.itba.paw.model.Nft;
-import ar.edu.itba.paw.model.Publication;
-import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.model.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -26,4 +23,18 @@ public interface NftDao {
     int getAmountPublicationPagesByUser(int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale);
 
     boolean isNftCreated(int nftId, String contractAddr, String chain);
+
+    Optional<Nft> getRandomNftFromCollection(int productId, String collection, int tableSize);
+
+    Optional<Nft> getRandomNftFromCategory(int productId, Category category, int tableSize);
+
+    Optional<Nft> getRandomNftFromOwner(int productId, User owner, int tableSize);
+
+    Optional<Nft> getRandomNftFromChain(int productId, Chain chain, int tableSize);
+
+    Optional<Nft> getRandomNftFromOtherBuyer(int productId, Nft nft, int currentUserId, int tableSize);
+
+    Optional<Nft> getRandomNft(int productId, int tableSize);
+
+    int[] getRandomNftTableSizes(Nft nft, int currentUserId);
 }

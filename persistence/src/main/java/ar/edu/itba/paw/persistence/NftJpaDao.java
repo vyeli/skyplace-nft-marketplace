@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.*;
+import org.apache.commons.lang3.reflect.Typed;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +13,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -242,6 +245,103 @@ public class NftJpaDao implements NftDao {
             return false;
         Optional<Nft> maybeNft = getNftByPk(nftId, contractAddr, chain);
         return maybeNft.isPresent() && !maybeNft.get().isDeleted();
+    }
+
+    @Override
+    public Optional<Nft> getRandomNftFromCollection(int productId, String collection, int tableSize) {
+        int randomIndex = (int) (Math.random()*tableSize);
+        final TypedQuery<Nft> query = em.createQuery("FROM Nft nft WHERE nft.collection=:collection AND nft.id<>:productId AND nft.isDeleted=false",Nft.class);
+        query.setFirstResult(randomIndex);
+        query.setMaxResults(1);
+        query.setParameter("collection",collection);
+        query.setParameter("productId",productId);
+        return query.getResultList().stream().findFirst();
+    }
+
+    @Override
+    public Optional<Nft> getRandomNftFromCategory(int productId, Category category, int tableSize) {
+        int randomIndex = (int) (Math.random()*tableSize);
+        final TypedQuery<Nft> query = em.createQuery("FROM Nft nft WHERE nft.sellorder.category=:category AND nft.id<>:productId AND nft.isDeleted = false",Nft.class);
+        query.setFirstResult(randomIndex);
+        query.setMaxResults(1);
+        query.setParameter("category",category);
+        query.setParameter("productId",productId);
+        return query.getResultList().stream().findFirst();
+    }
+
+    @Override
+    public Optional<Nft> getRandomNftFromOwner(int productId, User owner, int tableSize) {
+        int randomIndex = (int) (Math.random()*tableSize);
+        final TypedQuery<Nft> query = em.createQuery("FROM Nft nft WHERE nft.owner.id=:idOwner AND nft.id<>:productId AND nft.isDeleted = false ",Nft.class);
+        query.setFirstResult(randomIndex);
+        query.setMaxResults(1);
+        query.setParameter("idOwner",owner.getId());
+        query.setParameter("productId",productId);
+        return query.getResultList().stream().findFirst();
+    }
+
+    @Override
+    public Optional<Nft> getRandomNftFromChain(int productId, Chain chain, int tableSize) {
+        int randomIndex = (int) (Math.random()*tableSize);
+        final TypedQuery<Nft> query = em.createQuery("FROM Nft nft WHERE nft.chain = :chain AND nft.id<>:productId AND nft.isDeleted = false",Nft.class);
+        query.setFirstResult(randomIndex);
+        query.setMaxResults(1);
+        query.setParameter("chain",chain);
+        query.setParameter("productId",productId);
+        return query.getResultList().stream().findFirst();
+    }
+
+    @Override
+    public Optional<Nft> getRandomNftFromOtherBuyer(int productId, Nft nft, int currentUserId, int tableSize) {
+        int randomIndex = (int) (Math.random()*tableSize);
+        // Random NFT from a different collection from productId nft and that collection contains one NFT
+        // that was bought by someone who also bought an NFT from the same productId nft collection
+        final TypedQuery<Nft> query = em.createQuery("FROM Nft nft WHERE nft.collection<>:collection AND nft.isDeleted = false AND nft.collection IN (SELECT DISTINCT purchase.nftsByIdNft.collection FROM Purchase purchase WHERE purchase.status=:successStatus AND purchase.buyer.id IN (SELECT purchase.buyer.id FROM Purchase purchase WHERE purchase.nftsByIdNft.collection=:collection AND purchase.status=:successStatus AND  purchase.buyer.id<>:currentUserId AND purchase.nftsByIdNft.id<>:productId))", Nft.class);
+        query.setFirstResult(randomIndex);
+        query.setMaxResults(1);
+        query.setParameter("collection",nft.getCollection());
+        query.setParameter("productId",productId);
+        query.setParameter("currentUserId", currentUserId);
+        query.setParameter("successStatus",StatusPurchase.SUCCESS);
+        return query.getResultList().stream().findFirst();
+    }
+
+    @Override
+    public Optional<Nft> getRandomNft(int productId, int tableSize) {
+        int randomIndex = (int) (Math.random()*tableSize);
+        final TypedQuery<Nft> query = em.createQuery("FROM Nft nft WHERE nft.id<>:productId AND nft.isDeleted = false",Nft.class);
+        query.setFirstResult(randomIndex);
+        query.setMaxResults(1);
+        query.setParameter("productId",productId);
+        return query.getResultList().stream().findFirst();
+    }
+
+    private final static String SELECT_ALL_RANDOM_TABLE_SIZE =
+            "SELECT * FROM " +
+                    "(SELECT COUNT(*) AS c1 FROM nfts WHERE collection=:collection AND id<>:productId AND nfts.is_deleted = false) AS c1 " +
+                    "CROSS JOIN (SELECT COUNT(*) AS c2 FROM nfts JOIN sellorders ON nfts.id=sellorders.id_nft WHERE nfts.id<>:productId AND category=:category AND nfts.is_deleted = false) AS c2 " +
+                    "CROSS JOIN (SELECT COUNT(*) AS c3 FROM nfts JOIN users ON id_owner=users.id WHERE nfts.id<>:productId AND id_owner=:idOwner AND nfts.is_deleted = false) AS c3 " +
+                    "CROSS JOIN (SELECT COUNT(*) AS c4 FROM nfts WHERE collection<>:collection AND is_deleted = false AND collection IN (SELECT DISTINCT nfts.collection FROM purchases INNER JOIN nfts ON purchases.id_nft=nfts.id WHERE purchases.status=:successStatus AND purchases.id_buyer IN (SELECT purchases.id_buyer FROM purchases INNER JOIN nfts ON purchases.id_nft=nfts.id WHERE nfts.collection=:collection AND purchases.status=:successStatus AND  purchases.id_buyer<>:currentUserId AND nfts.id<>:productId))) AS c4 " +
+                    "CROSS JOIN (SELECT COUNT(*) AS c5 FROM nfts WHERE nfts.id<>:productId AND chain=:chain AND nfts.is_deleted = false) AS c5  " +
+                    "CROSS JOIN (SELECT COUNT(*) AS c6 FROM nfts WHERE id<>19 AND is_deleted=false) AS c6";
+
+
+    @Override
+    public int[] getRandomNftTableSizes(Nft nft, int currentUserId) {
+        final Query query = em.createNativeQuery(SELECT_ALL_RANDOM_TABLE_SIZE);
+        query.setParameter("productId", nft.getId());
+        query.setParameter("collection",nft.getCollection());
+        query.setParameter("category", nft.getSellOrder() != null ? nft.getSellOrder().getCategory().name() : "");
+        query.setParameter("chain",nft.getChain().name());
+        query.setParameter("idOwner",nft.getOwner().getId());
+        query.setParameter("successStatus",StatusPurchase.SUCCESS.name());
+        query.setParameter("currentUserId", currentUserId);
+        Object[] out = (Object[]) query.getSingleResult();
+        int outLength = out.length;
+        int[] res = new int[outLength];
+        for(int i = 0; i < outLength; i++)
+            res[i] = ((BigInteger)out[i]).intValue();
+        return res;
     }
 
     protected static class Pair<T, U> {

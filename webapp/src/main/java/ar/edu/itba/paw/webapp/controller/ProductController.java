@@ -112,6 +112,8 @@ public class ProductController {
         User owner = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
         Optional<User> currentUser = userService.getCurrentUser();
         List<BuyOrder> buyOffers = new ArrayList<>();
+        List<Publication> recommended = nftService.getRecommended(productId);
+        mav.addObject("recommendedList", recommended);
         long amountOfferPages = 0;
 
         if(nft.getSellOrder() != null) {
@@ -128,7 +130,7 @@ public class ProductController {
         boolean isFaved = false;
 
         if(currentUser.isPresent()) {
-            isFaved = favoriteService.isNftFavedByUser(currentUser.get().getId(), nft.getId());
+            isFaved = favoriteService.isNftFavedByUser(currentUser.get().getId(), productId);
             mav.addObject("isAdmin", userService.isAdmin());
             mav.addObject("currentUser", currentUser.get());
         }
