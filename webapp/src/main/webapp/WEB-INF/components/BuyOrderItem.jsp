@@ -15,10 +15,20 @@
                     <c:out value="${param.nftName}" />#<c:out value="${param.nftCollectionId}"/>
                 </h3>
                 <div class="text-jacarta-500 block text-sm">
-                    <spring:message code="bidded.bidded" arguments="${param.price}"/>
+                    <c:choose>
+                        <c:when test="${param.isMySale == true}">
+                            <spring:message code="bidded.forSale" arguments="${[param.buyerUsername,param.price]}" />
+                        </c:when>
+                        <c:otherwise>
+                            <spring:message code="bidded.bidded" arguments="${param.price}"/>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
                 <div class="text-sm pt-3">
                     <c:choose>
+                        <c:when test="${param.isMySale == true}">
+                            <spring:message code="buyoffer.pendingDate" arguments="${param.offerDate}"/>
+                        </c:when>
                         <c:when test="${param.status == 'NEW'}">
                             <span><spring:message code="buyoffer.pending" /></span>
                         </c:when>
@@ -30,7 +40,7 @@
             </div>
         </div>
     </a>
-    <c:if test="${param.isAdmin == true || (param.isOwner != null && param.isOwner == true)}">
+    <c:if test="${param.isAdmin == true || (param.isMySale == false && param.isOwner != null && param.isOwner == true)}">
         <c:choose>
             <c:when test="${param.status == 'NEW'}">
                 <button type="submit" onclick="openDeleteOfferModal(${param.sellOrderId}, ${param.buyerId})" class="px-5 py-2 rounded-md text-white transition duration-300 shadow-md hover:shadow-xl bg-red-500 hover:bg-red-900 z-10 absolute right-8">

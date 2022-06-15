@@ -36,5 +36,5 @@ public interface BuyOrderService {
 
     List<String> getBuyOrderStatusNames();
 
-    boolean hasBuyOrderStatusName(String status);
+    boolean hasValidFilterName(String status);
 }

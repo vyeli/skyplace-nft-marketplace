@@ -79,7 +79,9 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     @Override
     public List<BuyOrder> getBuyOrdersForUser(User user, int page, String status) {
         checkPendingOrdersDateForUser(user);
-        return buyOrderDao.getBuyOrdersForUser(user, page, status, getPageSize());
+        if(!status.equals("MYSALES"))
+            return buyOrderDao.getBuyOrdersForUser(user, page, status, getPageSize());
+        return buyOrderDao.getPendingBuyOrdersToUser(user, page, getPageSize());
     }
 
     @Override
@@ -198,11 +200,13 @@ public class BuyOrderServiceImpl implements BuyOrderService {
 
     @Override
     public List<String> getBuyOrderStatusNames() {
-        return StatusBuyOrder.getStatusNames();
+        List<String> statusNames = StatusBuyOrder.getStatusNames();
+        statusNames.add("MYSALES");
+        return statusNames;
     }
 
     @Override
-    public boolean hasBuyOrderStatusName(String status) {
-        return StatusBuyOrder.hasStatus(status);
+    public boolean hasValidFilterName(String status) {
+        return StatusBuyOrder.hasStatus(status) || status.equals("MYSALES");
     }
 }

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
@@ -141,6 +142,27 @@ public class BuyOrderJpaDao implements BuyOrderDao {
     }
 
     @Override
+    public List<BuyOrder> getPendingBuyOrdersToUser(User user, int page, int pageSize) {
+        final Query idQuery = em.createNativeQuery("SELECT id_sellorder, id_buyer FROM  nfts INNER JOIN users ON nfts.id_owner=users.id INNER JOIN sellorders ON sellorders.id_nft=nfts.id INNER JOIN buyorders ON sellorders.id=buyorders.id_sellorder WHERE users.id=:userId AND status=:pendingStatus");
+        idQuery.setParameter("userId",user.getId());
+        idQuery.setParameter("pendingStatus", StatusBuyOrder.PENDING.name());
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> res = (List<Object[]>) idQuery.getResultList();
+        //List<BuyOrderId> buyOrderIds2 = res.stream().map(o -> new BuyOrderId(((BigInteger)o[0]).intValue(),((BigInteger)o[1]).intValue())).collect(Collectors.toList());
+        List<BuyOrderId> buyOrderIds = new ArrayList<>();
+
+        for(Object[] r:res)
+            buyOrderIds.add(new BuyOrderId((int)r[0],(int)r[1]));
+
+        if(buyOrderIds.size() == 0)
+            return Collections.emptyList();
+        final TypedQuery<BuyOrder> query = em.createQuery("FROM BuyOrder b WHERE b.buyOrderId IN :buyOrderIds",BuyOrder.class);
+        query.setParameter("buyOrderIds",buyOrderIds);
+        return query.getResultList();
+    }
+
+    @Override
     public List<BuyOrder> getOrdersBySellOrderId(int page, int sellOrderId, int pageSize) {
         final Query idQuery = em.createNativeQuery("SELECT id_buyer FROM buyorders WHERE id_sellorder = :sellOrderId LIMIT :pageSize OFFSET :pageOffset");
         idQuery.setParameter("sellOrderId", sellOrderId);
@@ -148,7 +170,7 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         idQuery.setParameter("pageOffset", (page-1) * pageSize);
 
         @SuppressWarnings("unchecked")
-        final List<Integer> ids = (List<Integer>) idQuery.getResultList().stream().collect(Collectors.toList());
+        final List<Integer> ids = (List<Integer>) idQuery.getResultList();
         if(ids.size() == 0)
             return Collections.emptyList();
 

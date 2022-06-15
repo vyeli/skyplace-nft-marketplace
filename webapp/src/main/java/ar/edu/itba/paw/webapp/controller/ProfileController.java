@@ -93,11 +93,12 @@ public class ProfileController {
                 mav.addObject("pages", purchaseService.getAmountPagesByUserId(userId));
                 break;
             case "buyorders":
-                String itemsTypeName = buyOrderService.hasBuyOrderStatusName(profileFilter.getItems()) ? profileFilter.getItems() : "ALL";
+                String itemsTypeName = buyOrderService.hasValidFilterName(profileFilter.getItems()) ? profileFilter.getItems() : "ALL";
                 List<BuyOrder> buyOrders = buyOrderService.getBuyOrdersForUser(user, Integer.parseInt(profileFilter.getPage()), itemsTypeName);
                 mav.addObject("buyOrderItems", buyOrders);
                 mav.addObject("buyOrderItemsSize", buyOrders.size());
                 mav.addObject("pages", buyOrderService.getAmountPagesForUser(user));
+                mav.addObject("isMySale", itemsTypeName.equals("MYSALES"));
                 Map<String, BuyOrderItemType> itemTypes = getBuyOrderItemTypes();
                 itemTypes.get(itemsTypeName).setActive(true);
                 mav.addObject("buyOrderItemTypes", itemTypes.values());

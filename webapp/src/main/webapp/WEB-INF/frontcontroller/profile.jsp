@@ -151,12 +151,14 @@
                         <jsp:param name="sellOrderId" value="${buyOrderItem.offeredFor.id}"/>
                         <jsp:param name="buyerId" value="${buyOrderItem.offeredBy.id}"/>
                         <jsp:param name="buyerUsername" value="${buyOrderItem.offeredBy.username}"/>
+                        <jsp:param name="offerDate" value="${buyOrderItem.pendingDate}" />
                         <jsp:param name="buyerWallet" value="${buyOrderItem.offeredBy.wallet}"/>
                         <jsp:param name="sellerUsername" value="${buyOrderItem.offeredFor.nft.owner.username}"/>
                         <jsp:param name="sellerWallet" value="${buyOrderItem.offeredFor.nft.owner.wallet}"/>
                         <jsp:param name="status" value="${buyOrderItem.status}"/>
                         <jsp:param name="isOwner" value="${isOwner}"/>
                         <jsp:param name="isAdmin" value="${isAdmin}"/>
+                        <jsp:param name="isMySale" value="${isMySale}" />
                     </jsp:include>
                 </c:forEach>
                 <c:if test="${buyOrderItemsSize == 0}">
