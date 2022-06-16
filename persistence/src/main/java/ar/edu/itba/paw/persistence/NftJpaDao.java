@@ -29,11 +29,18 @@ public class NftJpaDao implements NftDao {
     private static final String COUNT_ID_QUERY = "SELECT COUNT(nfts.id) " +
             "FROM nfts " +
             "LEFT OUTER JOIN sellorders ON nfts.id=sellorders.id_nft " +
-            "JOIN users ON id_owner=users.id ";
+            "JOIN users ON id_owner=users.id " +
+            "LEFT OUTER JOIN favorited ON nfts.id=favorited.id_nft ";
+
     private static final String SELECT_ID_QUERY = "SELECT nfts.id " +
                                                                 "FROM nfts " +
                                                                 "LEFT OUTER JOIN sellorders ON nfts.id=sellorders.id_nft " +
                                                                 "JOIN users ON id_owner=users.id ";
+    private static final String SELECT_FAVORITED_ID_QUERY = "SELECT nfts.id " +
+                                        "FROM nfts " +
+                                        "LEFT OUTER JOIN sellorders ON nfts.id=sellorders.id_nft " +
+                                        "JOIN users ON id_owner=users.id " +
+                                        "LEFT OUTER JOIN favorited ON nfts.id=favorited.id_nft";
 
     @Override
     public Nft create(int nftId, String contractAddr, String nftName, Chain chain, MultipartFile image, User owner, String collection, String description) {
@@ -123,7 +130,7 @@ public class NftJpaDao implements NftDao {
     @Override
     public List<Nft> getAllPublications(int page, int pageSize, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
         Pair<String,List<Pair<String,Object>>> filterQuery = buildFilterQuery(status, category, chain, minPrice, maxPrice, search, searchFor);
-        return executeQueries(filterQuery, pageSize, page, sort);
+        return executeQueries(SELECT_ID_QUERY,filterQuery, pageSize, page, sort);
     }
 
     private Pair<String, List<Pair<String,Object>>> buildFilterQueryByUser(User user, boolean onlyFaved, boolean onlyOnSale) {
@@ -160,16 +167,16 @@ public class NftJpaDao implements NftDao {
     @Override
     public List<Nft> getAllPublicationsByUser(int page, int pageSize, User user, boolean onlyFaved, boolean onlyOnSale, String sort) {
         Pair<String, List<Pair<String,Object>>> filterQuery = buildFilterQueryByUser(user, onlyFaved, onlyOnSale);
-        return executeQueries(filterQuery, pageSize, page, sort);
+        return executeQueries(onlyFaved ? SELECT_FAVORITED_ID_QUERY:SELECT_ID_QUERY,filterQuery, pageSize, page, sort);
     }
-    private List<Nft> executeQueries(Pair<String, List<Pair<String,Object>>> filterQuery, int pageSize, int page, String sort) {
+    private List<Nft> executeQueries(String initalQuery,Pair<String, List<Pair<String,Object>>> filterQuery, int pageSize, int page, String sort) {
         String nativeQuery = filterQuery.getLeft();
         Pair<String,String> sorts = applySort(sort);
         List<Pair<String,Object>> args = filterQuery.getRight();
 
         if(page <= 0)
             page = 1;
-        StringBuilder queryString = new StringBuilder(SELECT_ID_QUERY);
+        StringBuilder queryString = new StringBuilder(initalQuery);
         queryString.append(nativeQuery).append(sorts.getLeft()).append(" LIMIT :pageSize OFFSET :pageOffset");
         final Query idQuery = em.createNativeQuery(queryString.toString());
         idQuery.setParameter("pageSize", pageSize);
@@ -185,7 +192,7 @@ public class NftJpaDao implements NftDao {
         }
 
         @SuppressWarnings("unchecked")
-        final List<Integer> ids = (List<Integer>) idQuery.getResultList().stream().collect(Collectors.toList());
+        final List<Integer> ids = (List<Integer>) idQuery.getResultList();
 
         if(ids.size() == 0)
             return Collections.emptyList();
