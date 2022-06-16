@@ -19,7 +19,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final PurchaseDao purchaseDao;
     private final UserService userService;
     private final NftService nftService;
-    private final int pageSize = 3;
+    private final int pageSize = 5;
 
     @Autowired
     public PurchaseServiceImpl(PurchaseDao purchaseDao, UserService userService, NftService nftService) {
@@ -45,8 +45,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public int getAmountPagesByUserId(int userId) {
-        Optional<User> maybeUser = userService.getUserById(userId);
-        return maybeUser.map(user -> (user.getTransactionAmount() - 1) / pageSize + 1).orElse(0);
+        return (purchaseDao.getTransactionAmount(userId) - 1) / getPageSize() + 1;
     }
 
     @Override

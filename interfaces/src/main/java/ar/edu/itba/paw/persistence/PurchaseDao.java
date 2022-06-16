@@ -19,4 +19,6 @@ public interface PurchaseDao {
     Purchase createPurchase(User buyer, User seller, Nft nft, BigDecimal price, String txHash, StatusPurchase statusPurchase);
 
     boolean isTxHashAlreadyInUse(String txHash);
+
+    int getTransactionAmount(int userId);
 }

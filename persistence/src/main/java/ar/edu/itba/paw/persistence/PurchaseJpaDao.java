@@ -11,11 +11,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class PurchaseJpaDao implements PurchaseDao {
@@ -44,7 +44,7 @@ public class PurchaseJpaDao implements PurchaseDao {
         idQuery.setParameter("pageSize", pageSize);
         idQuery.setParameter("offset", pageSize * (page - 1));
         @SuppressWarnings("unchecked")
-        List<Integer> ids = (List<Integer>) idQuery.getResultList().stream().collect(Collectors.toList());
+        List<Integer> ids = (List<Integer>) idQuery.getResultList();
 
         if(ids.size() == 0)
             return new ArrayList<>();
@@ -69,5 +69,12 @@ public class PurchaseJpaDao implements PurchaseDao {
         query.setParameter("statusPurchase", StatusPurchase.SUCCESS);
         query.setParameter("txHash", txHash);
         return query.getResultList().stream().findFirst().isPresent();
+    }
+
+    @Override
+    public int getTransactionAmount(int userId) {
+        final Query query = em.createNativeQuery("SELECT count(id) FROM purchases WHERE id_buyer=:userId OR id_seller=:userId");
+        query.setParameter("userId",userId);
+        return ((BigInteger)query.getSingleResult()).intValue();
     }
 }

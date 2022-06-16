@@ -80,10 +80,6 @@ public class User {
         return false;
     }
 
-    public int getTransactionAmount() {
-        return saleHistory.size() + purchaseHistory.size();
-    }
-
     public int getId() {
         return id;
     }
