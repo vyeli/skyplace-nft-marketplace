@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -41,7 +42,8 @@ public class ReviewServiceImpl implements ReviewService{
         User reviewer = userDao.getUserById(reviewerId).orElseThrow(UserNotFoundException::new);
         User reviewee = userDao.getUserById(revieweeId).orElseThrow(UserNotFoundException::new);
         Review newReview = reviewDao.addReview(reviewer, reviewee, score, title, comments);
-        mailingService.sendNewReviewMail(reviewee.getUsername(), reviewee.getEmail(), revieweeId, reviewer.getUsername(), reviewer.getEmail(), newReview.getScore(), newReview.getTitle(), newReview.getComments(), LocaleContextHolder.getLocale());
+        Locale locale = Locale.forLanguageTag(reviewee.getLocale());
+        mailingService.sendNewReviewMail(reviewee.getUsername(), reviewee.getEmail(), revieweeId, reviewer.getUsername(), reviewer.getEmail(), newReview.getScore(), newReview.getTitle(), newReview.getComments(), locale);
     }
 
     @Override

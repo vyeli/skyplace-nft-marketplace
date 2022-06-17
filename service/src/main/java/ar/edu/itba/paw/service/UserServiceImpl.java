@@ -3,7 +3,6 @@ package ar.edu.itba.paw.service;
 import ar.edu.itba.paw.exceptions.UserAlreadyExistsException;
 import ar.edu.itba.paw.exceptions.UserNotLoggedInException;
 import ar.edu.itba.paw.model.Chain;
-import ar.edu.itba.paw.model.SellOrder;
 import ar.edu.itba.paw.model.User;
 import ar.edu.itba.paw.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -34,8 +34,9 @@ public class UserServiceImpl implements UserService{
     public User create(String email, String username, String wallet, String walletChain, String password) {
         if(userDao.getUserByEmail(email).isPresent())
             throw new UserAlreadyExistsException();
-        User user = userDao.create(email, username, wallet, Chain.valueOf(walletChain), passwordEncoder.encode(password));
-        mailingService.sendRegisterMail(email, username, LocaleContextHolder.getLocale());
+        Locale locale = LocaleContextHolder.getLocale();
+        User user = userDao.create(email, username, wallet, Chain.valueOf(walletChain), passwordEncoder.encode(password), locale.toLanguageTag());
+        mailingService.sendRegisterMail(email, username, locale);
         return user;
     }
 

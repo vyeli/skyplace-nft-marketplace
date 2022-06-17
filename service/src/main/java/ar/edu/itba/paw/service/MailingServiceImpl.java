@@ -38,8 +38,8 @@ public class MailingServiceImpl implements MailingService{
     private static final String EMAIL_ENCODING = "UTF-8";
     private static final String IMG_PNG_FORMAT = "image/png";
 
-    // FIXME: no deberia esto ser estatico hardcodeado
     private static final String EXPLORE_URL = "http://pawserver.it.itba.edu.ar/paw-2022a-09/explore";
+
     private static final String PRODUCT_BASE_URL = "http://pawserver.it.itba.edu.ar/paw-2022a-09/product/";
 
     private static final String PROFILE_BASE_URL = "http://pawserver.it.itba.edu.ar/paw-2022a-09/profile/";
@@ -64,8 +64,15 @@ public class MailingServiceImpl implements MailingService{
         this.messageSource = messageSource;
     }
 
+    /**
+     *Sends a Welcome mail to the user
+     *@param userEmail String that contains the email of the addressee
+     *@param username String that contains the user's name.
+     *@param locale Locale of the addressee in order to send the email in that language.
+     *@throws MessagingException if email could not be sent
+     */
     @Override
-    public void sendRegisterMail(String userEmail, String username, Locale locale){
+    public void sendRegisterMail(String userEmail, String username, Locale locale) /*throws MessagingException*/{
         final MimeMessage message = emailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);

@@ -32,7 +32,7 @@ public class FrontController {
     private final MessageSource messageSource;
 
     @Autowired
-    public FrontController(UserService userService, NftService nftService, MessageSource messageSource) {
+    public FrontController(UserService userService, NftService nftService, MessageSource messageSource, MailingService mailingService) {
         this.userService = userService;
         this.nftService = nftService;
         this.messageSource = messageSource;

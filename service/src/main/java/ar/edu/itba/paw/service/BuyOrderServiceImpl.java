@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -49,7 +50,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         Nft nft = sellOrder.getNft();
         User seller = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
-        mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), price, image.getImage(), LocaleContextHolder.getLocale());
+        Locale locale = Locale.forLanguageTag(seller.getLocale());
+        mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), price, image.getImage(), locale);
         return true;
     }
 
@@ -101,7 +103,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
 
         sellOrder.getNft().setOwner(buyer);
-        mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), seller.getId(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), buyOrder.get().getAmount(), image.getImage(), LocaleContextHolder.getLocale());
+        Locale locale = Locale.forLanguageTag(buyer.getLocale());
+        mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), seller.getId(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), buyOrder.get().getAmount(), image.getImage(), locale);
 
         sellOrderService.delete(sellOrder.getId(), buyOrder.get());
         purchaseService.createPurchase(buyerId, seller.getId(), nft.getId(), buyOrder.get().getAmount(), txHash, StatusPurchase.SUCCESS);
@@ -152,8 +155,9 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
         BigDecimal offerAmount = buyOrder.get().getAmount();
         buyOrderDao.deleteBuyOrder(sellOrderId, buyerId);
+        Locale locale = Locale.forLanguageTag(buyer.getLocale());
         mailingService.sendOfferRejectedMail(buyer.getEmail(), seller.getEmail(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), new BigDecimal(offerAmount.stripTrailingZeros()
-                .toPlainString()), image.getImage(),  LocaleContextHolder.getLocale());
+                .toPlainString()), image.getImage(), locale);
     }
 
     @Override

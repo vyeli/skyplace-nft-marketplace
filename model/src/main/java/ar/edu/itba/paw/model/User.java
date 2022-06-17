@@ -38,6 +38,9 @@ public class User {
     @Column(nullable = false, length = -1)
     private Role role;
 
+    @Column(name="locale", columnDefinition = "TEXT DEFAULT 'en'")
+    private String locale;
+
     @OneToMany(mappedBy = "offeredBy", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<BuyOrder> buyOrders;
 
@@ -63,13 +66,14 @@ public class User {
         // just for hibernate
     }
 
-    public User(String username, String wallet, String email, String password, Chain walletChain, Role role) {
+    public User(String username, String wallet, String email, String password, Chain walletChain, Role role, String locale) {
         this.username = username;
         this.wallet = wallet;
         this.email = email;
         this.password = password;
         this.walletChain = walletChain;
         this.role = role;
+        this.locale = locale;
     }
 
     public boolean isNftOwner(int nftId) {
@@ -107,5 +111,7 @@ public class User {
     public Role getRole() {
         return role;
     }
+
+    public String getLocale() { return locale; }
 
 }

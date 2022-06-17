@@ -51,7 +51,8 @@ public class NftServiceImpl implements NftService {
             newNft = nftDao.create(nftId, contractAddr, nftName, Chain.valueOf(chain), image, owner, collection, description);
         }
         Image nftImage = imageService.getImage(newNft.getIdImage()).orElseThrow(ImageNotFoundException::new);
-        mailingService.sendNftCreatedMail(owner.getEmail(), owner.getUsername(), nftId, nftName, contractAddr, nftImage.getImage(), LocaleContextHolder.getLocale());
+        Locale locale = Locale.forLanguageTag(owner.getLocale());
+        mailingService.sendNftCreatedMail(owner.getEmail(), owner.getUsername(), nftId, nftName, contractAddr, nftImage.getImage(), locale);
         return newNft;
     }
 
@@ -132,7 +133,8 @@ public class NftServiceImpl implements NftService {
         User owner = nft.getOwner();
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
         nft.setDeleted(true); // soft delete
-        mailingService.sendNftDeletedMail(owner.getEmail(), owner.getUsername(), nft.getNftId(), nft.getNftName(), nft.getContractAddr(), image.getImage(), LocaleContextHolder.getLocale());
+        Locale locale = Locale.forLanguageTag(owner.getLocale());
+        mailingService.sendNftDeletedMail(owner.getEmail(), owner.getUsername(), nft.getNftId(), nft.getNftName(), nft.getContractAddr(), image.getImage(), locale);
     }
 
     @Override

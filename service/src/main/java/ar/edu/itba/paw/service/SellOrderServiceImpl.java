@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -48,8 +49,9 @@ public class SellOrderServiceImpl implements SellOrderService {
         User owner = nft.getOwner();
         SellOrder sellOrder = sellOrderDao.create(price, nft, Category.valueOf(category));
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
+        Locale locale = Locale.forLanguageTag(owner.getLocale());
         mailingService.sendNftSellOrderCreatedMail(owner.getEmail(), owner.getUsername(), nft.getNftId(), nft.getNftName(), nft.getContractAddr(), new BigDecimal(price.stripTrailingZeros()
-                .toPlainString()), image.getImage(), LocaleContextHolder.getLocale());
+                .toPlainString()), image.getImage(), locale);
         return sellOrder;
     }
 
@@ -78,8 +80,9 @@ public class SellOrderServiceImpl implements SellOrderService {
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
 
         sellOrderDao.delete(sellOrder.getId());
+        Locale locale = Locale.forLanguageTag(owner.getLocale());
         mailingService.sendSellOrderDeletedMail(owner.getEmail(), owner.getUsername(),nft.getNftId(), nft.getNftName(), nft.getContractAddr(), image.getImage(), new BigDecimal(sellOrder.getPrice().stripTrailingZeros()
-                .toPlainString()),  LocaleContextHolder.getLocale());
+                .toPlainString()), locale);
     }
 
     @Transactional

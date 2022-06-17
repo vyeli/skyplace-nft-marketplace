@@ -17,8 +17,8 @@ public class UserJpaDao implements UserDao {
     private EntityManager em;
 
     @Override
-    public User create(String email, String username, String wallet, Chain walletChain, String password) {
-        final User user = new User(username, wallet, email, password, walletChain, Role.User);
+    public User create(String email, String username, String wallet, Chain walletChain, String password, String locale) {
+        final User user = new User(username, wallet, email, password, walletChain, Role.User, locale);
         em.persist(user);
         return user;
     }

@@ -1,21 +1,12 @@
 package ar.edu.itba.paw.webapp.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.io.Resource;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.DatabasePopulator;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -30,14 +21,10 @@ import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
-import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
-import org.thymeleaf.templatemode.TemplateMode;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.Properties;
 
 @ComponentScan({
@@ -54,13 +41,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
     public static final String DB_URL_PARAMETER = "DB_URL";
     public static final String DB_USERNAME_PARAMETER = "DB_USERNAME";
     public static final String DB_PASSWORD_PARAMETER = "DB_PASSWORD";
-
-    private final static String MAIL_USERNAME_PARAMETER = "MAIL_USERNAME";
-    private final static String MAIL_PASSWORD_PARAMETER = "MAIL_PASSWORD";
-    private final static String MAIL_HOST_PARAMETER = "MAIL_HOST";
-    private final static String MAIL_PORT_PARAMETER = "MAIL_PORT";
-    private final static String MAIL_AUTH_PARAMETER = "MAIL_HAS_AUTH";
-    private final static String MAIL_STARTTLS_PARAMETER = "MAIL_STARTTLS_ENABLE";
 
     @Bean
     public ViewResolver viewResolver() {
@@ -120,16 +100,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
         return messageSource;
     }
 
-    @Bean
-    public SpringResourceTemplateResolver templateResolver(){
-        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setPrefix("classpath:mails/templates/");
-        templateResolver.setSuffix(".html");
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        templateResolver.setCacheable(false);
-        return templateResolver;
-    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -156,32 +126,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
     @Bean
     public PlatformTransactionManager transactionManager(final EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
-    }
-
-    @Bean
-    public SpringTemplateEngine templateEngine(){
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver());
-        return templateEngine;
-    }
-
-    @Bean
-    public JavaMailSender emailSender(){
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-
-        final Dotenv env = Dotenv.load();
-
-        mailSender.setHost(env.get(MAIL_HOST_PARAMETER));
-        mailSender.setPort(Integer.parseInt(Objects.requireNonNull(env.get(MAIL_PORT_PARAMETER))));
-        mailSender.setUsername(env.get(MAIL_USERNAME_PARAMETER));
-        mailSender.setPassword(env.get(MAIL_PASSWORD_PARAMETER));
-
-        Properties javaMailProps = new Properties();
-        javaMailProps.setProperty("mail.smtp.auth", env.get(MAIL_AUTH_PARAMETER));
-        javaMailProps.setProperty("mail.smtp.starttls.enable", env.get(MAIL_STARTTLS_PARAMETER));
-        mailSender.setJavaMailProperties(javaMailProps);
-
-        return mailSender;
     }
 
 //    @Value("classpath:sql/schema.sql")

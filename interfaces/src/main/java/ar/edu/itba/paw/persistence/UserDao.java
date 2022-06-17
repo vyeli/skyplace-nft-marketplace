@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UserDao {
 
-    User create(String email, String username, String wallet, Chain walletChain, String password);
+    User create(String email, String username, String wallet, Chain walletChain, String password, String locale);
 
     Optional<User> getUserByEmail(String email);
 
