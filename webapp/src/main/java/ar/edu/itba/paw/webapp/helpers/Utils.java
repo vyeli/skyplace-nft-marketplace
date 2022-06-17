@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.helpers;
 
-import ar.edu.itba.paw.webapp.controller.FrontController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -13,6 +12,10 @@ import java.util.Objects;
 public class Utils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+
+    private Utils() {
+        throw new UnsupportedOperationException();
+    }
 
     public static int parseInt(String number) throws NumberFormatException {
         int parsedNumber;
