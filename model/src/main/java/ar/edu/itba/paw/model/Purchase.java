@@ -57,7 +57,7 @@ public class Purchase {
     }
 
     public BigDecimal getPrice() {
-        return new BigDecimal(price.stripTrailingZeros().toPlainString());
+        return price.stripTrailingZeros();
     }
 
     public Timestamp getBuyDate() {

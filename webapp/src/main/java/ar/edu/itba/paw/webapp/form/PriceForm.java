@@ -12,9 +12,7 @@ public class PriceForm {
     private BigDecimal price;
 
     public BigDecimal getPrice() {
-        if(price == null)
-            return BigDecimal.ZERO;
-        return new BigDecimal(price.stripTrailingZeros().toPlainString());
+        return price == null ? BigDecimal.ZERO : price.stripTrailingZeros();
     }
 
     public void setPrice(BigDecimal price) {

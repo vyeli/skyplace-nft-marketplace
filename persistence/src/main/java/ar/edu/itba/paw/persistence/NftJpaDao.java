@@ -113,7 +113,7 @@ public class NftJpaDao implements NftDao {
         }
         if(maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) > 0) {
             nativeQuery.append(" AND sellorders.price <=  :maxPrice ");
-            args.add(new Pair<>("maxPrice", minPrice));
+            args.add(new Pair<>("maxPrice", maxPrice));
         }
 
         if(search != null && !search.equals("")) {

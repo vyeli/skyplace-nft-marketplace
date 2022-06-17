@@ -147,7 +147,7 @@
                         <jsp:param name="nftCollectionId" value="${buyOrderItem.offeredFor.nft.nftId}"/>
                         <jsp:param name="nftContractAddr" value="${buyOrderItem.offeredFor.nft.contractAddr}"/>
                         <jsp:param name="nftImg" value="${buyOrderItem.offeredFor.nft.idImage}"/>
-                        <jsp:param name="price" value="${buyOrderItem.amount}"/>
+                        <jsp:param name="price" value="${buyOrderItem.amount.toPlainString()}"/>
                         <jsp:param name="sellOrderId" value="${buyOrderItem.offeredFor.id}"/>
                         <jsp:param name="buyerId" value="${buyOrderItem.offeredBy.id}"/>
                         <jsp:param name="buyerUsername" value="${buyOrderItem.offeredBy.username}"/>
@@ -175,7 +175,7 @@
                         <jsp:param name="nftId" value="${item.nftsByIdNft.nftId}"/>
                         <jsp:param name="nftImg" value="${item.nftsByIdNft.idImage}"/>
                         <jsp:param name="isNftDeleted" value="${item.nftsByIdNft.deleted}"/>
-                        <jsp:param name="price" value="${item.price}"/>
+                        <jsp:param name="price" value="${item.price.toPlainString()}"/>
                         <jsp:param name="date" value="${item.buyDate}"/>
                         <jsp:param name="sellerUsername" value="${item.seller.username}"/>
                         <jsp:param name="sellerId" value="${item.seller.id}"/>
@@ -204,7 +204,7 @@
             <div class="flex flex-wrap justify-center gap-8">
                 <c:forEach items="${publications}" var="publication">
                     <c:if test="${publication.nft.sellOrder != null}">
-                        <c:set value="${publication.nft.sellOrder.price}" var="sellPrice" />
+                        <c:set value="${publication.nft.sellOrder.price.toPlainString()}" var="sellPrice" />
                         <c:set value="${publication.nft.sellOrder.category}" var="sellCategory" />
                     </c:if>
                     <jsp:include page="../components/Card.jsp">

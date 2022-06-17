@@ -51,7 +51,7 @@
             type="number"
             path="price"
             autoComplete="off"
-            value="${order.price}"
+            value="${order.price.toPlainString()}"
             required="true"
             placeholder="0.0"
             min="0"

@@ -156,8 +156,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         BigDecimal offerAmount = buyOrder.get().getAmount();
         buyOrderDao.deleteBuyOrder(sellOrderId, buyerId);
         Locale locale = Locale.forLanguageTag(buyer.getLocale());
-        mailingService.sendOfferRejectedMail(buyer.getEmail(), seller.getEmail(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), new BigDecimal(offerAmount.stripTrailingZeros()
-                .toPlainString()), image.getImage(), locale);
+        mailingService.sendOfferRejectedMail(buyer.getEmail(), seller.getEmail(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), offerAmount, image.getImage(), locale);
     }
 
     @Override

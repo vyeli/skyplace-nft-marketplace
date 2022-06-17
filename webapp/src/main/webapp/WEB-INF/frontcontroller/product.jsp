@@ -46,7 +46,7 @@
                             <span class="pl-2 font-semibold"><spring:message code="product.offers"/></span>
                         </div>
                         <div>
-                            <div class="flex flex-col px-4 divide-y">
+                            <div class="flex flex-col px-4 pt-4 divide-y">
                                 <c:set var="offerCount" value="1" scope="page" />
                                 <c:forEach items="${buyOffer}" var="offer">
                                     <div class="flex items-center justify-between py-3">
@@ -75,7 +75,7 @@
                                                     <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
                                                     </svg>
                                                 <span class="text-slate-700">
-                                                        <c:out value="${offer.amount}"/>
+                                                        <c:out value="${offer.amount.toPlainString()}"/>
                                                     </span>
                                             </div>
                                             <c:if test="${isBuyPending == null || isBuyPending == false}">
@@ -114,13 +114,13 @@
                                         <c:if test="${offerPage > 1}">
                                             <form action="<c:url value="/product/${productId}#offers" />" method="get" class="pr-2">
                                                 <input type="hidden" name="offerPage" value="${offerPage-1}" />
-                                                <button type="submit" class="text-cyan-700 text-lg">
+                                                <button type="submit" class="text-cyan-700 text-lg hover:underline hover:text-cyan-800">
                                                     <spring:message code="product.previous"/>
                                                 </button>
                                             </form>
                                             <form action="<c:url value="/product/${productId}#offers" />" method="get">
                                                 <input type="hidden" name="offerPage" value="1" />
-                                                <button type="submit" class="text-cyan-700 text-lg px-2">
+                                                <button type="submit" class="text-cyan-700 text-lg px-2 hover:underline hover:text-cyan-800">
                                                     1
                                                 </button>
                                             </form>
@@ -131,7 +131,7 @@
                                         <c:if test="${offerPage-1 > 1}">
                                             <form action="<c:url value="/product/${productId}#offers" />" method="get" >
                                                 <input type="hidden" name="offerPage" value="${offerPage-1}" />
-                                                <button type="submit" class="text-cyan-700 text-lg px-2">
+                                                <button type="submit" class="text-cyan-700 text-lg px-2 hover:underline hover:text-cyan-800">
                                                     ...<c:out value="${offerPage-1}"/>
                                                 </button>
                                             </form>
@@ -140,7 +140,7 @@
                                         <c:if test="${offerPage+1 < amountOfferPages}">
                                             <form action="<c:url value="/product/${productId}#offers" />" method="get">
                                                 <input type="hidden" name="offerPage" value="${offerPage+1}" />
-                                                <button type="submit" class="text-cyan-700 text-lg px-2">
+                                                <button type="submit" class="text-cyan-700 text-lg px-2 hover:underline hover:text-cyan-800">
                                                     <c:out value="${offerPage+1}"/>...
                                                 </button>
                                             </form>
@@ -148,13 +148,13 @@
                                         <c:if test="${offerPage < amountOfferPages}">
                                             <form action="<c:url value="/product/${productId}#offers" />" method="get">
                                                 <input type="hidden" name="offerPage" value="${amountOfferPages}" />
-                                                <button type="submit" class="text-cyan-700 text-lg px-2">
+                                                <button type="submit" class="text-cyan-700 text-lg px-2 hover:underline hover:text-cyan-800">
                                                     <c:out value="${amountOfferPages}"/>
                                                 </button>
                                             </form>
                                             <form action="<c:url value="/product/${productId}#offers" />" method="get" class="px-2">
                                                 <input type="hidden" name="offerPage" value="${offerPage+1}" />
-                                                <button type="submit" class="text-cyan-700 text-lg">
+                                                <button type="submit" class="text-cyan-700 text-lg hover:underline hover:text-cyan-800">
                                                     <spring:message code="product.next"/>
                                                 </button>
                                             </form>
@@ -289,7 +289,7 @@
                             </span>
                             <c:choose>
                                 <c:when test="${sellOrder != null}">
-                                    <span class="text-green font-bold tracking-tight">${sellOrder.price}</span>
+                                    <span class="text-green font-bold tracking-tight"><c:out value="${sellOrder.price.toPlainString()}" /></span>
                                     <span id="priceTag" class="ml-4 text-slate-500 text-base"></span>
                                 </c:when>
                                 <c:otherwise>
@@ -365,7 +365,7 @@
                                         <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
                                     </svg>
                                     <span class="text-slate-700">
-                                        <c:out value="${pendingBuyOrder.amount}"/>
+                                        <c:out value="${pendingBuyOrder.amount.toPlainString()}"/>
                                     </span>
                                 </div>
                             </div>
@@ -377,7 +377,7 @@
                         </a>
                     </c:if>
                     <c:if test="${isBuyPending != null && isBuyPending == true && (pendingBuyOrder.offeredBy.id == currentUser.id || isAdmin)}">
-                        <button onclick="openConfirmBuyOfferModal('${pendingBuyOrder.offeredBy.username}', '${pendingBuyOrder.offeredBy.wallet}', '${owner.username}', '${owner.wallet}', '${nft.nftName}', '${nft.contractAddr}', ${pendingBuyOrder.amount}, ${nft.nftId}, ${nft.id}, ${sellOrder.id}, ${pendingBuyOrder.offeredBy.id})" class="px-5 py-2 rounded-md text-white transition duration-300 shadow-md hover:shadow-xl bg-cyan-600 hover:bg-cyan-800 ml-auto z-10">
+                        <button onclick="openConfirmBuyOfferModal('${pendingBuyOrder.offeredBy.username}', '${pendingBuyOrder.offeredBy.wallet}', '${owner.username}', '${owner.wallet}', '${nft.nftName}', '${nft.contractAddr}', ${pendingBuyOrder.amount.toPlainString()}, ${nft.nftId}, ${nft.id}, ${sellOrder.id}, ${pendingBuyOrder.offeredBy.id})" class="px-5 py-2 rounded-md text-white transition duration-300 shadow-md hover:shadow-xl bg-cyan-600 hover:bg-cyan-800 ml-auto z-10">
                             <spring:message code="buyoffer.confirm" />
                         </button>
                     </c:if>
@@ -418,7 +418,7 @@
             <div class="flex flex-wrap justify-center gap-8">
                 <c:forEach items="${recommendedList}" var="recommended">
                     <c:if test="${recommended.nft.sellOrder != null}">
-                        <c:set value="${recommended.nft.sellOrder.price}" var="sellPrice" />
+                        <c:set value="${recommended.nft.sellOrder.price.toPlainString()}" var="sellPrice" />
                         <c:set value="${recommended.nft.sellOrder.category}" var="sellCategory" />
                     </c:if>
                     <jsp:include page="../components/Card.jsp">

@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.service;
 
-import ar.edu.itba.paw.model.Review;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +23,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URLConnection;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.Properties;
 
 
 @Service
@@ -120,7 +117,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftName", nftName);
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
-            context.setVariable("nftBidEthPrice", nftPrice);
+            context.setVariable("nftBidEthPrice", nftPrice.toPlainString());
             context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
@@ -204,7 +201,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftName", nftName);
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
-            context.setVariable("nftPrice", nftPrice);
+            context.setVariable("nftPrice", nftPrice.toPlainString());
             context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
@@ -247,7 +244,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftName", nftName);
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
-            context.setVariable("offerPrice", offerPrice);
+            context.setVariable("offerPrice", offerPrice.toPlainString());
             context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
             context.setVariable("reviewUrl", REVIEW_BASE_URL + sellerId + CREATE_REVIEW_SUFFIX);
             context.setVariable("logoResourceName", "logo");
@@ -291,7 +288,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftName", nftName);
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
-            context.setVariable("offerPrice", offerPrice);
+            context.setVariable("offerPrice", offerPrice.toPlainString());
             context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
@@ -377,7 +374,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftName", nftName);
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
-            context.setVariable("nftPrice", nftPrice);
+            context.setVariable("nftPrice", nftPrice.toPlainString());
             context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");

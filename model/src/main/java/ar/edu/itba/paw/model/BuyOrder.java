@@ -45,7 +45,7 @@ public class BuyOrder {
     }
 
     public BigDecimal getAmount() {
-        return new BigDecimal(amount.stripTrailingZeros().toPlainString());
+        return amount.stripTrailingZeros();
     }
 
     public void setAmount(BigDecimal amount) {
