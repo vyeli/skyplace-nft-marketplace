@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.validators.interfaces.PasswordsEqualConstraint;
+import ar.edu.itba.paw.webapp.validators.interfaces.FieldsEqualConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.UniqueEmailConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.UniqueUsernameConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.ValidChainConstraint;
@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@PasswordsEqualConstraint
+@FieldsEqualConstraint(first = "password", second = "passwordRepeat")
 public class UserForm {
 
     @NotBlank

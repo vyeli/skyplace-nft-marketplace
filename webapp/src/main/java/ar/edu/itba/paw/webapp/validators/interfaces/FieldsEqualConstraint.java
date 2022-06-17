@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.validators.interfaces;
 
-import ar.edu.itba.paw.webapp.validators.PasswordsEqualConstraintValidator;
+import ar.edu.itba.paw.webapp.validators.FieldsEqualConstraintValidator;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,11 +14,14 @@ import javax.validation.Payload;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = PasswordsEqualConstraintValidator.class)
-public @interface PasswordsEqualConstraint{
+@Constraint(validatedBy = FieldsEqualConstraintValidator.class)
+public @interface FieldsEqualConstraint {
     String message() default "";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    String first();
+    String second();
 }
