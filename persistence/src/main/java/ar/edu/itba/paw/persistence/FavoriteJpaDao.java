@@ -28,6 +28,9 @@ public class FavoriteJpaDao implements FavoriteDao{
     @Autowired
     private NftDao nftDao;
 
+    /**
+     * Adds a new favorite from a user for a certain product
+     */
     @Override
     public void addNftFavorite(int productId, User user) {
         Nft nft = nftDao.getNFTById(productId).orElseThrow(NftNotFoundException::new);
@@ -35,6 +38,9 @@ public class FavoriteJpaDao implements FavoriteDao{
         em.persist(newFavorited);
     }
 
+    /**
+     * Removes an existing favorite from a user for a certain product
+     */
     @Override
     public void removeNftFavorite(int productId, User user) {
         nftDao.getNFTById(productId).orElseThrow(NftNotFoundException::new);
@@ -42,6 +48,9 @@ public class FavoriteJpaDao implements FavoriteDao{
         em.remove(favoriteToRemove);
     }
 
+    /**
+     * @return Optional of the entity that contains who faved and for what product.
+     */
     @Override
     public Optional<Favorited> userFavedNft(int userId, int idNft) {
         final TypedQuery<Favorited> query = em.createQuery("FROM Favorited f WHERE f.user.id = :userId AND f.nft.id = :nftId", Favorited.class);
@@ -50,6 +59,10 @@ public class FavoriteJpaDao implements FavoriteDao{
         return query.getResultList().stream().findFirst();
     }
 
+    /**
+     * Retrieves the amount of users that faved a certain product
+     * @return Number of favorites for a product.
+     */
     @Override
     public int getNftFavorites(int productId) {
         final Query query = em.createNativeQuery("SELECT count(*) FROM Favorited WHERE id_nft = :id_nft");

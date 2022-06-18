@@ -19,6 +19,10 @@ public class ImageJpaDao implements ImageDao {
     @PersistenceContext
     private EntityManager em;
 
+    /**
+     * @param image File that contains the image
+     * @return The new image entity created.
+     */
     @Override
     public Image createImage(MultipartFile image) {
         Image newImage = null;
@@ -31,6 +35,10 @@ public class ImageJpaDao implements ImageDao {
         return newImage; // has ID field populated by JPA
     }
 
+    /**
+     * @param id id of the image to retrieve
+     * @return Optional of the image with an id that may or may not exist
+     */
     @Override
     public Optional<Image> getImage(int id) {
         return Optional.ofNullable(em.find(Image.class, id));

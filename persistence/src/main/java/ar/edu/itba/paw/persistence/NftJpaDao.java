@@ -38,6 +38,18 @@ public class NftJpaDao implements NftDao {
                                         "JOIN users ON id_owner=users.id " +
                                         "LEFT OUTER JOIN favorited ON nfts.id=favorited.id_nft";
 
+    /**
+     * Creates a new NFT product with the provided data.
+     * @param nftId id of the NFT inside its contract.
+     * @param contractAddr Address of the smart contract that defines the NFT.
+     * @param nftName Name of the NFT.
+     * @param chain Chain in which the smart contract lives.
+     * @param image Image of the NFT.
+     * @param owner The user that created this NFT.
+     * @param collection Name of the collection that this NFT belongs.
+     * @param description Description of the NFT
+     * @return New nft entity containing all the data
+     */
     @Override
     public Nft create(int nftId, String contractAddr, String nftName, Chain chain, MultipartFile image, User owner, String collection, String description) {
         Image nftImage = imageDao.createImage(image);
@@ -123,6 +135,21 @@ public class NftJpaDao implements NftDao {
         return new Pair<>(nativeQuery.toString(), args);
     }
 
+    /**
+     * Retrieves a list of all NFTs in a specific page after aplying filters and being sorted.
+     * If a certain filter or sort is empty or null, it is ignored.
+     * @param page Number of page
+     * @param pageSize Amount of NFTs that can a page have
+     * @param status Status of the NFT, can be onSale or not.
+     * @param category Name of the category that contains the NFTs, if this value is given, retrieves only on sale NFTs
+     * @param chain Name of the chain that contains the NFTs
+     * @param minPrice The minimum value that the NFT can be being sold for, if this value is given, retrieves only on sale NFTs
+     * @param maxPrice The maximum value that the NFT can be being sold for, if this value is given, retrieves only on sale NFTs
+     * @param sort Which type of sort to apply, if sort is priceAsc or priceDsc, then only on sale NFTs are retrieved.
+     * @param search Name inside a certain NFT name or the exact name of a collection.
+     * @param searchFor Clarifies whether the search is for collections or NFTs.
+     * @return List of all NFTs that matches the conditions given in a specific page.
+     */
     @Override
     public List<Nft> getAllPublications(int page, int pageSize, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
         Pair<String,List<Pair<String,Object>>> filterQuery = buildFilterQuery(status, category, chain, minPrice, maxPrice, search, searchFor);
@@ -160,6 +187,15 @@ public class NftJpaDao implements NftDao {
         return new Pair<>(" ORDER BY nfts.nft_name ", " ORDER BY nft.nftName ");
     }
 
+    /**
+     * Retrieves a list of NFTs in a specific page for a certain user.
+     * @param page Number of page
+     * @param pageSize Amount of NFTs that can a page have
+     * @param onlyFaved Whether the list should contain only faved NFTs by this user or not
+     * @param onlyOnSale Whether the list should contain only on sale NFTs that this user owns.
+     * @param sort Which type of sort to apply, if sort is priceAsc or priceDsc, then only on sale NFTs are retrieved.
+     * @return List of all NFTs that matches the conditions given in a specific page.
+     */
     @Override
     public List<Nft> getAllPublicationsByUser(int page, int pageSize, User user, boolean onlyFaved, boolean onlyOnSale, String sort) {
         Pair<String, List<Pair<String,Object>>> filterQuery = buildFilterQueryByUser(user, onlyFaved, onlyOnSale);
@@ -221,12 +257,18 @@ public class NftJpaDao implements NftDao {
         return res.intValue();
     }
 
+    /**
+     * @return Amount of publications after aplying all filters.
+     */
     @Override
     public int getAmountPublications(String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
         Pair<String, List<Pair<String,Object>>> filterQuery = buildFilterQuery(status, category, chain, minPrice, maxPrice, search, searchFor);
         return getIds(filterQuery);
     }
 
+    /**
+     * @return Amount of pages of publications after aplying all filters.
+     */
     @Override
     public int getAmountPublicationPagesByUser(int pageSize, User user, User currentUser, boolean onlyFaved, boolean onlyOnSale) {
         Pair<String, List<Pair<String,Object>>> filterQuery = buildFilterQueryByUser(user, onlyFaved, onlyOnSale);
@@ -250,6 +292,11 @@ public class NftJpaDao implements NftDao {
         return maybeNft.isPresent() && !maybeNft.get().isDeleted();
     }
 
+    /**
+     * Get a random NFT which matches the collection of the productId given.
+     * @param tableSize Amount of products that belong to the same collection of the given NFT.
+     * @return Optional of a random NFT that belongs to the same collection of the given NFT.
+     */
     @Override
     public Optional<Nft> getRandomNftFromCollection(int productId, String collection, int tableSize) {
         int randomIndex = (int) (Math.random()*tableSize);
@@ -261,6 +308,12 @@ public class NftJpaDao implements NftDao {
         return query.getResultList().stream().findFirst();
     }
 
+    /**
+     * Get a random NFT which matches the category of the NFT id given.
+     * @param category Enum that contains all valid and existing categories that a NFT can have.
+     * @param tableSize Amount of products that belong to the same category of the given NFT id.
+     * @return Optional of a random NFT that belongs to the same category of the given NFT id.
+     */
     @Override
     public Optional<Nft> getRandomNftFromCategory(int productId, Category category, int tableSize) {
         int randomIndex = (int) (Math.random()*tableSize);
@@ -272,6 +325,11 @@ public class NftJpaDao implements NftDao {
         return query.getResultList().stream().findFirst();
     }
 
+    /**
+     * Get a random NFT also sold by the owner of the given NFT id.
+     * @param tableSize Amount of products that belong to the same owner of the given NFT id.
+     * @return Optional of a random NFT that belongs to the same owner of the given NFT id.
+     */
     @Override
     public Optional<Nft> getRandomNftFromOwner(int productId, User owner, int tableSize) {
         int randomIndex = (int) (Math.random()*tableSize);
@@ -283,6 +341,11 @@ public class NftJpaDao implements NftDao {
         return query.getResultList().stream().findFirst();
     }
 
+    /**
+     * Get a random NFT that lives in the same chain as the given NFT id.
+     * @param tableSize Amount of products that belong to the same chain of the given NFT id.
+     * @return Optional of a random NFT that belongs to the same chain of the given NFT id.
+     */
     @Override
     public Optional<Nft> getRandomNftFromChain(int productId, Chain chain, int tableSize) {
         int randomIndex = (int) (Math.random()*tableSize);
@@ -294,11 +357,15 @@ public class NftJpaDao implements NftDao {
         return query.getResultList().stream().findFirst();
     }
 
+    /**
+     * Get a random NFT that belongs to a different collection of the NFT id given but belongs to a collection
+     * that another user bought from both, the given NFT id collection and this different collection.
+     * @param tableSize Amount of products that matches this condition.
+     * @return Optional of a random NFT that matches this condition.
+     */
     @Override
     public Optional<Nft> getRandomNftFromOtherBuyer(int productId, Nft nft, int currentUserId, int tableSize) {
         int randomIndex = (int) (Math.random()*tableSize);
-        // Random NFT from a different collection from productId nft and that collection contains one NFT
-        // that was bought by someone who also bought an NFT from the same productId nft collection
         final TypedQuery<Nft> query = em.createQuery("FROM Nft nft WHERE nft.collection<>:collection AND nft.isDeleted = false AND nft.collection IN (SELECT DISTINCT purchase.nftsByIdNft.collection FROM Purchase purchase WHERE purchase.status=:successStatus AND purchase.buyer.id IN (SELECT purchase.buyer.id FROM Purchase purchase WHERE purchase.nftsByIdNft.collection=:collection AND purchase.status=:successStatus AND  purchase.buyer.id<>:currentUserId AND purchase.nftsByIdNft.id<>:productId))", Nft.class);
         query.setFirstResult(randomIndex);
         query.setMaxResults(1);
@@ -309,6 +376,11 @@ public class NftJpaDao implements NftDao {
         return query.getResultList().stream().findFirst();
     }
 
+    /**
+     * Get a complete random NFT different to the NFT id given.
+     * @param tableSize Amount of NFTs
+     * @return Optional of a complete random NFT.
+     */
     @Override
     public Optional<Nft> getRandomNft(int productId, int tableSize) {
         int randomIndex = (int) (Math.random()*tableSize);
@@ -329,6 +401,11 @@ public class NftJpaDao implements NftDao {
                     "CROSS JOIN (SELECT COUNT(*) AS c6 FROM nfts WHERE id<>19 AND is_deleted=false) AS c6";
 
 
+    /**
+     * Retrieves an array containg all the amount of NFTs that matches each of the recommended conditions
+     * @param nft NFT to use as a guideline for recommended NFTs.
+     * @return Array containing each tableSize for each recommended condition.
+     */
     @Override
     public int[] getRandomNftTableSizes(Nft nft, int currentUserId) {
         final Query query = em.createNativeQuery(SELECT_ALL_RANDOM_TABLE_SIZE);

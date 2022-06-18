@@ -26,6 +26,10 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         return buyOrder.getResultList().stream().findFirst();
     }
 
+    /**
+     * Updates buy order price or creates a new one depending on existance.
+     * @return New or updated Buy Order.
+     */
     @Override
     public BuyOrder create(SellOrder sellOrder, BigDecimal price, User bidder) {
         Optional<BuyOrder> existBuyOrder = getBuyOrderForUserInSellOrder(sellOrder.getId(), bidder.getId());
@@ -53,6 +57,9 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         em.merge(buyOrder.get());
     }
 
+    /**
+     * Accepts a buy order and sets its status to pending.
+     */
     @Override
     public void acceptBuyOrder(int sellOrderId, int buyerId) {
         if(getPendingBuyOrder(sellOrderId).isPresent())
@@ -60,16 +67,17 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         changeBuyOrderStatus(sellOrderId, buyerId, StatusBuyOrder.PENDING);
     }
 
+    /**
+     * Stops a pending buy order setting its status to new.
+     */
     @Override
     public void rejectBuyOrder(int sellOrderId, int buyerId) {
-        stopPendingBuyOrder(sellOrderId, buyerId);
-    }
-
-    @Override
-    public void stopPendingBuyOrder(int sellOrderId, int buyerId) {
         changeBuyOrderStatus(sellOrderId, buyerId, StatusBuyOrder.NEW);
     }
 
+    /**
+     * @return The amount of buy orders for a specific sell order.
+     */
     @Override
     public int getAmountBuyOrders(SellOrder sellOrder) {
         final Query query = em.createNativeQuery("SELECT count(*) FROM buyorders WHERE id_sellorder = :sellOrderId");
@@ -77,6 +85,9 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         return ((BigInteger)query.getSingleResult()).intValue();
     }
 
+    /**
+     * @return The amount of buy orders that a certain user has despite the status.
+     */
     @Override
     public int getAmountBuyOrdersForUser(User user) {
         final Query query = em.createNativeQuery("SELECT count(*) FROM buyorders WHERE id_buyer = :buyerId");
@@ -84,6 +95,9 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         return ((BigInteger)query.getSingleResult()).intValue();
     }
 
+    /**
+     * Deletes a certain buy order.
+     */
     @Override
     public void deleteBuyOrder(int sellOrderId, int buyerId) {
         final Query query = em.createQuery("DELETE FROM BuyOrder b WHERE b.offeredFor.id = :sellOrderId AND b.offeredBy.id = :buyerId ");
@@ -92,6 +106,9 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         query.executeUpdate();
     }
 
+    /**
+     * @return true or false depending on if the specific sell order contains or not a pending buy order.
+     */
     @Override
     public boolean sellOrderPendingBuyOrder(int sellOrderId) {
         final Query query = em.createNativeQuery("SELECT count(*) > 0 AS v FROM buyorders WHERE id_sellorder = :sellOrderId AND status LIKE :statusPending");
@@ -120,6 +137,13 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         return query.getResultList().stream().findFirst();
     }
 
+    /**
+     * Retrieves a list of buy orders for a certain user, with or without filters.
+     * @param page number of the page to retrieve.
+     * @param status Status name to filter, if no valid status received, no filter applied.
+     * @param pageSize number of buy orders that can contain a single page
+     * @return A list of pageSize or less elements with all the different buy orders in a certain page for a certain user.
+     */
     @Override
     public List<BuyOrder> getBuyOrdersForUser(User user, int page, String status, int pageSize) {
         final StringBuilder nativeQueryText = new StringBuilder("SELECT id_sellorder FROM buyorders WHERE id_buyer = :buyerId");
@@ -147,6 +171,12 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         return query.getResultList();
     }
 
+    /**
+     * Retrieves a list of pending buy orders for a user.
+     * @param page number of the page to retrieve.
+     * @param pageSize number of buy orders that can contain a single page
+     * @return A list of pageSize or less elements with all the different pending buy orders in a certain page for a certain user.
+     */
     @Override
     public List<BuyOrder> getPendingBuyOrdersToUser(User user, int page, int pageSize) {
         final Query idQuery = em.createNativeQuery("SELECT id_sellorder, id_buyer FROM  nfts INNER JOIN users ON nfts.id_owner=users.id INNER JOIN sellorders ON sellorders.id_nft=nfts.id INNER JOIN buyorders ON sellorders.id=buyorders.id_sellorder WHERE users.id=:userId AND status=:pendingStatus");
@@ -168,6 +198,12 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         return query.getResultList();
     }
 
+    /**
+     * Retrieve a list of buy orders for a certain sell order.
+     * @param page number of the page to retrieve.
+     * @param pageSize number of buy orders that can contain a single page
+     * @return A list of pageSize or less elements with all the different buy orders in a certain page for a certain sell order.
+     */
     @Override
     public List<BuyOrder> getOrdersBySellOrderId(int page, int sellOrderId, int pageSize) {
         final Query idQuery = em.createNativeQuery("SELECT id_buyer FROM buyorders WHERE id_sellorder = :sellOrderId LIMIT :pageSize OFFSET :pageOffset");
@@ -186,6 +222,10 @@ public class BuyOrderJpaDao implements BuyOrderDao {
         return query.getResultList();
     }
 
+    /**
+     * Retrieves a list of all pending buy orders that expired, that is to say, the buy orders that exceeded the time limit to confirm a buy offer.
+     * @return A list of expired pending buy orders.
+     */
     @Override
     public List<BuyOrder> getExpiredPendingOffersByUser(User user) {
         final TypedQuery<BuyOrder> query = em.createQuery("FROM BuyOrder AS b WHERE b.offeredBy.id = :buyerId AND EXTRACT(EPOCH FROM CURRENT_TIMESTAMP-b.pendingDate) >= 86400000 ",BuyOrder.class);

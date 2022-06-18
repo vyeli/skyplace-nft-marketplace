@@ -31,8 +31,6 @@ public interface BuyOrderDao {
 
     List<BuyOrder> getExpiredPendingOffersByUser(User user);
 
-    void stopPendingBuyOrder(int sellOrderId, int buyerId);
-
     int getAmountBuyOrders(SellOrder sellOrder);
 
     int getAmountBuyOrdersForUser(User user);
