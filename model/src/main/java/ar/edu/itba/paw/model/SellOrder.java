@@ -2,9 +2,7 @@ package ar.edu.itba.paw.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "sellorders")
@@ -23,7 +21,7 @@ public class SellOrder {
     private Category category;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "offeredFor")
-    private List<BuyOrder> offers;
+    private List<BuyOrder> offers; // FIXME: remove mapping
 
     @OneToOne
     @JoinColumn(name = "id_nft", referencedColumnName = "id", nullable = false)
@@ -36,10 +34,6 @@ public class SellOrder {
         this.price = price;
         this.nft = nft;
         this.category = category;
-    }
-
-    public int getBuyOrdersAmount() {
-        return offers.size();
     }
 
     public int getId() {

@@ -2,7 +2,6 @@ package ar.edu.itba.paw.model;
 
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -30,10 +29,10 @@ public class Nft {
     @Column(name = "id_image", nullable = false)
     private int idImage;
 
-    @Column(name = "collection", nullable = true)
+    @Column(name = "collection")
     private String collection;
 
-    @Column(name = "description", nullable = true)
+    @Column(name = "description")
     private String description;
 
     @ManyToOne(optional = false)
@@ -44,10 +43,10 @@ public class Nft {
     private boolean isDeleted;
 
     @OneToMany(mappedBy = "nftsByIdNft")
-    private List<Purchase> purchasesById;
+    private List<Purchase> purchasesById; // FIXME: delete mapping
 
     @OneToMany(mappedBy = "nft")
-    private List<Favorited> favoritedsById;
+    private List<Favorited> favoritedsById; // FIXME: delete mapping
 
     @OneToOne(mappedBy = "nft")
     private SellOrder sellorder;

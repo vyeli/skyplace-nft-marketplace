@@ -4,14 +4,12 @@ import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.persistence.NftDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.function.IntPredicate;
 
 @Service
 public class NftServiceImpl implements NftService {

@@ -65,7 +65,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public boolean userOwnsNft(int productId, User user) {
-        return user.isNftOwner(productId);
+
+        return userDao.userOwnsNft(productId, user);
     }
 
     @Override

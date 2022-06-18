@@ -2,7 +2,7 @@ package ar.edu.itba.paw.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Table(name = "purchases")
@@ -18,7 +18,7 @@ public class Purchase {
     private BigDecimal price;
 
     @Column(name = "buy_date", nullable = false)
-    private Timestamp buyDate;
+    private Date buyDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_nft", referencedColumnName = "id", nullable = false)
@@ -42,7 +42,7 @@ public class Purchase {
         // just for hibernate
     }
 
-    public Purchase(BigDecimal price, Timestamp buyDate, Nft nftsByIdNft, User buyer, User seller, StatusPurchase status, String txHash) {
+    public Purchase(BigDecimal price, Date buyDate, Nft nftsByIdNft, User buyer, User seller, StatusPurchase status, String txHash) {
         this.price = price;
         this.buyDate = buyDate;
         this.nftsByIdNft = nftsByIdNft;
@@ -60,7 +60,7 @@ public class Purchase {
         return price.stripTrailingZeros();
     }
 
-    public Timestamp getBuyDate() {
+    public Date getBuyDate() {
         return buyDate;
     }
 

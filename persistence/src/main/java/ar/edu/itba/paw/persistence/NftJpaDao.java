@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.*;
-import org.apache.commons.lang3.reflect.Typed;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,9 +11,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Array;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class NftJpaDao implements NftDao {

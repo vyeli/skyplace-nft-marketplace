@@ -4,7 +4,6 @@ import ar.edu.itba.paw.exceptions.*;
 import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +73,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
 
     @Override
     public int getAmountPagesBySellOrderId(SellOrder sellOrder) {
-        return (sellOrder.getBuyOrdersAmount() - 1) / getPageSize() + 1;
+        return (buyOrderDao.getAmountBuyOrders(sellOrder) - 1) / getPageSize() + 1;
     }
 
     @Transactional

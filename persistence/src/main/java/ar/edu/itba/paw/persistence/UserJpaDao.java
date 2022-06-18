@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.math.BigInteger;
 import java.util.Optional;
 
 @Repository
@@ -40,5 +42,13 @@ public class UserJpaDao implements UserDao {
     @Override
     public Optional<User> getUserById(int id) {
         return Optional.ofNullable(em.find(User.class, id));
+    }
+
+    @Override
+    public boolean userOwnsNft(int productId, User user) {
+        final Query query = em.createNativeQuery("SELECT count(*) FROM users INNER JOIN nfts ON users.id=nfts.id_owner WHERE users.id=:userId AND nfts.id=:productId");
+        query.setParameter("userId", user.getId());
+        query.setParameter("productId", productId);
+        return ((BigInteger)query.getSingleResult()).intValue() > 0;
     }
 }

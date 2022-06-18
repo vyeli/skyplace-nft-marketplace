@@ -2,9 +2,7 @@ package ar.edu.itba.paw.model;
 
 import javax.persistence.*;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -15,8 +13,6 @@ public class User {
     @SequenceGenerator(allocationSize = 1, sequenceName = "users_id_seq", name = "users_id_seq")
     @Column(name = "id")
     private Integer id;
-
-    // TODO: check string lengths
 
     @Column(nullable = false, length = -1)
     private String username;
@@ -42,25 +38,25 @@ public class User {
     private String locale;
 
     @OneToMany(mappedBy = "offeredBy", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<BuyOrder> buyOrders;
+    private List<BuyOrder> buyOrders; // FIXME: maybe remove mapping
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Collection<Favorited> favorited;
+    private Collection<Favorited> favorited; // FIXME: maybe remove mapping
 
     @OneToMany(mappedBy = "owner")
-    private Collection<Nft> nftsOwned;
+    private Collection<Nft> nftsOwned; // FIXME: maybe remove mapping
 
     @OneToMany(mappedBy = "buyer")
-    private List<Purchase> purchaseHistory;
+    private List<Purchase> purchaseHistory; // FIXME: remove mapping
 
     @OneToMany(mappedBy = "seller")
-    private List<Purchase> saleHistory;
+    private List<Purchase> saleHistory; // FIXME: remove mapping
 
     @OneToMany(mappedBy = "usersByIdReviewer", cascade = CascadeType.ALL)
-    private Collection<Review> reviewsCreated;
+    private Collection<Review> reviewsCreated; // FIXME: remove mapping
 
     @OneToMany(mappedBy = "usersByIdReviewee", cascade = CascadeType.ALL)
-    private Collection<Review> reviewsReceived;
+    private Collection<Review> reviewsReceived; // FIXME: remove mapping
 
     /* default */ User() {
         // just for hibernate
@@ -74,14 +70,6 @@ public class User {
         this.walletChain = walletChain;
         this.role = role;
         this.locale = locale;
-    }
-
-    public boolean isNftOwner(int nftId) {
-        for (Nft nft : nftsOwned) {
-            if (nft.getId() == nftId)
-                return true;
-        }
-        return false;
     }
 
     public int getId() {

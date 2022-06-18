@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
@@ -69,6 +68,13 @@ public class BuyOrderJpaDao implements BuyOrderDao {
     @Override
     public void stopPendingBuyOrder(int sellOrderId, int buyerId) {
         changeBuyOrderStatus(sellOrderId, buyerId, StatusBuyOrder.NEW);
+    }
+
+    @Override
+    public int getAmountBuyOrders(SellOrder sellOrder) {
+        final Query query = em.createNativeQuery("SELECT count(*) FROM buyorders WHERE id_sellorder = :sellOrderId");
+        query.setParameter("sellOrderId",sellOrder.getId());
+        return ((BigInteger)query.getSingleResult()).intValue();
     }
 
     @Override

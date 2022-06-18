@@ -33,6 +33,8 @@ public interface BuyOrderDao {
 
     void stopPendingBuyOrder(int sellOrderId, int buyerId);
 
+    int getAmountBuyOrders(SellOrder sellOrder);
+
     int getAmountBuyOrdersForUser(User user);
 
     void deleteBuyOrder(int sellOrderId, int buyerId);
