@@ -129,7 +129,7 @@ public class SellOrderServiceImplTest {
         Mockito.when(userService.currentUserOwnsNft(ID_NFT)).thenReturn(true);
         Mockito.when(nftService.getNFTById(ID_NFT)).thenReturn(Optional.of(nft));
         Mockito.when(imageService.getImage(ID_IMAGE_NFT)).thenReturn(Optional.of(image));
-        Mockito.doNothing().when(mailingService).sendNftSellOrderCreatedMail(MAIL_USER1, USERNAME_USER1, ID_NFT, NFT_NAME, NFT_CONTRACT_ADDR, price, imageBytes, userLocale);
+        Mockito.doNothing().when(mailingService).sendNftSellOrderCreatedMail(MAIL_USER1, USERNAME_USER1, ID_NFT, NFT_NAME, NFT_CONTRACT_ADDR, price, imageBytes, userLocale, ID_NFT);
 
         sellOrderService.create(price, ID_NFT, VALID_CATEGORY_TEXT);
     }

@@ -130,7 +130,7 @@ public class NftServiceImplTest {
         Mockito.when(nftDao.getNftByPk(ID_NFT, NFT_CONTRACT_ADDR, NFT_CHAIN_TEXT)).thenReturn(Optional.of(nft));
         Mockito.when(userService.getUserById(ID_OWNER)).thenReturn(Optional.of(user));
         Mockito.when(imageService.getImage(ID_IMAGE_NFT)).thenReturn(Optional.of(image));
-        Mockito.doNothing().when(mailingService).sendNftCreatedMail(MAIL_USER1, USERNAME_USER1, ID_NFT, NFT_NAME, NFT_CONTRACT_ADDR, imageBytes, userLocale);
+        Mockito.doNothing().when(mailingService).sendNftCreatedMail(MAIL_USER1, USERNAME_USER1, ID_NFT, NFT_NAME, NFT_CONTRACT_ADDR, imageBytes, userLocale, ID_NFT);
 
         nftService.create(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN_TEXT, imageFile, ID_OWNER, NFT_COLLECTION, NFT_DESCRIPTION);
     }

@@ -214,7 +214,7 @@ public class BuyOrderServiceImplTest {
 
         Mockito.when(buyOrderDao.getBuyOrder(ID_SELLORDER, ID_BUYER)).thenReturn(Optional.of(buyOrder));
         Mockito.when(imageService.getImage(ID_IMAGE_NFT)).thenReturn(Optional.of(image));
-        Mockito.doNothing().when(mailingService).sendOfferAcceptedMail(MAIL_USER1, MAIL_USER2, ID_SELLER, USERNAME_USER1, NFT_NAME, ID_NFT, NFT_CONTRACT_ADDR, testPrice, imageBytes, sellerLocale);
+        Mockito.doNothing().when(mailingService).sendOfferAcceptedMail(MAIL_USER1, MAIL_USER2, ID_SELLER, USERNAME_USER1, NFT_NAME, ID_NFT, NFT_CONTRACT_ADDR, testPrice, imageBytes, sellerLocale, ID_NFT);
 
         buyOrderService.confirmBuyOrder(ID_SELLORDER, ID_BUYER, TX_HASH);
     }
