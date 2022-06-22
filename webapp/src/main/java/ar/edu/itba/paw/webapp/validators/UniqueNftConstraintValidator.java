@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.webapp.validators;
 
 import ar.edu.itba.paw.service.NftService;
-import ar.edu.itba.paw.webapp.form.CreateNftForm;
-import ar.edu.itba.paw.webapp.validators.interfaces.FieldsEqualConstraint;
 import ar.edu.itba.paw.webapp.validators.interfaces.UniqueNftConstraint;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
