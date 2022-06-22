@@ -78,24 +78,22 @@
                                                         <c:out value="${offer.amount.toPlainString()}"/>
                                                     </span>
                                             </div>
-                                            <c:if test="${isBuyPending == null || isBuyPending == false}">
-                                                <c:if test="${sellOrder != null && offer.offeredBy.id == currentUser.id}">
-                                                    <div class="flex gap-2">
-                                                        <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400 transition duration-300 hover:border-slate-600 hover:bg-slate-600 hover:text-white hover:shadow-md">
-                                                            <spring:message code="product.removeOffer"/>
-                                                        </button>
-                                                    </div>
-                                                </c:if>
-                                                <c:if test="${sellOrder != null && owner.id == currentUser.id}">
-                                                    <div class="flex gap-2">
-                                                        <button onclick="handleAccept(${offer.offeredFor.id}, ${offer.offeredBy.id}, ${currentUser.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600 transition duration-300 hover:bg-cyan-900 hover:border-cyan-900 hover:shadow-md">
-                                                            <spring:message code="product.accept"/>
-                                                        </button>
-                                                        <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400 transition duration-300 hover:border-slate-600 hover:bg-slate-600 hover:text-white hover:shadow-md">
-                                                            <spring:message code="product.reject"/>
-                                                        </button>
-                                                    </div>
-                                                </c:if>
+                                            <c:if test="${sellOrder != null && offer.offeredBy.id == currentUser.id && pendingBuyOrder.offeredBy.id != currentUser.id }">
+                                                <div class="flex gap-2">
+                                                    <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400 transition duration-300 hover:border-slate-600 hover:bg-slate-600 hover:text-white hover:shadow-md">
+                                                        <spring:message code="product.removeOffer"/>
+                                                    </button>
+                                                </div>
+                                            </c:if>
+                                            <c:if test="${sellOrder != null && owner.id == currentUser.id && isBuyPending != true}">
+                                                <div class="flex gap-2">
+                                                    <button onclick="handleAccept(${offer.offeredFor.id}, ${offer.offeredBy.id}, ${currentUser.id}, ${productId})" class="py-0.5 px-3 text-sm border rounded-lg bg-cyan-600 text-white border-cyan-600 transition duration-300 hover:bg-cyan-900 hover:border-cyan-900 hover:shadow-md">
+                                                        <spring:message code="product.accept"/>
+                                                    </button>
+                                                    <button onclick="handleReject(${offer.offeredFor.id}, ${offer.offeredBy.id})" class="py-0.5 px-3 text-sm border rounded-lg bg-white border-slate-400 transition duration-300 hover:border-slate-600 hover:bg-slate-600 hover:text-white hover:shadow-md">
+                                                        <spring:message code="product.reject"/>
+                                                    </button>
+                                                </div>
                                             </c:if>
                                         </div>
                                     </div>
@@ -373,7 +371,7 @@
                     </c:if>
                     <c:if test="${sellOrder == null && (currentUser != null && owner.id == currentUser.id)}">
                         <a href="<c:url value="/sell/${nft.id}" />">
-                            <button class="shadow-md px-6 py-2.5 rounded-md transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl" type="submit"><spring:message code="product.sell" /></button>
+                            <button class="shadow-md px-6 py-3 text-lg rounded-md  transition duration-300 bg-cyan-600 hover:bg-cyan-800 text-white hover:shadow-xl" type="submit"><spring:message code="product.sell" /></button>
                         </a>
                     </c:if>
                     <c:if test="${isBuyPending != null && isBuyPending == true && (pendingBuyOrder.offeredBy.id == currentUser.id || isAdmin)}">
@@ -400,7 +398,7 @@
                                         <path fill="#8A92B2" d="M420.1 1078.7l539.7 760.6v-441.7z"></path>
                                         <path fill="#62688F" d="M959.8 1397.6v441.7l540.1-760.6z"></path>
                                     </svg>
-                                    <form:input id="offerInput" type="number" placeholder="0" class="rounded-lg border-slate-300" min="0.000000000000000001" step="0.000000000000000001" path="price" required="true" />
+                                    <form:input id="offerInput" type="number" placeholder="0" class="rounded-lg border-slate-300" min="0.000000000000000001" step="0.000000000000000001" value="0" path="price" required="true" />
                                 </label>
                                 <input type="submit" class="bg-cyan-600 shadow-accent-volume hover:bg-cyan-700 inline-block w-1/2 rounded-lg py-3 px-8 text-center font-semibold text-white transition-all cursor-pointer" value="<spring:message code="product.makeOffer"/>">
                                 <span id="offerDisplay" class="ml-4 text-slate-500 text-base"></span>
@@ -415,7 +413,7 @@
             <span class="font-medium text-2xl mb-6"><spring:message code="product.recommended" /></span>
 
             <!-- Recommended -->
-            <div class="flex flex-wrap justify-center gap-8">
+            <div class="flex flex-wrap justify-center gap-8 items-start">
                 <c:forEach items="${recommendedList}" var="recommended">
                     <c:if test="${recommended.nft.sellOrder != null}">
                         <c:set value="${recommended.nft.sellOrder.price.toPlainString()}" var="sellPrice" />

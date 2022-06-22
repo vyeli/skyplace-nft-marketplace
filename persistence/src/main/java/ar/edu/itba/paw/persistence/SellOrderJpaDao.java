@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.model.Category;
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.SellOrder;
+import ar.edu.itba.paw.model.StatusBuyOrder;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -51,6 +52,8 @@ public class SellOrderJpaDao implements SellOrderDao{
     @Override
     public boolean sellOrderHasPendingBuyOrder(int sellOrderId) {
         final Query query = em.createNativeQuery("SELECT sellorders.id FROM sellorders INNER JOIN buyorders ON sellorders.id=buyorders.id_sellorder WHERE id=:sellOrderId AND status=:pendingStatus ");
+        query.setParameter("sellOrderId", sellOrderId);
+        query.setParameter("pendingStatus", StatusBuyOrder.PENDING.getName());
         return query.getResultList().size() > 0;
     }
 

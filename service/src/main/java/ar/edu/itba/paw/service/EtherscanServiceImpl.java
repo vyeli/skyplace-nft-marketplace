@@ -51,6 +51,11 @@ public class EtherscanServiceImpl implements EtherscanService {
             if(con != null)
                 con.disconnect();
             return false;
+        } catch (Exception e) {
+            LOGGER.error("General API error {}",e.getMessage());
+            if(con != null)
+                con.disconnect();
+            return false;
         }
     }
 

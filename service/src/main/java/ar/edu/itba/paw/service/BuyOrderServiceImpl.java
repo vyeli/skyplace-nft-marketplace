@@ -50,7 +50,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         User seller = userService.getUserById(nft.getOwner().getId()).orElseThrow(UserNotFoundException::new);
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
         Locale locale = Locale.forLanguageTag(seller.getLocale());
-        mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getId(), nft.getContractAddr(), price, image.getImage(), locale);
+        mailingService.sendOfferMail(bidder.getEmail(), seller.getEmail(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), price, image.getImage(), locale, nft.getId());
         return true;
     }
 
@@ -126,7 +126,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
 
         Locale locale = Locale.forLanguageTag(buyer.getLocale());
-        mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), seller.getId(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), buyOrder.get().getAmount(), image.getImage(), locale);
+        mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), seller.getId(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), buyOrder.get().getAmount(), image.getImage(), locale, nft.getId());
     }
 
     private void rejectBuyOrder(Optional<BuyOrder> buyOrder) {
@@ -170,7 +170,9 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         BigDecimal offerAmount = buyOrder.get().getAmount();
         buyOrderDao.deleteBuyOrder(sellOrderId, buyerId);
         Locale locale = Locale.forLanguageTag(buyer.getLocale());
-        mailingService.sendOfferRejectedMail(buyer.getEmail(), seller.getEmail(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), offerAmount, image.getImage(), locale);
+        if (sellOrderService.currentUserOwnsSellOrder(sellOrderId)) {
+            mailingService.sendOfferRejectedMail(buyer.getEmail(), seller.getEmail(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), offerAmount, image.getImage(), locale, nft.getId());
+        }
     }
 
     @Override

@@ -50,7 +50,7 @@ public class NftServiceImpl implements NftService {
         }
         Image nftImage = imageService.getImage(newNft.getIdImage()).orElseThrow(ImageNotFoundException::new);
         Locale locale = Locale.forLanguageTag(owner.getLocale());
-        mailingService.sendNftCreatedMail(owner.getEmail(), owner.getUsername(), nftId, nftName, contractAddr, nftImage.getImage(), locale);
+        mailingService.sendNftCreatedMail(owner.getEmail(), owner.getUsername(), nftId, nftName, contractAddr, nftImage.getImage(), locale, newNft.getId());
         return newNft;
     }
 

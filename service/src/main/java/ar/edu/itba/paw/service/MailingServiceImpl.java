@@ -103,7 +103,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendOfferMail(String bidderMail, String sellerMail, String nftName, int nftId, String nftAddress, BigDecimal nftPrice, byte[] imageBytes, Locale locale){
+    public void sendOfferMail(String bidderMail, String sellerMail, String nftName, int nftId, String nftAddress, BigDecimal nftPrice, byte[] imageBytes, Locale locale, int productId){
         final MimeMessage message = emailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
@@ -118,7 +118,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
             context.setVariable("nftBidEthPrice", nftPrice.toPlainString());
-            context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
+            context.setVariable("productUrl", PRODUCT_BASE_URL + productId);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
             context.setVariable("userImageResourceName", "userImage");
@@ -146,7 +146,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendNftCreatedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, byte[] imageBytes, Locale locale) {
+    public void sendNftCreatedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, byte[] imageBytes, Locale locale, int productId) {
         final MimeMessage message = emailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
@@ -160,7 +160,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftName", nftName);
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
-            context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
+            context.setVariable("productUrl", PRODUCT_BASE_URL + productId);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
             context.setVariable("userImageResourceName", "userImage");
@@ -187,7 +187,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendNftSellOrderCreatedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, BigDecimal nftPrice, byte[] imageBytes, Locale locale) {
+    public void sendNftSellOrderCreatedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, BigDecimal nftPrice, byte[] imageBytes, Locale locale, int productId) {
         final MimeMessage message = emailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
@@ -202,7 +202,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
             context.setVariable("nftPrice", nftPrice.toPlainString());
-            context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
+            context.setVariable("productUrl", PRODUCT_BASE_URL + productId);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
             context.setVariable("userImageResourceName", "userImage");
@@ -230,7 +230,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendOfferAcceptedMail(String bidderMail, String sellerMail, int sellerId, String username, String nftName, int nftId, String nftAddress, BigDecimal offerPrice, byte[] imageBytes, Locale locale) {
+    public void sendOfferAcceptedMail(String bidderMail, String sellerMail, int sellerId, String username, String nftName, int nftId, String nftAddress, BigDecimal offerPrice, byte[] imageBytes, Locale locale, int productId) {
         final MimeMessage message = emailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
@@ -245,7 +245,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
             context.setVariable("offerPrice", offerPrice.toPlainString());
-            context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
+            context.setVariable("productUrl", PRODUCT_BASE_URL + productId);
             context.setVariable("reviewUrl", REVIEW_BASE_URL + sellerId + CREATE_REVIEW_SUFFIX);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
@@ -274,7 +274,7 @@ public class MailingServiceImpl implements MailingService{
     }
 
     @Override
-    public void sendOfferRejectedMail(String bidderMail, String sellerMail, String bidderUsername, String nftName, int nftId, String nftAddress, BigDecimal offerPrice, byte[] imageBytes, Locale locale) {
+    public void sendOfferRejectedMail(String bidderMail, String sellerMail, String bidderUsername, String nftName, int nftId, String nftAddress, BigDecimal offerPrice, byte[] imageBytes, Locale locale, int productId) {
         final MimeMessage message = emailSender.createMimeMessage();
         try {
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, EMAIL_ENCODING);
@@ -289,7 +289,7 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
             context.setVariable("offerPrice", offerPrice.toPlainString());
-            context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
+            context.setVariable("productUrl", PRODUCT_BASE_URL + productId);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
             context.setVariable("userImageResourceName", "userImage");
@@ -333,7 +333,6 @@ public class MailingServiceImpl implements MailingService{
             context.setVariable("nftName", nftName);
             context.setVariable("nftId", nftId);
             context.setVariable("nftAddress", nftAddress);
-            context.setVariable("productUrl", PRODUCT_BASE_URL + nftId);
             context.setVariable("logoResourceName", "logo");
             context.setVariable("nftImageResourceName", "nftImage");
             context.setVariable("userImageResourceName", "userImage");

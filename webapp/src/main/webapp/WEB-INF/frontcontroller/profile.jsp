@@ -201,7 +201,7 @@
             </jsp:include>
         </c:when>
         <c:otherwise>
-            <div class="flex flex-wrap justify-center gap-8">
+            <div class="flex flex-wrap justify-center gap-8 items-start">
                 <c:forEach items="${publications}" var="publication">
                     <c:if test="${publication.nft.sellOrder != null}">
                         <c:set value="${publication.nft.sellOrder.price.toPlainString()}" var="sellPrice" />

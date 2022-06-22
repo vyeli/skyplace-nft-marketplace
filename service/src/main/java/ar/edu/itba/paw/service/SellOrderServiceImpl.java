@@ -52,7 +52,7 @@ public class SellOrderServiceImpl implements SellOrderService {
         SellOrder sellOrder = sellOrderDao.create(price, nft, Category.valueOf(category));
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
         Locale locale = Locale.forLanguageTag(owner.getLocale());
-        mailingService.sendNftSellOrderCreatedMail(owner.getEmail(), owner.getUsername(), nft.getNftId(), nft.getNftName(), nft.getContractAddr(), price, image.getImage(), locale);
+        mailingService.sendNftSellOrderCreatedMail(owner.getEmail(), owner.getUsername(), nft.getNftId(), nft.getNftName(), nft.getContractAddr(), price, image.getImage(), locale, nft.getId());
         return sellOrder;
     }
 

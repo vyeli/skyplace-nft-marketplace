@@ -9,18 +9,18 @@ import java.util.Locale;
 public interface MailingService {
 
     @Async
-    void sendOfferMail(String bidderEmail, String sellerMail, String nftName, int nftId, String nftAddress, BigDecimal nftPrice, byte[] image, Locale locale);
+    void sendOfferMail(String bidderEmail, String sellerMail, String nftName, int nftId, String nftAddress, BigDecimal nftPrice, byte[] image, Locale locale, int productId);
 
     @Async
     void sendRegisterMail(String userEmail, String username, Locale locale);
     @Async
-    void sendOfferAcceptedMail(String bidderEmail, String sellerMail, int sellerId, String username, String nftName, int nftId, String nftAddress,BigDecimal offerPrice, byte[] image, Locale locale);
+    void sendOfferAcceptedMail(String bidderEmail, String sellerMail, int sellerId, String username, String nftName, int nftId, String nftAddress,BigDecimal offerPrice, byte[] image, Locale locale, int productId);
     @Async
-    void sendOfferRejectedMail(String bidderEmail, String sellerMail, String bidderUsername, String nftName, int nftId, String nftAddress,BigDecimal offerPrice, byte[] image, Locale locale);
+    void sendOfferRejectedMail(String bidderEmail, String sellerMail, String bidderUsername, String nftName, int nftId, String nftAddress,BigDecimal offerPrice, byte[] image, Locale locale, int productId);
     @Async
-    public void sendNftCreatedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, byte[] imageBytes, Locale locale);
+    public void sendNftCreatedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, byte[] imageBytes, Locale locale, int productId);
     @Async
-    void sendNftSellOrderCreatedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, BigDecimal nftPrice, byte[] imageBytes, Locale locale);
+    void sendNftSellOrderCreatedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, BigDecimal nftPrice, byte[] imageBytes, Locale locale, int productId);
     @Async
     void sendNftDeletedMail(String userEmail, String username, int nftId, String nftName, String nftAddress, byte[] imageBytes, Locale locale);
     @Async
