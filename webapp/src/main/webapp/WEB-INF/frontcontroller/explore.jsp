@@ -212,7 +212,7 @@
             </div>
 
             <div class="px-8 pb-8 flex flex-wrap gap-8 overflow-y-scroll justify-center">
-                <c:if test="${publicationsAmount == 0}">
+                <c:if test="${publicationsOnPage == 0}">
                     <span class="pt-4 text-2xl"><spring:message code="explore.noNfts"/></span>
                 </c:if>
                 <c:forEach items="${publications}" var="publication">

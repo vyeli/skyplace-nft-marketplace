@@ -67,6 +67,7 @@ public class FrontController {
         mav.addObject("publications", publications);
         mav.addObject("pages", (publicationsAmount-1)/nftService.getPageSize()+1);
         mav.addObject("publicationsAmount", publicationsAmount);
+        mav.addObject("publicationsOnPage", publications.size());
         mav.addObject("categories", categories);
         mav.addObject("chains", chains);
         String sortFormat = getSortStringFormat(exploreFilter.getSort());
