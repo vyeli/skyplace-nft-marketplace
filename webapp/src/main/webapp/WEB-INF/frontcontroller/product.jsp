@@ -412,29 +412,31 @@
                 </div>
             </div>
 
-            <span class="font-medium text-2xl mb-6"><spring:message code="product.recommended" /></span>
+            <c:if test="${(currentUser == null || owner.id != currentUser.id)}">
+                <span class="font-medium text-2xl mb-6"><spring:message code="product.recommended" /></span>
 
-            <!-- Recommended -->
-            <div class="flex flex-wrap justify-center gap-8">
-                <c:forEach items="${recommendedList}" var="recommended">
-                    <c:if test="${recommended.nft.sellOrder != null}">
-                        <c:set value="${recommended.nft.sellOrder.price.toPlainString()}" var="sellPrice" />
-                        <c:set value="${recommended.nft.sellOrder.category}" var="sellCategory" />
-                    </c:if>
-                    <jsp:include page="../components/Card.jsp">
-                        <jsp:param name="name" value="${recommended.nft.nftName}"/>
-                        <jsp:param name="isFaved" value="${recommended.isFaved != null}"/>
-                        <jsp:param name="nftId" value="${recommended.nft.nftId}" />
-                        <jsp:param name="descr" value="${recommended.nft.description}"/>
-                        <jsp:param name="img" value="${recommended.nft.idImage}"/>
-                        <jsp:param name="onSale" value="${recommended.nft.sellOrder != null}"/>
-                        <jsp:param name="price" value="${sellPrice}" />
-                        <jsp:param name="category" value="${sellCategory}"/>
-                        <jsp:param name="sellerUsername" value="${recommended.nft.owner.username}"/>
-                        <jsp:param name="idProduct" value="${recommended.nft.id}"/>
-                    </jsp:include>
-                </c:forEach>
-            </div>
+                <!-- Recommended -->
+                <div class="flex flex-wrap justify-center gap-8">
+                    <c:forEach items="${recommendedList}" var="recommended">
+                        <c:if test="${recommended.nft.sellOrder != null}">
+                            <c:set value="${recommended.nft.sellOrder.price.toPlainString()}" var="sellPrice" />
+                            <c:set value="${recommended.nft.sellOrder.category}" var="sellCategory" />
+                        </c:if>
+                        <jsp:include page="../components/Card.jsp">
+                            <jsp:param name="name" value="${recommended.nft.nftName}"/>
+                            <jsp:param name="isFaved" value="${recommended.isFaved != null}"/>
+                            <jsp:param name="nftId" value="${recommended.nft.nftId}" />
+                            <jsp:param name="descr" value="${recommended.nft.description}"/>
+                            <jsp:param name="img" value="${recommended.nft.idImage}"/>
+                            <jsp:param name="onSale" value="${recommended.nft.sellOrder != null}"/>
+                            <jsp:param name="price" value="${sellPrice}" />
+                            <jsp:param name="category" value="${sellCategory}"/>
+                            <jsp:param name="sellerUsername" value="${recommended.nft.owner.username}"/>
+                            <jsp:param name="idProduct" value="${recommended.nft.id}"/>
+                        </jsp:include>
+                    </c:forEach>
+                </div>
+            </c:if>
         </div>
     </section>
 </main>
