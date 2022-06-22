@@ -23,4 +23,6 @@ public interface SellOrderService {
 
     boolean currentUserOwnsSellOrder(int productId);
 
+    boolean sellOrderHasPendingBuyOrder(int sellOrderId);
+
 }

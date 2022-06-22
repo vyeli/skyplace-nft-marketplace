@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Locale;
@@ -45,6 +46,8 @@ public class SellOrderServiceImpl implements SellOrderService {
             throw new InvalidCategoryException();
 
         Nft nft = nftService.getNFTById(idNft).orElseThrow(NftNotFoundException::new);
+        if(nft.getSellOrder() != null)
+            throw new NftAlreadyHasSellOrderException();
         User owner = nft.getOwner();
         SellOrder sellOrder = sellOrderDao.create(price, nft, Category.valueOf(category));
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
@@ -65,7 +68,17 @@ public class SellOrderServiceImpl implements SellOrderService {
             throw new UserNoPermissionException();
         if(Arrays.stream(Category.values()).noneMatch(e -> e.name().equals(category)))
             throw new InvalidCategoryException();
+        Optional<SellOrder> sellOrder = getOrderById(id);
+        if (!sellOrder.isPresent())
+            throw new SellOrderNotFoundException();
+        if(sellOrderHasPendingBuyOrder(sellOrder.get().getId()))
+            throw new SellOrderHasPendingBuyOrderException();
         return sellOrderDao.update(id, Category.valueOf(category), price);
+    }
+
+    @Override
+    public boolean sellOrderHasPendingBuyOrder(int sellOrderId) {
+        return sellOrderDao.sellOrderHasPendingBuyOrder(sellOrderId);
     }
 
     private boolean hasPermission(int sellOrderId) {
@@ -87,8 +100,12 @@ public class SellOrderServiceImpl implements SellOrderService {
     public void delete(int sellOrderId) {
         if (!hasPermission(sellOrderId))
             throw new UserNoPermissionException();
-
-        getOrderById(sellOrderId).ifPresent(this::delete);
+        if(sellOrderHasPendingBuyOrder(sellOrderId))
+            throw new SellOrderHasPendingBuyOrderException();
+        Optional<SellOrder> sellOrder = getOrderById(sellOrderId);
+        if(!sellOrder.isPresent())
+            throw new SellOrderNotFoundException();
+        delete(sellOrder.get());
     }
 
     @Transactional

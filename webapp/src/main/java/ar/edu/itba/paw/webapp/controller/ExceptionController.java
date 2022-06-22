@@ -23,7 +23,7 @@ public class ExceptionController {
         return new ModelAndView("error/404");
     }
 
-    @ExceptionHandler({UserNoPermissionException.class, UserIsNotNftOwnerException.class})
+    @ExceptionHandler({UserNoPermissionException.class, UserIsNotNftOwnerException.class, NftAlreadyHasSellOrderException.class, SellOrderHasPendingBuyOrderException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ModelAndView noPermission(Exception e) {
         LOGGER.error("{} redirecting to 403", e.getMessage());

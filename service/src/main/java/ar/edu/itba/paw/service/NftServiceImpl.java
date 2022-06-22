@@ -127,6 +127,8 @@ public class NftServiceImpl implements NftService {
     public void delete(Nft nft) {
         if (!userService.currentUserOwnsNft(nft.getId()) && !userService.isAdmin())
             throw new UserIsNotNftOwnerException();
+        if (nft.getSellOrder() != null)
+            throw new NftAlreadyHasSellOrderException();
 
         User owner = nft.getOwner();
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);

@@ -48,4 +48,10 @@ public class SellOrderJpaDao implements SellOrderDao{
         return query.executeUpdate() == 1;
     }
 
+    @Override
+    public boolean sellOrderHasPendingBuyOrder(int sellOrderId) {
+        final Query query = em.createNativeQuery("SELECT sellorders.id FROM sellorders INNER JOIN buyorders ON sellorders.id=buyorders.id_sellorder WHERE id=:sellOrderId AND status=:pendingStatus ");
+        return query.getResultList().size() > 0;
+    }
+
 }

@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import static ar.edu.itba.paw.webapp.helpers.Utils.*;
 
-// FIXME: Agregar chequeos de ser dueño de la oferta, pending, etc. por si bypasean el frontend, principalmente en /product/id
 @Controller
 public class ProductController {
 
@@ -41,13 +40,16 @@ public class ProductController {
 
     @RequestMapping(value = "/sell/{productId:\\d+}", method = RequestMethod.GET)
     public ModelAndView createSellOrderForm(@ModelAttribute("sellNftForm") final SellNftForm form, @PathVariable int productId) {
-
         final ModelAndView mav = new ModelAndView("frontcontroller/sell");
         Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
         User user = userService.getCurrentUser().orElseThrow(UserNotLoggedInException::new);
 
         if (nft.getOwner().getId() != user.getId())
             throw new UserIsNotNftOwnerException();
+
+        if(nft.getSellOrder() != null)
+            throw new NftAlreadyHasSellOrderException();
+
         mav.addObject("nft", nft);
 
         List<String> categories = Category.getCategories();
@@ -73,7 +75,11 @@ public class ProductController {
         List<String> categories = Category.getCategories();
         mav.addObject("categories", categories);
         Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
-        mav.addObject(  "nft", nft);
+        if(nft.getSellOrder() == null)
+            throw new SellOrderNotFoundException();
+        if(buyOrderService.getPendingBuyOrder(nft.getSellOrder().getId()).isPresent())
+            throw new SellOrderHasPendingBuyOrderException();
+        mav.addObject("nft", nft);
         SellOrder order = sellOrderService.getOrderById(nft.getSellOrder().getId()).orElseThrow(SellOrderNotFoundException::new);
         mav.addObject("order",order);
         return mav;
@@ -92,7 +98,8 @@ public class ProductController {
     @RequestMapping(value = "/sellOrder/{productId:\\d+}/delete", method = RequestMethod.POST)
     public ModelAndView deleteSellOrder(@PathVariable int productId) {
         Nft nft = nftService.getNFTById(productId).orElseThrow(NftNotFoundException::new);
-
+        if(nft.getSellOrder() == null)
+            throw new SellOrderNotFoundException();
         sellOrderService.delete(nft.getSellOrder().getId());
         return new ModelAndView("redirect:/product/" + productId);
     }

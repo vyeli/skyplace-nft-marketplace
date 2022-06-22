@@ -113,6 +113,12 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     @Transactional
     @Override
     public void acceptBuyOrder(int sellOrderId, int buyerId) {
+        if(!sellOrderService.getOrderById(sellOrderId).isPresent())
+            throw new SellOrderNotFoundException();
+        if(!userService.getUserById(buyerId).isPresent())
+            throw new UserNotFoundException();
+        if(sellOrderPendingBuyOrder(sellOrderId))
+            throw new SellOrderHasPendingBuyOrderException();
         buyOrderDao.acceptBuyOrder(sellOrderId, buyerId);
     }
 
@@ -147,6 +153,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         Optional<BuyOrder> buyOrder = buyOrderDao.getBuyOrder(sellOrderId, buyerId);
         if(!buyOrder.isPresent())
             return;
+        if(buyOrder.get().getStatus().equals(StatusBuyOrder.PENDING))
+            throw new BuyOrderIsPendingException();
         SellOrder sellOrder = buyOrder.get().getOfferedFor();
         User buyer = buyOrder.get().getOfferedBy();
         Nft nft = sellOrder.getNft();
@@ -171,6 +179,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     @Transactional
     @Override
     public boolean validateTransaction(String txHash, int sellOrderId, int buyerId) {
+        if(!sellOrderService.getOrderById(sellOrderId).isPresent())
+            throw new SellOrderNotFoundException();
         if(purchaseService.isTxHashAlreadyInUse(txHash))
             return false;
 

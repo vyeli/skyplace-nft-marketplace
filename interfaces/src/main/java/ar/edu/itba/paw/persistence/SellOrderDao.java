@@ -16,4 +16,6 @@ public interface SellOrderDao {
     boolean update(int id, Category category, BigDecimal price);
 
     boolean delete(int id);
+
+    boolean sellOrderHasPendingBuyOrder(int sellOrderId);
 }
