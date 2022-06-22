@@ -36,7 +36,7 @@
                         <c:set var="iconUrl" value="/resources/tabs/inactive/${tab.name}.svg"/>
                     </c:otherwise>
                 </c:choose>
-                <li class="${tabClass}">
+                <li class="${tabClass} pb-3">
                     <form:form modelAttribute="profileFilter" action="${profilePath}" method="get" class="flex flex-row gap-2">
                         <form:button type="submit" name="tab" value="${tab.name}" class="flex">
                             <img class="h-6 w-6 mr-2" src='<c:url value="${iconUrl}"/>' alt="tab_icon"/>
@@ -53,7 +53,7 @@
     <!-- Paginator and dropdown -->
     <div class="flex flex-row items-center justify-between">
         <!-- Paginator -->
-        <div class="flex flex-row text-xl items-start">
+        <div class="flex flex-row text-lg items-center">
             <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
                 <input type="hidden" name="tab" value="${activeTab.name}"/>
                 <form:hidden path="sort" value="${sortValue}"/>
@@ -70,10 +70,10 @@
                 <input type="hidden" name="tab" value="${activeTab.name}"/>
                 <form:hidden path="sort" value="${sortValue}"/>
                 <form:input path="page" type="number" min="1" max="${pages}" value="${currentPage}"
-                            class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 py-0.5" />
+                            class="w-9 border-2 border-slate-400 text-[1.1rem] rounded-lg pl-2 mx-1 py-0.5 focus:ring-cyan-700 focus:border-cyan-700" />
                 <span><spring:message code="profile.of" arguments="${pages}"/></span>
             </form:form>
-            <form:form modelAttribute="profileFilter" action="${profilePath}" method="get">
+            <form:form modelAttribute="profileFilter" action="${profilePath}" method="get" class="flex items-center">
                 <input type="hidden" name="tab" value="${activeTab.name}"/>
                 <form:hidden path="sort" value="${sortValue}"/>
                 <c:choose>
@@ -90,23 +90,23 @@
         <!-- Dropdown menu -->
         <c:if test="${activeTab.name == 'inventory' || activeTab.name == 'selling' || activeTab.name == 'favorited'}">
             <div class="flex flex-row text-2xl">
-                <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button">
-                    <c:out value="${sortName}" />
-                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border-2 border-cyan-600 font-medium rounded-lg text-base px-3 py-2 text-center inline-flex items-center" type="button">
+                    <p class="text-cyan-700"><c:out value="${sortName}" /></p>
+                    <svg class="w-4 h-4 ml-2 stroke-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
                 <div id="sortDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-48">
                     <form:form class="mb-0" modelAttribute="profileFilter" action="${profilePath}" method="get">
                         <input type="hidden" name="tab" value="${activeTab.name}"/>
                         <form:hidden path="page" value="1" />
-                        <ul class="py-1 text-sm text-gray-700" aria-labelledby="sortDropdownDefault">
+                        <ul class="text-sm leading-normal text-gray-700 border border-slate-100 divide-y divide-slate-100" aria-labelledby="sortDropdownDefault">
                             <li>
-                                <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.name"/></form:button>
+                                <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-3 hover:bg-gray-100 flex w-full" ><spring:message code="explore.name"/></form:button>
                             </li>
                             <li>
-                                <form:button type="submit" path="sort" name="sort" value="priceAsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.PriceAs"/></form:button>
+                                <form:button type="submit" path="sort" name="sort" value="priceAsc" class="block px-4 py-3 hover:bg-gray-100 flex w-full" ><spring:message code="explore.PriceAs"/></form:button>
                             </li>
                             <li>
-                                <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full" ><spring:message code="explore.PriceDe"/></form:button>
+                                <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-3 hover:bg-gray-100 flex w-full" ><spring:message code="explore.PriceDe"/></form:button>
                             </li>
                         </ul>
                     </form:form>
@@ -116,7 +116,7 @@
         <c:if test="${activeTab.name == 'buyorders'}">
             <form:form class="flex flex-row gap-2 mb-0" modelAttribute="profileFilter" action="${profilePath}" method="get">
                 <c:set var="inactiveTagClasses" value="block px-4 py-2 bg-slate-100 hover:bg-slate-400 hover:text-white rounded-lg flex w-full text-slate-700 border border-slate-400 transition duration-300 hover:shadow-xl"/>
-                <c:set var="activeTagClasses" value="block px-4 py-2 bg-slate-400 rounded-lg flex w-full text-white border border-slate-400"/>
+                <c:set var="activeTagClasses" value="block px-4 py-2 bg-cyan-600 rounded-lg flex w-full text-white"/>
                 <input type="hidden" name="tab" value="${activeTab.name}"/>
                 <form:hidden path="page" value="1" />
                     <c:forEach items="${buyOrderItemTypes}" var="item">
@@ -128,7 +128,7 @@
                                 <c:set var="itemClasses" value="${inactiveTagClasses}"/>
                             </c:otherwise>
                         </c:choose>
-                        <form:button type="submit" path="items" name="items" value="${item.name}" class="${itemClasses}">
+                        <form:button type="submit" path="items" name="items" value="${item.name}" class="${itemClasses} w-max">
                             <spring:message code="buyorders.${item.name}"/>
                         </form:button>
                     </c:forEach>
