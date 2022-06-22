@@ -12,8 +12,6 @@ public interface ReviewDao {
 
     List<Review> getUserReviews(int page, int userId, int pageSize);
 
-    List<Review> getAllUserReviews(int userId);
-
     boolean hasReviewByUser(int idReviewer, int idReviewee);
 
     long getUserReviewsAmount(int userId);

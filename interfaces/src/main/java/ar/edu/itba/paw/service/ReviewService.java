@@ -11,8 +11,6 @@ public interface ReviewService {
 
     List<Review> getUserReviews(int page, int userId);
 
-    List<Review> getAllUserReviews(int userId);
-
     void deleteReview(int reviewId);
 
     int getUserReviewsPageAmount(int userId);

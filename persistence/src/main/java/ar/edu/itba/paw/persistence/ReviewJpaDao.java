@@ -47,14 +47,6 @@ public class ReviewJpaDao implements ReviewDao{
     }
 
 
-    // FIXME: Falta paginacion
-    @Override
-    public List<Review> getAllUserReviews(int userId) {
-        final TypedQuery<Review> query = em.createQuery("FROM Review AS r WHERE r.usersByIdReviewee.id = :userId", Review.class);
-        query.setParameter("userId", userId);
-        return query.getResultList();
-    }
-
     @Override
     public boolean hasReviewByUser(int reviewerId, int revieweeId) {
         final TypedQuery<Review> query = em.createQuery("FROM Review r WHERE r.usersByIdReviewer = :idReviewer AND r.usersByIdReviewee = :idReviewee", Review.class);
