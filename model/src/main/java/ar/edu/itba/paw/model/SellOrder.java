@@ -21,7 +21,7 @@ public class SellOrder {
     private Category category;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "offeredFor")
-    private List<BuyOrder> offers; // FIXME: remove mapping
+    private List<BuyOrder> offers;
 
     @OneToOne
     @JoinColumn(name = "id_nft", referencedColumnName = "id", nullable = false)

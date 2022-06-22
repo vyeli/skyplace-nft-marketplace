@@ -43,10 +43,10 @@ public class Nft {
     private boolean isDeleted;
 
     @OneToMany(mappedBy = "nftsByIdNft")
-    private List<Purchase> purchasesById; // FIXME: delete mapping
+    private List<Purchase> purchasesById;
 
     @OneToMany(mappedBy = "nft")
-    private List<Favorited> favoritedsById; // FIXME: delete mapping
+    private List<Favorited> favoritedsById;
 
     @OneToOne(mappedBy = "nft")
     private SellOrder sellorder;

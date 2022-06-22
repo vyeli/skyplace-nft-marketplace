@@ -18,7 +18,7 @@
             <c:when test="${param.onSale}">
                 <div class="flex items-center">
                     <img class="w-8" src="<c:url value="/resources/eth_logo.svg" />" alt="eth">
-                    <span><c:out value="${param.price}" /></span>
+                    <span class="truncate"><c:out value="${param.price}" /></span>
                 </div>
             </c:when>
             <c:otherwise>

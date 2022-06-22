@@ -1,11 +1,3 @@
-CREATE TABLE IF NOT EXISTS chains (
-    chain TEXT PRIMARY KEY
-);
-
-CREATE TABLE IF NOT EXISTS categories (
-    category TEXT PRIMARY KEY
-);
-
 CREATE TABLE IF NOT EXISTS images (
                                       id_image SERIAL PRIMARY KEY,
                                       image    BYTEA NOT NULL
@@ -19,8 +11,9 @@ CREATE TABLE IF NOT EXISTS users (
                                      password TEXT NOT NULL,
                                      wallet_chain TEXT NOT NULL default 'Ethereum',
                                      role TEXT NOT NULL default 'User',
+                                     locale TEXT default 'en',
                                      UNIQUE(email),
-    FOREIGN KEY (wallet_chain) REFERENCES chains(chain)
+    UNIQUE(username)
     );
 
 CREATE TABLE IF NOT EXISTS reviews (
@@ -28,10 +21,10 @@ CREATE TABLE IF NOT EXISTS reviews (
                                        id_reviewer INT NOT NULL,
                                        id_reviewee INT NOT NULL,
                                        score INT NOT NULL,
-                                       title TEXT,
                                        comments TEXT,
+                                       title TEXT,
                                        UNIQUE(id_reviewer, id_reviewee),
-                                       FOREIGN KEY (id_reviewer) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_reviewer) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (id_reviewee) REFERENCES users(id) ON DELETE CASCADE
     );
 
@@ -45,11 +38,10 @@ CREATE TABLE IF NOT EXISTS nfts (
                                     id_owner INT NOT NULL,
                                     collection TEXT,
                                     description TEXT,
-                                    properties TEXT ARRAY,
+                                    is_deleted BOOLEAN DEFAULT false,
                                     PRIMARY KEY (id),
     UNIQUE(nft_id, contract_addr, chain),
     FOREIGN KEY (id_image) REFERENCES images (id_image),
-    FOREIGN KEY (chain) REFERENCES chains(chain) ON DELETE CASCADE,
     FOREIGN KEY (id_owner) REFERENCES users(id) ON DELETE CASCADE
     );
 
@@ -59,7 +51,6 @@ CREATE TABLE IF NOT EXISTS SellOrders (
     id_nft INT NOT NULL,
     category TEXT,
     FOREIGN KEY(id_nft) REFERENCES nfts(id),
-    FOREIGN KEY(category) REFERENCES categories(category),
     UNIQUE(id_nft)
     );
 
@@ -70,10 +61,13 @@ CREATE TABLE IF NOT EXISTS Purchases (
                                          id_seller INT NOT NULL,
                                          price NUMERIC(36, 18) NOT NULL default 0,
     buy_date TIMESTAMP NOT NULL default CURRENT_DATE,
+    status TEXT NOT NULL DEFAULT 'SUCCESS',
+    tx TEXT,
     FOREIGN KEY (id_buyer) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (id_seller) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY(id_nft) REFERENCES nfts(id) ON DELETE CASCADE
     );
+
 
 CREATE TABLE IF NOT EXISTS Favorited (
                                          user_id INT NOT NULL,
@@ -87,28 +81,9 @@ CREATE TABLE IF NOT EXISTS Buyorders (
                                          id_sellorder INT NOT NULL,
                                          amount NUMERIC(36, 18) NOT NULL,
     id_buyer INT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'NEW',
+    pending_date TIMESTAMP,
     FOREIGN KEY (id_sellorder) REFERENCES sellorders(id) ON DELETE CASCADE,
     FOREIGN KEY (id_buyer) REFERENCES Users(id) ON DELETE CASCADE,
     UNIQUE(id_sellorder, id_buyer)
-    );
-
-INSERT INTO categories VALUES('Collectible') ON CONFLICT DO NOTHING;
-INSERT INTO categories VALUES('Utility') ON CONFLICT DO NOTHING;
-INSERT INTO categories VALUES('Gaming') ON CONFLICT DO NOTHING;
-INSERT INTO categories VALUES('Sports') ON CONFLICT DO NOTHING;
-INSERT INTO categories VALUES('Music') ON CONFLICT DO NOTHING;
-INSERT INTO categories VALUES('VR') ON CONFLICT DO NOTHING;
-INSERT INTO categories VALUES('Memes') ON CONFLICT DO NOTHING;
-INSERT INTO categories VALUES('Photography') ON CONFLICT DO NOTHING;
-INSERT INTO categories VALUES('Miscellaneous') ON CONFLICT DO NOTHING;
-INSERT INTO categories VALUES('Art') ON CONFLICT DO NOTHING;
-
-INSERT INTO chains VALUES('Ethereum') ON CONFLICT DO NOTHING;
-INSERT INTO chains VALUES('BSC') ON CONFLICT DO NOTHING;
-INSERT INTO chains VALUES('Polygon') ON CONFLICT DO NOTHING;
-INSERT INTO chains VALUES('Harmony') ON CONFLICT DO NOTHING;
-INSERT INTO chains VALUES('Solana') ON CONFLICT DO NOTHING;
-INSERT INTO chains VALUES('Ronin') ON CONFLICT DO NOTHING;
-INSERT INTO chains VALUES('Cardano') ON CONFLICT DO NOTHING;
-INSERT INTO chains VALUES('Tezos') ON CONFLICT DO NOTHING;
-INSERT INTO chains VALUES('Avalanche') ON CONFLICT DO NOTHING;
+);

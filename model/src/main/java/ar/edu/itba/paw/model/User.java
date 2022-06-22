@@ -38,25 +38,25 @@ public class User {
     private String locale;
 
     @OneToMany(mappedBy = "offeredBy", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<BuyOrder> buyOrders; // FIXME: maybe remove mapping
+    private List<BuyOrder> buyOrders;
 
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Collection<Favorited> favorited; // FIXME: maybe remove mapping
+    private Collection<Favorited> favorited;
 
     @OneToMany(mappedBy = "owner")
-    private Collection<Nft> nftsOwned; // FIXME: maybe remove mapping
+    private Collection<Nft> nftsOwned;
 
     @OneToMany(mappedBy = "buyer")
-    private List<Purchase> purchaseHistory; // FIXME: remove mapping
+    private List<Purchase> purchaseHistory;
 
     @OneToMany(mappedBy = "seller")
-    private List<Purchase> saleHistory; // FIXME: remove mapping
+    private List<Purchase> saleHistory;
 
     @OneToMany(mappedBy = "usersByIdReviewer", cascade = CascadeType.ALL)
-    private Collection<Review> reviewsCreated; // FIXME: remove mapping
+    private Collection<Review> reviewsCreated;
 
     @OneToMany(mappedBy = "usersByIdReviewee", cascade = CascadeType.ALL)
-    private Collection<Review> reviewsReceived; // FIXME: remove mapping
+    private Collection<Review> reviewsReceived;
 
     /* default */ User() {
         // just for hibernate
