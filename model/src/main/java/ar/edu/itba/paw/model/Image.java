@@ -19,6 +19,11 @@ public class Image {
         // just for hibernate
     }
 
+    public Image(int idImage, byte[] image){
+        this.idImage = idImage;
+        this.image = image;
+    }
+
     public Image(byte[] image) {
         this.image = image;
     }

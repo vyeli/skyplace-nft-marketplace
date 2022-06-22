@@ -14,10 +14,10 @@ public class Review {
     @Column(name = "score", nullable = false)
     private int score;
 
-    @Column(name = "title", length = -1)
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "comments", length = -1)
+    @Column(name = "comments")
     private String comments;
 
     @ManyToOne(optional = false)
@@ -33,6 +33,15 @@ public class Review {
     }
 
     public Review(User reviewer, User reviewee, int score, String title, String comments) {
+        this.usersByIdReviewer = reviewer;
+        this.usersByIdReviewee = reviewee;
+        this.score = score;
+        this.title = title;
+        this.comments = comments;
+    }
+
+    public Review(int id, User reviewer, User reviewee, int score, String title, String comments) {
+        this.id = id;
         this.usersByIdReviewer = reviewer;
         this.usersByIdReviewee = reviewee;
         this.score = score;

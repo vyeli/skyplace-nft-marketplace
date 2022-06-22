@@ -42,7 +42,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
     public boolean create(int idSellOrder, BigDecimal price, int userId) {
         if(sellOrderService.currentUserOwnsSellOrder(idSellOrder))
             throw new UserNoPermissionException();
-        
+
         SellOrder sellOrder = sellOrderService.getOrderById(idSellOrder).orElseThrow(SellOrderNotFoundException::new);
         User bidder = userService.getUserById(userId).orElseThrow(UserNotFoundException::new);
         buyOrderDao.create(sellOrder, price, bidder);
@@ -58,7 +58,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         rejectBuyOrder(getPendingBuyOrder(sellOrderId));
     }
 
-    private void checkPendingOrdersDateForUser(User user) {
+    protected void checkPendingOrdersDateForUser(User user) {
         List<BuyOrder> buyOrders = buyOrderDao.getExpiredPendingOffersByUser(user);
         for(BuyOrder b:buyOrders)
             rejectBuyOrder(Optional.of(b));
@@ -91,7 +91,7 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         return (size - 1) / getPageSize() + 1;
     }
 
-    private boolean confirmBuyOrder(int sellOrderId, int buyerId, String txHash) {
+    protected boolean confirmBuyOrder(int sellOrderId, int buyerId, String txHash) {
         Optional<BuyOrder> buyOrder = buyOrderDao.getBuyOrder(sellOrderId, buyerId);
         if(!buyOrder.isPresent())
             return false;

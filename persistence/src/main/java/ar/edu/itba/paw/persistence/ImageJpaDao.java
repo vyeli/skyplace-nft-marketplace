@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Repository
-public class ImageJpaDao implements ImageDao {
+public class  ImageJpaDao implements ImageDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageJpaDao.class);
 

@@ -18,17 +18,15 @@ public class NftServiceImpl implements NftService {
     private final UserService userService;
     private final MailingService mailingService;
     private final ImageService imageService;
-    private final FavoriteService favoriteService;
 
     private final int RECOMMENDED_AMOUNT = 6;
 
     @Autowired
-    public NftServiceImpl(NftDao nftDao, UserService userService, MailingService mailingService, ImageService imageService, FavoriteService favoriteService) {
+    public NftServiceImpl(NftDao nftDao, UserService userService, MailingService mailingService, ImageService imageService) {
         this.nftDao = nftDao;
         this.userService = userService;
         this.mailingService = mailingService;
         this.imageService = imageService;
-        this.favoriteService = favoriteService;
     }
 
     @Transactional
@@ -40,17 +38,18 @@ public class NftServiceImpl implements NftService {
         Nft newNft;
         Optional<Nft> maybeNft = nftDao.getNftByPk(nftId, contractAddr, chain);
         User owner = userService.getUserById(idOwner).orElseThrow(UserNotFoundException::new);
-
+        Image img;
         if (maybeNft.isPresent()) {
             newNft = maybeNft.get();
             newNft.setOwner(owner);   // update owner
             newNft.setDeleted(false); // remove soft delete
+            img = imageService.getImage(newNft.getIdImage()).orElseThrow(ImageNotFoundException::new);
         } else {
-            newNft = nftDao.create(nftId, contractAddr, nftName, Chain.valueOf(chain), image, owner, collection, description);
+            img = imageService.createImage(image);
+            newNft = nftDao.create(nftId, contractAddr, nftName, Chain.valueOf(chain), img.getIdImage(), owner, collection, description);
         }
-        Image nftImage = imageService.getImage(newNft.getIdImage()).orElseThrow(ImageNotFoundException::new);
         Locale locale = Locale.forLanguageTag(owner.getLocale());
-        mailingService.sendNftCreatedMail(owner.getEmail(), owner.getUsername(), nftId, nftName, contractAddr, nftImage.getImage(), locale);
+        mailingService.sendNftCreatedMail(owner.getEmail(), owner.getUsername(), nftId, nftName, contractAddr, img.getImage(), locale);
         return newNft;
     }
 
@@ -71,13 +70,17 @@ public class NftServiceImpl implements NftService {
         return createPublicationsWithNfts(nfts, currentUser);
     }
 
-    private List<Publication> createPublicationsWithNfts(List<Nft> nfts, User user) {
+    protected Optional<Favorited> isNftFavedByUser(int userId, int productId) {
+        return nftDao.isNftFavedByUser(userId, productId);
+    }
+
+    protected List<Publication> createPublicationsWithNfts(List<Nft> nfts, User user) {
         List<Publication> publications = new ArrayList<>();
         for(Nft nft:nfts)
             if(user == null)
                 publications.add(new Publication(nft, null));
             else
-                publications.add(new Publication(nft, favoriteService.userFavedNft(user.getId(), nft.getId()).orElse(null)));
+                publications.add(new Publication(nft, isNftFavedByUser(user.getId(), nft.getId()).orElse(null)));
         return publications;
     }
 
@@ -171,7 +174,7 @@ public class NftServiceImpl implements NftService {
     }
 
     private Publication createPublicationFromNft(Nft nft, Optional<User> user) {
-        Favorited f = favoriteService.userFavedNft(user.map(User::getId).orElse(0), nft.getId()).orElse(null);
+        Favorited f = isNftFavedByUser(user.map(User::getId).orElse(0), nft.getId()).orElse(null);
         return new Publication(nft, f);
     }
 

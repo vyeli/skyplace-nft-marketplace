@@ -52,6 +52,17 @@ public class Purchase {
         this.txHash = txHash;
     }
 
+    public Purchase(int id, BigDecimal price, Date buyDate, Nft nftsByIdNft, User buyer, User seller, StatusPurchase status, String txHash) {
+        this.id = id;
+        this.price = price;
+        this.buyDate = buyDate;
+        this.nftsByIdNft = nftsByIdNft;
+        this.buyer = buyer;
+        this.seller = seller;
+        this.status = status;
+        this.txHash = txHash;
+    }
+
     public int getId() {
         return id;
     }

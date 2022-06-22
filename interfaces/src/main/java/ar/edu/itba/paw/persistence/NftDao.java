@@ -1,14 +1,13 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 public interface NftDao {
-    Nft create(int nftId, String contractAddr, String nftName, Chain chain, MultipartFile image, User owner, String collection, String description);
+    Nft create(int nftId, String contractAddr, String nftName, Chain chain, int imageId, User owner, String collection, String description);
 
     Optional<Nft> getNFTById(int nftId);
 
@@ -37,4 +36,6 @@ public interface NftDao {
     Optional<Nft> getRandomNft(int productId, int tableSize);
 
     int[] getRandomNftTableSizes(Nft nft, int currentUserId);
+
+    Optional<Favorited> isNftFavedByUser(int userId, int productId);
 }

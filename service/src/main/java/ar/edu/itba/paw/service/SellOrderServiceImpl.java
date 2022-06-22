@@ -81,11 +81,11 @@ public class SellOrderServiceImpl implements SellOrderService {
         return sellOrderDao.sellOrderHasPendingBuyOrder(sellOrderId);
     }
 
-    private boolean hasPermission(int sellOrderId) {
+    protected boolean hasPermission(int sellOrderId) {
         return currentUserOwnsSellOrder(sellOrderId) || userService.isAdmin();
     }
 
-    private void delete(SellOrder sellOrder) {
+    protected void delete(SellOrder sellOrder) {
         Nft nft = sellOrder.getNft();
         User owner = sellOrder.getNft().getOwner();
         Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);

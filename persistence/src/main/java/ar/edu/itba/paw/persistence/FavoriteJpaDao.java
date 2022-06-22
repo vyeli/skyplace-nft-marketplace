@@ -1,13 +1,11 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.exceptions.NftNotFoundException;
 import ar.edu.itba.paw.model.Favorited;
 import ar.edu.itba.paw.model.FavoritedId;
 import ar.edu.itba.paw.model.Nft;
 import ar.edu.itba.paw.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -25,15 +23,12 @@ public class FavoriteJpaDao implements FavoriteDao{
     @PersistenceContext
     private EntityManager em;
 
-    @Autowired
-    private NftDao nftDao;
 
     /**
      * Adds a new favorite from a user for a certain product
      */
     @Override
-    public void addNftFavorite(int productId, User user) {
-        Nft nft = nftDao.getNFTById(productId).orElseThrow(NftNotFoundException::new);
+    public void addNftFavorite(Nft nft, User user) {
         Favorited newFavorited = new Favorited(user, nft);
         em.persist(newFavorited);
     }
@@ -42,9 +37,8 @@ public class FavoriteJpaDao implements FavoriteDao{
      * Removes an existing favorite from a user for a certain product
      */
     @Override
-    public void removeNftFavorite(int productId, User user) {
-        nftDao.getNFTById(productId).orElseThrow(NftNotFoundException::new);
-        Favorited favoriteToRemove = em.find(Favorited.class, new FavoritedId(user.getId(), productId));
+    public void removeNftFavorite(Nft nft, User user) {
+        Favorited favoriteToRemove = em.find(Favorited.class, new FavoritedId(user.getId(), nft.getId()));
         em.remove(favoriteToRemove);
     }
 

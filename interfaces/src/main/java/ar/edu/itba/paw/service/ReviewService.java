@@ -19,8 +19,6 @@ public interface ReviewService {
 
     double getUserScore(int userId);
 
-    Map<Integer, Integer> getUserReviewsRatings(int userId);
-
     List<Integer> getUserReviewsRatingsListSorted(int userId, String sort);
 
     boolean hasReviewByUser(int idReviewer, int idReviewee);
