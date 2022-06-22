@@ -2,6 +2,7 @@ package ar.edu.itba.paw.service;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -13,6 +14,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Properties;
 
+@ComponentScan(
+        {"ar.edu.itba.paw.service"}
+)
 @Configuration
 public class MailingConfig {
 

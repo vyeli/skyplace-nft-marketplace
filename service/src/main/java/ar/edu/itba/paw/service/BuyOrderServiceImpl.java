@@ -99,11 +99,8 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         User buyer = buyOrder.get().getOfferedBy();
         Nft nft = sellOrder.getNft();
         User seller = nft.getOwner();
-        Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
 
         sellOrder.getNft().setOwner(buyer);
-        Locale locale = Locale.forLanguageTag(buyer.getLocale());
-        mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), seller.getId(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), buyOrder.get().getAmount(), image.getImage(), locale);
 
         sellOrderService.delete(sellOrder.getId(), buyOrder.get());
         purchaseService.createPurchase(buyerId, seller.getId(), nft.getId(), buyOrder.get().getAmount(), txHash, StatusPurchase.SUCCESS);
@@ -120,6 +117,16 @@ public class BuyOrderServiceImpl implements BuyOrderService {
         if(sellOrderPendingBuyOrder(sellOrderId))
             throw new SellOrderHasPendingBuyOrderException();
         buyOrderDao.acceptBuyOrder(sellOrderId, buyerId);
+
+        Optional<BuyOrder> buyOrder = buyOrderDao.getBuyOrder(sellOrderId, buyerId);
+        SellOrder sellOrder = buyOrder.get().getOfferedFor();
+        User buyer = buyOrder.get().getOfferedBy();
+        Nft nft = sellOrder.getNft();
+        User seller = nft.getOwner();
+        Image image = imageService.getImage(nft.getIdImage()).orElseThrow(ImageNotFoundException::new);
+
+        Locale locale = Locale.forLanguageTag(buyer.getLocale());
+        mailingService.sendOfferAcceptedMail(buyer.getEmail(), seller.getEmail(), seller.getId(), buyer.getUsername(), nft.getNftName(), nft.getNftId(), nft.getContractAddr(), buyOrder.get().getAmount(), image.getImage(), locale);
     }
 
     private void rejectBuyOrder(Optional<BuyOrder> buyOrder) {

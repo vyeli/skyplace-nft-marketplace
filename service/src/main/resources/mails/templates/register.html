@@ -11,7 +11,8 @@
             <img src="cid:logo" th:src="|cid:${logoResourceName}|" alt="skyplace_logo"/>
             <h2 style="font-size: 1.875rem; line-height: 2.25rem; margin-top: 0.125rem;">Skyplace</h2>
         </div>
-        <p th:text="#{email.register.hello}"> <span th:text="${username}"></span>,</p>
+        <p th:text="#{email.register.hello}"></p>
+        <p th:text="${username}" style="font-weight: 700;"></p>
         <p th:text="#{email.register.welcome}"></p>
         <hr style="color: #E5E7EB;">
         <div style="display: flex; margin: 0 0.5rem;">
