@@ -122,9 +122,9 @@
         <div class="w-[80%] min-w-[500px] grow flex flex-col">
             <!-- header -->
 
-            <div class="flex justify-between h-16 mb-2 px-8">
+            <div class="flex justify-between items-center h-16 mb-2 px-8">
             <!-- pages -->
-                <div class="flex text-xl items-start pt-4">
+                <div class="flex text-xl items-center">
                     <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
                         <form:hidden path="search" value="${searchValue}"/>
                         <form:hidden path="searchFor" value="${searchForValue}"/>
@@ -143,7 +143,7 @@
                             </c:otherwise>
                         </c:choose>
                     </form:form>
-                    <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get">
+                    <form:form modelAttribute="exploreFilter" action="${explorePath}" method="get" class="flex items-center">
                         <form:hidden path="search" value="${searchValue}"/>
                         <form:hidden path="searchFor" value="${searchForValue}"/>
                         <form:hidden path="sort" value="${sortValue}"/>
@@ -154,7 +154,7 @@
                         <form:hidden path="status" value="${statusValue}"/>
                         <form:label path="page">
                             <form:input path="page" type="number" min="1" max="${pages}" value="${currentPage}"
-                                class="w-10 border-2 border-slate-300 rounded-lg bg-slate-300 px-1 mx-1 py-0.5" />
+                                class="w-10 border-2 border-slate-400 text-[1.1rem] rounded-lg pl-2 mx-1 py-0.5 focus:ring-cyan-700 focus:border-cyan-700" />
                         </form:label>
                         <span> <spring:message code="explore.of"/> ${pages}</span>
                     </form:form>
@@ -172,17 +172,17 @@
                                 <form:button type="submit" path="page" name="page" value="${currentPage+1}" class="text-cyan-400 cursor-pointer ml-2" ><spring:message code="explore.next"/></form:button>
                             </c:when>
                             <c:otherwise>
-                                <span class=" text-gray-400 cursor-default ml-2"><spring:message code="explore.next"/></span>
+                                <span class="text-gray-400 cursor-default ml-2"><spring:message code="explore.next"/></span>
                             </c:otherwise>
                         </c:choose>
                     </form:form>
                 </div>
-                <div class="flex text-2xl pt-4">
-                    <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border border-slate-400 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center" type="button">
-                        <c:out value="${sortName}" />
-                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+                <div class="flex text-2xl pr-6">
+                    <button id="sortDropdownDefault" data-dropdown-toggle="sortDropdown" class="border-2 border-cyan-600 font-medium rounded-lg text-base px-4 py-2.5 text-center inline-flex items-center" type="button">
+                        <p class="text-cyan-700 font-bold"><c:out value="${sortName}" /></p>
+                        <svg class="w-4 h-4 ml-4 stroke-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     <!-- Dropdown menu -->
-                    <div id="sortDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44">
+                    <div id="sortDropdown" class="z-10 hidden bg-white rounded shadow w-44">
                         <form:form class="mb-0" modelAttribute="exploreFilter" action="${explorePath}" method="get">
                             <form:hidden path="page" value="1" />
                             <form:hidden path="search" value="${searchValue}"/>
@@ -192,18 +192,18 @@
                             <form:hidden path="category" value="${categoryValue}"/>
                             <form:hidden path="chain" value="${chainValue}"/>
                             <form:hidden path="status" value="${statusValue}"/>
-                            <ul class="py-1 text-sm text-gray-700" aria-labelledby="sortDropdownDefault">
+                            <ul class="text-[.95rem] leading-normal text-gray-700 border divide-y divide-slate-100 border-slate-100" aria-labelledby="sortDropdownDefault">
                                 <li>
-                                    <form:button type="submit" path="sort" name="sort" value="name" class="block px-4 py-2 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.name"/></form:button>
+                                    <form:button type="submit" path="sort" name="sort" value="name" class="px-4 py-3 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.name"/></form:button>
                                 </li>
                                 <li>
-                                    <form:button type="submit" path="sort" name="sort" value="priceAsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.PriceAs"/></form:button>
+                                    <form:button type="submit" path="sort" name="sort" value="priceAsc" class="px-4 py-3 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.PriceAs"/></form:button>
                                 </li>
                                 <li>
-                                    <form:button type="submit" path="sort" name="sort" value="priceDsc" class="block px-4 py-2 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.PriceDe"/></form:button>
+                                    <form:button type="submit" path="sort" name="sort" value="priceDsc" class="px-4 py-3 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.PriceDe"/></form:button>
                                 </li>
                                 <li>
-                                    <form:button type="submit" path="sort" name="sort" value="collection" class="block px-4 py-2 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.collection"/></form:button>
+                                    <form:button type="submit" path="sort" name="sort" value="collection" class="px-4 py-3 hover:bg-gray-100 flex w-full text-left" ><spring:message code="explore.collection"/></form:button>
                                 </li>
                             </ul>
                         </form:form>
