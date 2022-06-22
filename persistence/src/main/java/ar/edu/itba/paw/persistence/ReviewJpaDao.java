@@ -49,7 +49,7 @@ public class ReviewJpaDao implements ReviewDao{
 
     @Override
     public boolean hasReviewByUser(int reviewerId, int revieweeId) {
-        final TypedQuery<Review> query = em.createQuery("FROM Review r WHERE r.usersByIdReviewer = :idReviewer AND r.usersByIdReviewee = :idReviewee", Review.class);
+        final TypedQuery<Review> query = em.createQuery("FROM Review r WHERE r.usersByIdReviewer.id = :idReviewer AND r.usersByIdReviewee.id = :idReviewee", Review.class);
         //final Query query = em.createNativeQuery("SELECT count(*) FROM reviews WHERE id_reviewer = :id_reviewer AND id_reviewee = :id_reviewee");
         query.setParameter("idReviewer", reviewerId);
         query.setParameter("idReviewee", revieweeId);
