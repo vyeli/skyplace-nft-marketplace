@@ -59,13 +59,6 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public Map<Integer, Integer> getUserReviewsRatings(int userId) {
-        if(!userDao.getUserById(userId).isPresent())
-            throw new UserNotFoundException();
-        return reviewDao.getUserReviewsRatings(userId, minScore, maxScore);
-    }
-
-    @Override
     public List<Integer> getUserReviewsRatingsListSorted(int userId, String sort) {
         if(!userDao.getUserById(userId).isPresent())
             throw new UserNotFoundException();

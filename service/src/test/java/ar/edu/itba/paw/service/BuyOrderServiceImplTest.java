@@ -1,30 +1,18 @@
-/*package ar.edu.itba.paw.service;
+package ar.edu.itba.paw.service;
 
 import ar.edu.itba.paw.exceptions.*;
-import ar.edu.itba.paw.model.BuyOffer;
-import ar.edu.itba.paw.model.BuyOrder;
-import ar.edu.itba.paw.model.SellOrder;
-import ar.edu.itba.paw.model.User;
+import ar.edu.itba.paw.model.*;
 import ar.edu.itba.paw.persistence.BuyOrderDao;
-import ar.edu.itba.paw.persistence.ImageDao;
-import ar.edu.itba.paw.persistence.NftDao;
-import ar.edu.itba.paw.persistence.SellOrderDao;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
-/*
 @RunWith(MockitoJUnitRunner.class)
 public class BuyOrderServiceImplTest {
 
@@ -34,27 +22,42 @@ public class BuyOrderServiceImplTest {
     private final static String MAIL_USER1 = "test1@test.test";
     private final static String USERNAME_USER1 = "test1";
     private final static String WALLET_USER1 = "0x3038BfE9acde2Fa667bEbF3322DBf9F33ca22c80";
-    private final static String WALLETCHAIN_USER1 = "Ethereum";
+    private final static Chain WALLETCHAIN_USER1 = Chain.Ethereum;
     private final static String PASSWORD_USER1 = "PASSUSER1";
-    private final static String ROLE_USER1 = "User";
+    private final static Role ROLE_USER1 = Role.User;
+    private final static String LOCALE_USER1 = "en";
 
     private final static int ID_USER2 = 2;
     private final static String MAIL_USER2 = "test2@test.test";
     private final static String USERNAME_USER2 = "test2";
     private final static String WALLET_USER2 = "0xE5Da717E6d0186bE40eEa87De0A5aC9d5c4e5666";
-    private final static String WALLETCHAIN_USER2 = "Ethereum";
+    private final static Chain WALLETCHAIN_USER2 = Chain.Ethereum;
     private final static String PASSWORD_USER2 = "PASSUSER2";
-    private final static String ROLE_USER2 = "User";
+    private final static Role ROLE_USER2 = Role.User;
+    private final static String LOCALE_USER2 = "en";
 
     private final static int ID_BUYER = 1;
     private final static int ID_SELLER = 2;
-    private final static int ID_NFT = 1;
-    private final static int PAGE_NUM = 1;
-    private final static String CATEGORY = "Other";
 
-    private static BigDecimal testPrice;
+    private final static int ID_NFT = 1;
+    private final static String NFT_CONTRACT_ADDR = "0xC37575F40b525FCA00554cB627CfFF8693d6b8B4";
+    private final static String NFT_NAME = "Test nft";
+    private final static Chain NFT_CHAIN = Chain.Cardano;
+    private final static int ID_IMAGE_NFT = 1;
+    private final static String NFT_COLLECTION = "Test nfts";
+    private final static String NFT_DESCRIPTION = "A test nft";
+
+    private final static StatusBuyOrder DEFAULT_STATUS_BUY_ORDER = StatusBuyOrder.NEW;
+    private final static Date PENDING_DATE_BUY_ORDER = null;
+    private final static int PAGE_NUM = 1;
+
+    private final static String TX_HASH = "3E5XGTx46hAJYUNFZ5a8EhGZ7hXR8irenxTozSdZ84gq4N1hqvSGAtuvm9aTKGTRjaFbU1TDLtdQFg4GHK5XxiSi";
+
+    private final static Category CATEGORY = Category.Photography;
+    private final static BigDecimal testPrice = new BigDecimal("0.001");
 
     @InjectMocks
+    @Spy
     private BuyOrderServiceImpl buyOrderService;
 
     @Mock
@@ -62,133 +65,352 @@ public class BuyOrderServiceImplTest {
     @Mock
     private UserService userService;
     @Mock
-    private SellOrderDao sellOrderDao;
+    private SellOrderService sellOrderService;
     @Mock
-    private NftDao nftDao;
-    @Mock
-    private ImageDao imageDao;
-    @Mock
-    private MailingService mailingService;
+    private ImageService imageService;
     @Mock
     private PurchaseService purchaseService;
-
-    @Before
-    public void setUp(){
-        testPrice = new BigDecimal("0.001");
-    }
+    @Mock
+    private EtherscanService etherscanService;
+    @Mock
+    private MailingService mailingService;
 
     @Test(expected = UserNoPermissionException.class)
     public void testCreateBuyOrderOnOwnedSellOrder() {
-        Mockito.when(userService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(true);
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(true);
+
         buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
-    }
-
-    @Test
-    public void testCreateBuyOrderWithExistentBuyOrderData() {
-        Mockito.when(userService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
-        Mockito.when(buyOrderDao.create(ID_SELLORDER, testPrice, ID_USER1)).thenReturn(false);
-
-        boolean createResult = buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
-        assertFalse(createResult);
     }
 
     @Test(expected = SellOrderNotFoundException.class)
-    public void testCreateBuyOrderWithUnexistentSellOrderData() {
-        Mockito.when(userService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
-        Mockito.when(buyOrderDao.create(ID_SELLORDER, testPrice, ID_USER1)).thenReturn(true);
-        Mockito.when(sellOrderDao.getOrderById(ID_SELLORDER)).thenReturn(Optional.empty());
+    public void testCreateBuyOrderWithUnexistentSellOrderId() {
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
+        Mockito.when(sellOrderService.getOrderById(ID_SELLORDER)).thenReturn(Optional.empty());
 
         buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
-    }
-
-    @Test(expected = NftNotFoundException.class)
-    public void testCreateBuyOrderWithUnexistentNftData() {
-        SellOrder sellOrder = new SellOrder(ID_SELLORDER, testPrice, ID_NFT, CATEGORY);
-        Mockito.when(userService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
-        Mockito.when(buyOrderDao.create(ID_SELLORDER, testPrice, ID_USER1)).thenReturn(true);
-        Mockito.when(sellOrderDao.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
-        Mockito.when(nftDao.getNFTById(ID_NFT)).thenReturn(Optional.empty());
-
-        buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
-    }
-
-    @Test
-    public void testGetBuyOffersForUnexistentSellOrderId(){
-        List<BuyOrder> buyOrders = new ArrayList<>();
-        Mockito.when(buyOrderDao.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER, buyOrderService.getPageSize())).thenReturn(buyOrders);
-
-        int buyOfferAmount = buyOrderService.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER).size();
-        assertEquals(0, buyOfferAmount);
-    }
-
-    @Test
-    public void testGetBuyOffersForExistentSellOrderId(){
-        BuyOrder buyOrder1 = new BuyOrder(ID_SELLORDER, testPrice, ID_USER1);
-        BuyOrder buyOrder2 = new BuyOrder(ID_SELLORDER, testPrice, ID_USER2);
-        User user1 = new User(ID_USER1, MAIL_USER1, USERNAME_USER1, WALLET_USER1, WALLETCHAIN_USER1, PASSWORD_USER1, ROLE_USER1);
-        User user2 = new User(ID_USER2, MAIL_USER2, USERNAME_USER2, WALLET_USER2, WALLETCHAIN_USER2, PASSWORD_USER2, ROLE_USER2);
-        List<BuyOrder> buyOrders = new ArrayList<>();
-        BuyOffer buyOffer1 = new BuyOffer(buyOrder1, user1);
-        BuyOffer buyOffer2 = new BuyOffer(buyOrder2, user2);
-        buyOrders.add(buyOrder1);
-        buyOrders.add(buyOrder2);
-        Mockito.when(buyOrderDao.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER, buyOrderService.getPageSize())).thenReturn(buyOrders);
-        Mockito.when(userService.getUserById(ID_USER1)).thenReturn(Optional.of(user1));
-        Mockito.when(userService.getUserById(ID_USER2)).thenReturn(Optional.of(user2));
-
-        List<BuyOffer> buyOfferList = buyOrderService.getOrdersBySellOrderId(PAGE_NUM, ID_SELLORDER);
-
-        assertEquals(buyOfferList.get(0).getBuyOrder().getIdSellOrder(), buyOffer1.getBuyOrder().getIdSellOrder());
-        assertEquals(buyOfferList.get(0).getBuyOrder().getIdBuyer(), buyOffer1.getBuyOrder().getIdBuyer());
-        assertEquals(buyOfferList.get(1).getBuyOrder().getIdSellOrder(), buyOffer2.getBuyOrder().getIdSellOrder());
-        assertEquals(buyOfferList.get(1).getBuyOrder().getIdBuyer(), buyOffer2.getBuyOrder().getIdBuyer());
-    }
-
-    @Test(expected = UserIsNotNftOwnerException.class)
-    public void testConfirmBuyOrderOnUnownedNft(){
-        Mockito.when(userService.currentUserOwnsNft(ID_SELLORDER)).thenReturn(false);
-        buyOrderService.confirmBuyOrder(ID_SELLORDER, ID_BUYER, ID_SELLER, ID_NFT, testPrice);
-    }
-
-    @Test(expected = SellOrderNotFoundException.class)
-    public void testConfirmBuyOrderOnUnexistentSellOrder(){
-        Mockito.when(userService.currentUserOwnsNft(ID_SELLORDER)).thenReturn(true);
-        Mockito.when(sellOrderDao.getOrderById(ID_SELLORDER)).thenReturn(Optional.empty());
-
-        buyOrderService.confirmBuyOrder(ID_SELLORDER, ID_BUYER, ID_SELLER, ID_NFT, testPrice);
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void testConfirmBuyOrderWithUnexistentBuyer(){
-        SellOrder sellOrder = new SellOrder(ID_SELLORDER, testPrice, ID_NFT, CATEGORY);
-        Mockito.when(userService.currentUserOwnsNft(ID_SELLORDER)).thenReturn(true);
-        Mockito.when(sellOrderDao.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
-        Mockito.when(userService.getUserById(ID_BUYER)).thenReturn(Optional.empty());
+    public void testCreateBuyOrderWithUnexistentBidderData() {
+        User seller = new User(USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
 
-        buyOrderService.confirmBuyOrder(ID_SELLORDER, ID_BUYER, ID_SELLER, ID_NFT, testPrice);
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
+        Mockito.when(sellOrderService.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
+        Mockito.when(userService.getUserById(ID_USER1)).thenReturn(Optional.empty());
+
+        buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
+    }
+
+    // TODO: Check create test errors (getUserId() returns null) -> add User constructor with id?
+    @Test(expected = UserNotFoundException.class)
+    public void testCreateBuyOrderWithUnexistentSellerData() {
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
+        Mockito.when(sellOrderService.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
+        Mockito.when(userService.getUserById(ID_USER1)).thenReturn(Optional.of(bidder));
+        Mockito.when(userService.getUserById(ID_USER2)).thenReturn(Optional.empty());
+
+        buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
+    }
+
+    @Test(expected = ImageNotFoundException.class)
+    public void testCreateBuyOrderWithUnexistentNftImage() {
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
+        Mockito.when(sellOrderService.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
+        Mockito.when(userService.getUserById(ID_USER1)).thenReturn(Optional.of(bidder));
+        Mockito.when(userService.getUserById(ID_USER2)).thenReturn(Optional.of(seller));
+        Mockito.when(imageService.getImage(ID_IMAGE_NFT)).thenReturn(Optional.empty());
+
+        buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
     }
 
     @Test
-    public void testConfirmBuyOrderOnValidData(){
-        SellOrder sellOrder = new SellOrder(ID_SELLORDER, testPrice, ID_NFT, CATEGORY);
-        User buyerUser = new User(ID_USER1, MAIL_USER1, USERNAME_USER1, WALLET_USER1, WALLETCHAIN_USER1, PASSWORD_USER1, ROLE_USER1);
-        Mockito.when(userService.currentUserOwnsNft(ID_SELLORDER)).thenReturn(true);
-        Mockito.when(sellOrderDao.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
-        Mockito.when(userService.getUserById(ID_BUYER)).thenReturn(Optional.of(buyerUser));
-        
-        buyOrderService.confirmBuyOrder(ID_SELLORDER, ID_BUYER, ID_SELLER, ID_NFT, testPrice);
+    public void testCreateBuyOrderWithValidData(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+        byte[] imageBytes = new byte[]{};
+        Image image = new Image(ID_IMAGE_NFT, imageBytes);
+
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
+        Mockito.when(sellOrderService.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
+        Mockito.when(userService.getUserById(ID_USER1)).thenReturn(Optional.of(bidder));
+        Mockito.when(userService.getUserById(ID_USER2)).thenReturn(Optional.of(seller));
+        Mockito.when(imageService.getImage(ID_IMAGE_NFT)).thenReturn(Optional.of(image));
+
+        buyOrderService.create(ID_SELLORDER, testPrice, ID_USER1);
+    }
+
+    @Test
+    public void testCheckPendingOrdersDateForUser(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+        BuyOrder buyOrder = new BuyOrder(testPrice, sellOrder, bidder, DEFAULT_STATUS_BUY_ORDER, PENDING_DATE_BUY_ORDER);
+        List<BuyOrder> buyOrderList = new ArrayList<>();
+        buyOrderList.add(buyOrder);
+
+        Mockito.when(buyOrderDao.getExpiredPendingOffersByUser(bidder)).thenReturn(buyOrderList);
+
+        buyOrderService.checkPendingOrdersDateForUser(bidder);
+    }
+
+    @Test
+    public void testGetAmountPagesBySellOrderIdOnSellOrderWithoutOffers() {
+        User seller = new User(USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+
+        Mockito.when(buyOrderDao.getAmountBuyOrders(sellOrder)).thenReturn(0);
+
+        int pageAmount = buyOrderService.getAmountPagesBySellOrderId(sellOrder);
+
+        assertEquals(1, pageAmount);
+    }
+
+    @Test
+    public void testGetAmountPagesForUserOnUserWithoutSellOrders() {
+        User user = new User(USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+
+        Mockito.when(buyOrderDao.getAmountBuyOrdersForUser(user)).thenReturn(0);
+
+        int pageAmount = buyOrderService.getAmountPagesForUser(user);
+
+        assertEquals(1, pageAmount);
+    }
+
+    @Test
+    public void testConfirmBuyOrderOnUnexistentBuyOrder(){
+        Mockito.when(buyOrderDao.getBuyOrder(ID_SELLORDER, ID_BUYER)).thenReturn(Optional.empty());
+
+        boolean result = buyOrderService.confirmBuyOrder(ID_SELLORDER, ID_BUYER, TX_HASH);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testConfirmBuyOrderOnBuyOrderWtihValidData(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+        BuyOrder buyOrder = new BuyOrder(testPrice, sellOrder, bidder, DEFAULT_STATUS_BUY_ORDER, PENDING_DATE_BUY_ORDER);
+        byte[] imageBytes = new byte[]{10, 20, 30};
+        Image image = new Image(ID_IMAGE_NFT, imageBytes);
+        Locale sellerLocale = new Locale(LOCALE_USER2);
+
+        Mockito.when(buyOrderDao.getBuyOrder(ID_SELLORDER, ID_BUYER)).thenReturn(Optional.of(buyOrder));
+        Mockito.when(imageService.getImage(ID_IMAGE_NFT)).thenReturn(Optional.of(image));
+        Mockito.doNothing().when(mailingService).sendOfferAcceptedMail(MAIL_USER1, MAIL_USER2, ID_SELLER, USERNAME_USER1, NFT_NAME, ID_NFT, NFT_CONTRACT_ADDR, testPrice, imageBytes, sellerLocale);
+
+        buyOrderService.confirmBuyOrder(ID_SELLORDER, ID_BUYER, TX_HASH);
+    }
+
+    @Test(expected = UserNotLoggedInException.class)
+    public void testDeleteBuyOrderOnUserNotLoggedin(){
+        Mockito.when(userService.getCurrentUser()).thenReturn(Optional.empty());
+
+        buyOrderService.deleteBuyOrder(ID_SELLORDER, ID_BUYER);
     }
 
     @Test(expected = UserIsNotNftOwnerException.class)
-    public void testDeleteBuyOrderOnUnownedSellOrder(){
-        Mockito.when(userService.currentUserOwnsSellOrder(ID_NFT)).thenReturn(false);
+    public void testDeleteBuyOrderOnUserNotNftOwner() {
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+
+        Mockito.when(userService.getCurrentUser()).thenReturn(Optional.of(seller));
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(false);
+
         buyOrderService.deleteBuyOrder(ID_SELLORDER, ID_BUYER);
     }
 
     @Test
-    public void testDeleteBuyOrderOnOwnedSellOrder() {
-        Mockito.when(userService.currentUserOwnsSellOrder(ID_NFT)).thenReturn(true);
+    public void testDeleteBuyOrderOnBuyOrderNotPresent(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+
+        Mockito.when(userService.getCurrentUser()).thenReturn(Optional.of(seller));
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(true);
+        Mockito.when(buyOrderDao.getBuyOrder(ID_SELLORDER, ID_BUYER)).thenReturn(Optional.empty());
+
         buyOrderService.deleteBuyOrder(ID_SELLORDER, ID_BUYER);
     }
+
+    @Test(expected = ImageNotFoundException.class)
+    public void testDeleteBuyOrderOnBuyOrderWithoutImage(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+        BuyOrder buyOrder = new BuyOrder(testPrice, sellOrder, bidder, DEFAULT_STATUS_BUY_ORDER, PENDING_DATE_BUY_ORDER);
+
+        Mockito.when(userService.getCurrentUser()).thenReturn(Optional.of(seller));
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(true);
+        Mockito.when(buyOrderDao.getBuyOrder(ID_SELLORDER, ID_BUYER)).thenReturn(Optional.of(buyOrder));
+        Mockito.when(imageService.getImage(ID_IMAGE_NFT)).thenReturn(Optional.empty());
+
+        buyOrderService.deleteBuyOrder(ID_SELLORDER, ID_BUYER);
+    }
+
+    @Test
+    public void testDeleteBuyOrderWithValidData(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+        BuyOrder buyOrder = new BuyOrder(testPrice, sellOrder, bidder, DEFAULT_STATUS_BUY_ORDER, PENDING_DATE_BUY_ORDER);
+        byte[] imageBytes = new byte[]{};
+        Image image = new Image(ID_IMAGE_NFT, imageBytes);
+
+        Mockito.when(userService.getCurrentUser()).thenReturn(Optional.of(seller));
+        Mockito.when(sellOrderService.currentUserOwnsSellOrder(ID_SELLORDER)).thenReturn(true);
+        Mockito.when(buyOrderDao.getBuyOrder(ID_SELLORDER, ID_BUYER)).thenReturn(Optional.of(buyOrder));
+        Mockito.when(imageService.getImage(ID_IMAGE_NFT)).thenReturn(Optional.of(image));
+
+        buyOrderService.deleteBuyOrder(ID_SELLORDER, ID_BUYER);
+    }
+
+    @Test
+    public void testValidateTransactionOnTxAlreadyInUse(){
+        Mockito.when(purchaseService.isTxHashAlreadyInUse(TX_HASH)).thenReturn(true);
+        Mockito.doReturn(Optional.of(new SellOrder(null, null, null))).when(sellOrderService).getOrderById(ID_SELLORDER);
+        boolean result = buyOrderService.validateTransaction(TX_HASH, ID_SELLORDER, ID_BUYER);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testValidateTransactionOnBuyOrderNotPresent(){
+        Mockito.when(purchaseService.isTxHashAlreadyInUse(TX_HASH)).thenReturn(false);
+        Mockito.when(buyOrderService.getPendingBuyOrder(ID_SELLORDER)).thenReturn(Optional.empty());
+        Mockito.doReturn(Optional.of(new SellOrder(null, null, null))).when(sellOrderService).getOrderById(ID_SELLORDER);
+
+        boolean result = buyOrderService.validateTransaction(TX_HASH, ID_SELLORDER, ID_BUYER);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testValidateTransactionOnBuyOrderNotPending(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+        BuyOrder buyOrder = new BuyOrder(testPrice, sellOrder, bidder, DEFAULT_STATUS_BUY_ORDER, PENDING_DATE_BUY_ORDER);
+
+        Mockito.when(purchaseService.isTxHashAlreadyInUse(TX_HASH)).thenReturn(false);
+        Mockito.when(buyOrderService.getPendingBuyOrder(ID_SELLORDER)).thenReturn(Optional.of(buyOrder));
+        Mockito.doReturn(Optional.of(new SellOrder(null, null, null))).when(sellOrderService).getOrderById(ID_SELLORDER);
+
+        boolean result = buyOrderService.validateTransaction(TX_HASH, ID_SELLORDER, ID_BUYER);
+
+        assertFalse(result);
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void testValidateTransactionOnInvalidUser(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+        BuyOrder buyOrder = new BuyOrder(testPrice, sellOrder, bidder, StatusBuyOrder.PENDING, PENDING_DATE_BUY_ORDER);
+
+        Mockito.when(purchaseService.isTxHashAlreadyInUse(TX_HASH)).thenReturn(false);
+        Mockito.when(buyOrderService.getPendingBuyOrder(ID_SELLORDER)).thenReturn(Optional.of(buyOrder));
+        Mockito.when(userService.getUserById(ID_BUYER)).thenReturn(Optional.empty());
+        Mockito.doReturn(Optional.of(new SellOrder(null, null, null))).when(sellOrderService).getOrderById(ID_SELLORDER);
+
+        buyOrderService.validateTransaction(TX_HASH, ID_SELLORDER, ID_BUYER);
+    }
+
+    @Test
+    public void testValidateTransactionOnInvalidTransaction(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+        BuyOrder buyOrder = new BuyOrder(testPrice, sellOrder, bidder, StatusBuyOrder.PENDING, PENDING_DATE_BUY_ORDER);
+
+        Mockito.when(purchaseService.isTxHashAlreadyInUse(TX_HASH)).thenReturn(false);
+        Mockito.when(buyOrderService.getPendingBuyOrder(ID_SELLORDER)).thenReturn(Optional.of(buyOrder));
+        Mockito.when(userService.getUserById(ID_BUYER)).thenReturn(Optional.of(bidder));
+        Mockito.when(etherscanService.isTransactionValid(TX_HASH, WALLET_USER1, WALLET_USER2, testPrice)).thenReturn(false);
+        Mockito.doReturn(Optional.of(new SellOrder(null, null, null))).when(sellOrderService).getOrderById(ID_SELLORDER);
+
+        boolean result = buyOrderService.validateTransaction(TX_HASH, ID_SELLORDER, ID_BUYER);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testNftHasValidTransactionOnSellOrderNotValid(){
+        User bidder = new User(USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+
+        Mockito.when(userService.getUserById(ID_BUYER)).thenReturn(Optional.of(bidder));
+        Mockito.when(sellOrderService.getOrderById(ID_SELLORDER)).thenReturn(Optional.empty());
+
+        boolean result = buyOrderService.nftHasValidTransaction(ID_SELLORDER, ID_BUYER, testPrice, TX_HASH);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testNftHasValidTransactionOnBuyerNotValid(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+
+        Mockito.when(sellOrderService.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
+        Mockito.when(userService.getUserById(ID_BUYER)).thenReturn(Optional.empty());
+
+        boolean result = buyOrderService.nftHasValidTransaction(ID_SELLORDER, ID_BUYER, testPrice, TX_HASH);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testNftHasValidTransactionOnInvalidTransaction(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+
+        Mockito.when(sellOrderService.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
+        Mockito.when(userService.getUserById(ID_BUYER)).thenReturn(Optional.of(bidder));
+        Mockito.when(etherscanService.isTransactionValid(TX_HASH, WALLET_USER1, WALLET_USER2, testPrice)).thenReturn(false);
+        Mockito.doReturn(false).when(buyOrderService).confirmBuyOrder(ID_SELLORDER, ID_BUYER, TX_HASH);
+
+        boolean result = buyOrderService.nftHasValidTransaction(ID_SELLORDER, ID_BUYER, testPrice, TX_HASH);
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void testNftHasValidTransactionOnValidTransaction(){
+        User seller = new User(ID_USER2, USERNAME_USER2, WALLET_USER2, MAIL_USER2, PASSWORD_USER2, WALLETCHAIN_USER2, ROLE_USER2, LOCALE_USER2);
+        User bidder = new User(ID_USER1, USERNAME_USER1, WALLET_USER1, MAIL_USER1, PASSWORD_USER1, WALLETCHAIN_USER1, ROLE_USER1, LOCALE_USER1);
+        Nft nft = new Nft(ID_NFT, NFT_CONTRACT_ADDR, NFT_NAME, NFT_CHAIN, ID_IMAGE_NFT, NFT_COLLECTION, NFT_DESCRIPTION, seller);
+        SellOrder sellOrder = new SellOrder(testPrice, nft, CATEGORY);
+
+        Mockito.when(sellOrderService.getOrderById(ID_SELLORDER)).thenReturn(Optional.of(sellOrder));
+        Mockito.when(userService.getUserById(ID_BUYER)).thenReturn(Optional.of(bidder));
+        Mockito.when(etherscanService.isTransactionValid(TX_HASH, WALLET_USER1, WALLET_USER2, testPrice)).thenReturn(true);
+        Mockito.doReturn(true).when(buyOrderService).confirmBuyOrder(ID_SELLORDER, ID_BUYER, TX_HASH);
+
+        boolean result = buyOrderService.nftHasValidTransaction(ID_SELLORDER, ID_BUYER, testPrice, TX_HASH);
+
+        assertTrue(result);
+    }
+
 }
-*/

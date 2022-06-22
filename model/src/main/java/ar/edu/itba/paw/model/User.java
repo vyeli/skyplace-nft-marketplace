@@ -14,24 +14,24 @@ public class User {
     @Column(name = "id")
     private Integer id;
 
-    @Column(nullable = false, length = -1)
+    @Column(nullable = false)
     private String username;
 
-    @Column(nullable = false, length = -1)
+    @Column(nullable = false)
     private String wallet;
 
-    @Column(nullable = false, length = -1, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, length = -1)
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="wallet_chain", nullable = false, length = -1)
+    @Column(name="wallet_chain", nullable = false)
     private Chain walletChain;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = -1)
+    @Column(nullable = false)
     private Role role;
 
     @Column(name="locale", columnDefinition = "TEXT DEFAULT 'en'")
@@ -60,6 +60,17 @@ public class User {
 
     /* default */ User() {
         // just for hibernate
+    }
+
+    public User(int id, String username, String wallet, String email, String password, Chain walletChain, Role role, String locale) {
+        this.id = id;
+        this.username = username;
+        this.wallet = wallet;
+        this.email = email;
+        this.password = password;
+        this.walletChain = walletChain;
+        this.role = role;
+        this.locale = locale;
     }
 
     public User(String username, String wallet, String email, String password, Chain walletChain, Role role, String locale) {

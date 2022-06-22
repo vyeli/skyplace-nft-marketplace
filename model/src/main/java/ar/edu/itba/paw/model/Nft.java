@@ -17,10 +17,10 @@ public class Nft {
     @Column(name = "nft_id", nullable = false)
     private int nftId;
 
-    @Column(name = "contract_addr", nullable = false, length = -1)
+    @Column(name = "contract_addr", nullable = false)
     private String contractAddr;
 
-    @Column(name = "nft_name", nullable = false, length = -1)
+    @Column(name = "nft_name", nullable = false)
     private String nftName;
 
     @Enumerated(EnumType.STRING)

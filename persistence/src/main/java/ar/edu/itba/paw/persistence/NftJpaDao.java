@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,9 +16,6 @@ public class NftJpaDao implements NftDao {
 
     @PersistenceContext
     private EntityManager em;
-
-    @Autowired
-    private ImageDao imageDao;
 
     private static final String COUNT_ID_QUERY = "SELECT COUNT(nfts.id) " +
             "FROM nfts " +
@@ -43,16 +38,14 @@ public class NftJpaDao implements NftDao {
      * @param contractAddr Address of the smart contract that defines the NFT.
      * @param nftName Name of the NFT.
      * @param chain Chain in which the smart contract lives.
-     * @param image Image of the NFT.
      * @param owner The user that created this NFT.
      * @param collection Name of the collection that this NFT belongs.
      * @param description Description of the NFT
      * @return New nft entity containing all the data
      */
     @Override
-    public Nft create(int nftId, String contractAddr, String nftName, Chain chain, MultipartFile image, User owner, String collection, String description) {
-        Image nftImage = imageDao.createImage(image);
-        final Nft nft = new Nft(nftId, contractAddr, nftName, chain, nftImage.getIdImage(), collection, description, owner);
+    public Nft create(int nftId, String contractAddr, String nftName, Chain chain, int imageId, User owner, String collection, String description) {
+        final Nft nft = new Nft(nftId, contractAddr, nftName, chain, imageId, collection, description, owner);
         em.persist(nft);
         return nft;
     }
@@ -421,6 +414,14 @@ public class NftJpaDao implements NftDao {
         for(int i = 0; i < outLength; i++)
             res[i] = ((BigInteger)out[i]).intValue();
         return res;
+    }
+
+    @Override
+    public Optional<Favorited> isNftFavedByUser(int userId, int productId) {
+        final TypedQuery<Favorited> query = em.createQuery("FROM Favorited f WHERE f.user.id = :userId AND f.nft.id = :productId",Favorited.class);
+        query.setParameter("userId",userId);
+        query.setParameter("productId",productId);
+        return query.getResultList().stream().findFirst();
     }
 
     protected static class Pair<T, U> {
