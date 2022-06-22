@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
 
-@UniqueNftConstraint
+@UniqueNftConstraint(nftId = "nftId", contractAddr = "contractAddr", chain = "chain")
 public class CreateNftForm {
     @Digits(integer = 15, fraction = 0)
     @Min(value=0L)
