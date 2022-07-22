@@ -20,12 +20,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.*;
-import org.springframework.web.servlet.handler.AbstractHandlerMapping;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -38,25 +32,13 @@ import java.util.Properties;
         "ar.edu.itba.paw.persistence"
 })
 @EnableAsync
-@EnableWebMvc
 @Configuration
 @EnableTransactionManagement
-public class WebConfig extends WebMvcConfigurationSupport {
+public class WebConfig {
 
     public static final String DB_URL_PARAMETER = "DB_URL";
     public static final String DB_USERNAME_PARAMETER = "DB_USERNAME";
     public static final String DB_PASSWORD_PARAMETER = "DB_PASSWORD";
-
-    @Bean
-    public ViewResolver viewResolver() {
-        final InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-
-        resolver.setViewClass(JstlView.class);
-        resolver.setPrefix("/WEB-INF/");
-        resolver.setSuffix(".jsp");
-
-        return resolver;
-    }
 
     @Bean
     public DataSource dataSource() {
@@ -79,22 +61,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
         resolver.setDefaultEncoding("utf-8");
         return resolver;
     }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/**")
-                .addResourceLocations("/image/")
-                .addResourceLocations("/js/");
-    }
-
-    @Override
-    @Bean
-    public HandlerMapping resourceHandlerMapping() {
-        AbstractHandlerMapping handlerMapping = (AbstractHandlerMapping) super.resourceHandlerMapping();
-        handlerMapping.setOrder(-1);
-        return handlerMapping;
-    }
-
 
     @Bean
     public MessageSource messageSource() {
