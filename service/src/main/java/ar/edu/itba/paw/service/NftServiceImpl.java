@@ -70,6 +70,11 @@ public class NftServiceImpl implements NftService {
         return createPublicationsWithNfts(nfts, currentUser);
     }
 
+    @Override
+    public List<Nft> getAll(int page, String status, String category, String chain, BigDecimal minPrice, BigDecimal maxPrice, String sort, String search, String searchFor) {
+        return nftDao.getAllPublications(page, pageSize, status, category, chain, minPrice, maxPrice, sort, search, searchFor);
+    }
+
     protected Optional<Favorited> isNftFavedByUser(int userId, int productId) {
         return nftDao.isNftFavedByUser(userId, productId);
     }

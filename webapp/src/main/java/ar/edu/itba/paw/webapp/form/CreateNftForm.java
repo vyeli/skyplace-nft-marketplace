@@ -15,6 +15,10 @@ public class CreateNftForm {
     @NotNull
     private int nftId;
 
+    @Min(value=0L)
+    @NotNull
+    private int ownerId;
+
     @NotBlank
     @Pattern(regexp = "^0x[a-fA-F0-9]{40}$")
     private String contractAddr;
@@ -40,6 +44,14 @@ public class CreateNftForm {
 
     public int getNftId() {
         return nftId;
+    }
+
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 
     public void setNftId(int nftId) {

@@ -1,8 +1,5 @@
-<<<<<<<< HEAD:webapp/src/main/resources/sql/schema1.sql
 DROP TABLE IF EXISTS categories, chains, nfts, purchases, reviews, sellorders, users, buyorders, favorited, images;
 
-========
->>>>>>>> 168c1b824c1cd7d7f9c68d54f91076ab1fbcad44:webapp/src/main/resources/sql/schema.sql
 CREATE TABLE IF NOT EXISTS chains (
     chain TEXT PRIMARY KEY
 );
