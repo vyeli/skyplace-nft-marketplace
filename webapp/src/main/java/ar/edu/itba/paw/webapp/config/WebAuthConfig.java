@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import ar.edu.itba.paw.webapp.auth.JwtFilter;
 import ar.edu.itba.paw.webapp.auth.SkyplaceUserDetailsService;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.concurrent.TimeUnit;
 
@@ -47,31 +50,35 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.sessionManagement()
-                .invalidSessionUrl("/")
-            .and().authorizeRequests()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().headers().cacheControl().disable()
+//        http.sessionManagement()
+//                .invalidSessionUrl("/")
+             .and().authorizeRequests()
                 .antMatchers("/login", "/register").anonymous()
                 // TODO: refactor with new login with API
                 .antMatchers(HttpMethod.POST, "/nfts").anonymous()
-                .antMatchers(HttpMethod.GET, "/nfts").anonymous()
+                .antMatchers(HttpMethod.GET, "/nfts", "/dummy").anonymous()
                 .antMatchers("/create", "/buyorder/accept", "/buyorder/validate", "/buyorder/delete","/product/*/delete", "/sell/*", "/sellOrder/*/update", "/sellOrder/*/delete", "/favorite/*/add", "/favorite/*/remove", "/review/*").hasAnyRole("USER","ADMIN")
                 .antMatchers(HttpMethod.POST, "/product/*").hasAnyRole("USER","ADMIN")
                 .antMatchers("/","/explore","/product/*", "/profile/*", "/images/*").permitAll()
                 .antMatchers("/**").authenticated()
-            .and().formLogin()
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/", false)
-                .loginPage("/login")
-            .and().rememberMe()
-                .rememberMeParameter("rememberme")
-                .userDetailsService(userDetailsService)
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(7))
-                .key(Dotenv.load().get(REMEMBERME_KEY_PARAMETER))
-            .and().logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
+//            .and().formLogin()
+//                .usernameParameter("email")
+//                .passwordParameter("password")
+//                .defaultSuccessUrl("/", false)
+//                .loginPage("/login")
+//            .and().rememberMe()
+//                .rememberMeParameter("rememberme")
+//                .userDetailsService(userDetailsService)
+//                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(7))
+//                .key(Dotenv.load().get(REMEMBERME_KEY_PARAMETER))
+//            .and().logout()
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/")
             .and().exceptionHandling()
                 .accessDeniedPage("/403")
+                .and().addFilterBefore(JwtFilter.class, UsernamePasswordAuthenticationFilter.class)
             .and().csrf().disable();
     }
 
