@@ -66,6 +66,7 @@ public class NftController {
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED, })
     @POST
     public Response createNft(@Valid final CreateNftForm nftForm) {
+        // TODO: DTO ValidationError - ver desde 01:05:00 de la clase del 23/5?
         final Nft newNft = nftService.create(nftForm.getNftId(), nftForm.getContractAddr(), nftForm.getName(), nftForm.getChain(), nftForm.getImage(), nftForm.getOwnerId(), nftForm.getCollection(), nftForm.getDescription());
         // appends the new ID to the path of this route (/nfts)
         final URI location = uriInfo.getAbsolutePathBuilder()
