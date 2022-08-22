@@ -31,6 +31,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private SkyplaceUserDetailsService userDetailsService;
 
+    @Autowired
+    private JwtFilter jwtFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -58,8 +61,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login", "/register").anonymous()
                 // TODO: refactor with new login with API
                 .antMatchers(HttpMethod.POST, "/nfts").anonymous()
-                .antMatchers(HttpMethod.GET, "/nfts", "/dummy").anonymous()
-                .antMatchers("/create", "/buyorder/accept", "/buyorder/validate", "/buyorder/delete","/product/*/delete", "/sell/*", "/sellOrder/*/update", "/sellOrder/*/delete", "/favorite/*/add", "/favorite/*/remove", "/review/*").hasAnyRole("USER","ADMIN")
+                .antMatchers(HttpMethod.GET, "/nfts").anonymous()
+                .antMatchers("/dummy", "/create", "/buyorder/accept", "/buyorder/validate", "/buyorder/delete","/product/*/delete", "/sell/*", "/sellOrder/*/update", "/sellOrder/*/delete", "/favorite/*/add", "/favorite/*/remove", "/review/*").hasAnyRole("USER","ADMIN")
                 .antMatchers(HttpMethod.POST, "/product/*").hasAnyRole("USER","ADMIN")
                 .antMatchers("/","/explore","/product/*", "/profile/*", "/images/*").permitAll()
                 .antMatchers("/**").authenticated()
@@ -78,8 +81,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 //                .logoutSuccessUrl("/")
             .and().exceptionHandling()
                 .accessDeniedPage("/403")
-                .and().addFilterBefore(JwtFilter.class, UsernamePasswordAuthenticationFilter.class)
-            .and().csrf().disable();
+                .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            // .and().csrf().disable();
     }
 
     @Override

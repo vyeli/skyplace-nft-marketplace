@@ -22,9 +22,6 @@ import java.util.stream.Collectors;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private SkyplaceUserDetailsService userDetailsService;
-
     // TODO: Move this to JwtConfig POJO Object and secret to somewhere else
     private final static String HEADER = "Authorization";
     private final static String PREFIX = "Bearer ";
