@@ -2,7 +2,6 @@ package ar.edu.itba.paw.webapp.config;
 
 import ar.edu.itba.paw.webapp.auth.JwtFilter;
 import ar.edu.itba.paw.webapp.auth.SkyplaceUserDetailsService;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,9 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebSecurity
@@ -79,10 +77,12 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 //            .and().logout()
 //                .logoutUrl("/logout")
 //                .logoutSuccessUrl("/")
+//                .and.csrf.disable()
             .and().exceptionHandling()
                 .accessDeniedPage("/403")
-                .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-            // .and().csrf().disable();
+            .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .csrf().disable();
     }
 
     @Override

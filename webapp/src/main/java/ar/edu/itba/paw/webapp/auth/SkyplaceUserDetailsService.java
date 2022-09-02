@@ -39,9 +39,10 @@ public class SkyplaceUserDetailsService implements UserDetailsService {
 
         final Collection<GrantedAuthority> roles = new ArrayList<>();
         for(String rol:Role.getRoles())
-            if(user.getRole().name().equals(rol))
-                roles.add(new SimpleGrantedAuthority(String.format("ROLE_%s",rol.toUpperCase())));
-
+            if(user.getRole().name().equals(rol)) {
+                System.out.println("User " + email + " has role of " + rol);
+                roles.add(new SimpleGrantedAuthority(String.format("ROLE_%s", rol.toUpperCase())));
+            }
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), roles);
     }
@@ -49,12 +50,18 @@ public class SkyplaceUserDetailsService implements UserDetailsService {
     public void autologin(String username, String password) {
         UserDetails userDetails = loadUserByUsername(username);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+        for(GrantedAuthority authority : userDetails.getAuthorities())
+            System.out.println("authority: " + authority);
 
         Authentication auth = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
+        System.out.println("PASO POR ACA");
+
         if (auth.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(auth);
+            System.out.println("ENTRO ACA");
         }
+
     }
 
 }
