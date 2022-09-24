@@ -74,7 +74,7 @@ public class NftController {
         return Response.created(location).build();
     }
 
-    // GET /users/{id}
+    // GET /nfts/{id}
     @GET
     @Path("/{id}")
     public Response getNft(@PathParam("id") int id) {
