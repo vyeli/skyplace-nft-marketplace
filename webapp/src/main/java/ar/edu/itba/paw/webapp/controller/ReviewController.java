@@ -131,37 +131,6 @@ public class ReviewController {
         return Response.noContent().build();
     }
 
-    @GET()
-    @Path("/reviewees/{id}")
-    @Produces({ MediaType.APPLICATION_JSON, })
-    public Response listUserReviews(
-            @PathParam("id") final int revieweeId,
-            @QueryParam("page") @DefaultValue("1") final int page,
-            @QueryParam("reviewer") @DefaultValue("-1") final int reviewerId
-    ) {
-        Stream<Review> reviewStream = reviewService.getUserReviews(page, revieweeId).stream();
-        List<ReviewDto> reviewList;
-
-        if(reviewerId > 0)
-            reviewStream = reviewStream.filter(r -> r.getUsersByIdReviewer().getId() == reviewerId);
-        reviewList = reviewStream.map(n -> ReviewDto.fromReview(uriInfo, n)).collect(Collectors.toList());
-
-        if(reviewList.isEmpty())
-            return Response.noContent().build();
-
-        Response.ResponseBuilder responseBuilder = Response.ok(new GenericEntity<List<ReviewDto>>(reviewList) {});
-        if (page > 1)
-            responseBuilder.link(uriInfo.getAbsolutePathBuilder().queryParam("page", page - 1).build(), "prev");
-        int lastPage = (int) Math.ceil(reviewService.getUserReviewsAmount(revieweeId) / (double) reviewService.getPageSize());
-        if (page < lastPage)
-            responseBuilder.link(uriInfo.getAbsolutePathBuilder().queryParam("page", page + 1).build(), "next");
-
-        return responseBuilder
-                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", 1).build(), "first")
-                .link(uriInfo.getAbsolutePathBuilder().queryParam("page", lastPage).build(), "last")
-                .build();
-    }
-
 
     /*
     // TODO: Make summary dto?
