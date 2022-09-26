@@ -34,7 +34,7 @@ public class NftDto {
         final UriBuilder purchasesUriBuilder = uriInfo.getAbsolutePathBuilder().replacePath("purchases");
 
         if (nft.getSellOrder() != null) {
-            final UriBuilder sellorderUriBuilder = uriInfo.getAbsolutePathBuilder().replacePath("orders")
+            final UriBuilder sellorderUriBuilder = uriInfo.getAbsolutePathBuilder().replacePath("sellorders")
                     .path(String.valueOf(nft.getSellOrder().getId()));
             // /orders/12
             dto.sellorder = sellorderUriBuilder.build();

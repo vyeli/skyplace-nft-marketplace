@@ -61,6 +61,7 @@ public class UserController {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+    // TODO: Move method to reviews controller (if possible)
     @GET()
     @Path("/{id}/reviews")
     @Produces({ MediaType.APPLICATION_JSON, })
