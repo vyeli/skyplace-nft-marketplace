@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Path("sellorders")
 @Component
@@ -49,10 +50,19 @@ public class SellOrderController {
             @QueryParam("chain") final String chain,
             @QueryParam("sort") final String sort,
             @QueryParam("search") final String search,
-            @QueryParam("searchFor") final String searchFor
+            @QueryParam("searchFor") final String searchFor,
+            @QueryParam("seller") final Integer sellerId
     ) {
-        List<SellOrderDto> sellOrderList = nftService.getAll(page, "onSale", category, chain, minPrice, maxPrice, sort, search, searchFor)
-                .stream().map(Nft::getSellOrder).map(s -> SellOrderDto.fromSellOrder(uriInfo, s)).collect(Collectors.toList());
+        Stream<Nft> stream = nftService.getAll(page, "onSale", category, chain, minPrice, maxPrice, sort, search, searchFor)
+                .stream();
+
+        // TODO: Get only user nfts instead of all and then filter
+        // Current problem: getAllPublicationsByUser used does not support all filtering query params
+        if(sellerId != null) {
+            stream = stream.filter(n -> n.getOwner().getId() == sellerId);
+        }
+        List<SellOrderDto> sellOrderList = stream.map(Nft::getSellOrder).map(s -> SellOrderDto.fromSellOrder(uriInfo, s)).collect(Collectors.toList());
+
         if(sellOrderList.isEmpty())
             return Response.noContent().build();
 

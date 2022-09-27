@@ -50,6 +50,16 @@ public class UserController {
         return Response.created(location).build();
     }
 
+    @GET
+    @Path("/current")
+    public Response getCurrentUser(){
+        final Optional<UserDto> maybeUser = userService.getCurrentUser().map(u -> UserDto.fromUser(uriInfo, u));
+        if(maybeUser.isPresent()) {
+            return Response.ok(maybeUser.get()).build();
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
     // GET /users/{id}
     @GET
     @Path("/{id}")
