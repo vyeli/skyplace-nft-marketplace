@@ -31,4 +31,12 @@ public class BuyOrderId implements Serializable {
     public int hashCode() {
         return Objects.hash(sellOrderId, buyerId);
     }
+
+    public int getSellOrderId() {
+        return sellOrderId;
+    }
+
+    public int getBuyerId() {
+        return buyerId;
+    }
 }
