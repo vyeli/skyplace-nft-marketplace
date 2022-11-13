@@ -210,19 +210,7 @@ public class SellOrderController {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    @GET
-    @Path("/{id}/buyorders/{userId}")
-    public Response getBuyOrderFromUserId(@PathParam("id") int id, @PathParam("userId") int userId) {
 
-        Optional<SellOrder> maybeSellOrder = this.sellOrderService.getOrderById(id);
-        Optional<User> maybeUser = this.userService.getUserById(userId);
-        if (!maybeSellOrder.isPresent() || !maybeUser.isPresent()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        //WIP
-        return Response.status(Response.Status.NOT_FOUND).build();
-    }
 
 
 

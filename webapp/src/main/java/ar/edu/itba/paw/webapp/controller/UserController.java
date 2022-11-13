@@ -39,7 +39,6 @@ public class UserController {
         this.reviewService = reviewService;
     }
 
-    // POST /users
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED, })
     @POST
     public Response createUser(@Valid final UserForm userForm) {
@@ -64,9 +63,9 @@ public class UserController {
     @GET
     @Path("/{id}")
     public Response getUser(@PathParam("id") int id) {
-        Optional<UserDto> maybeUser = userService.getUserById(id).map(user -> UserDto.fromUser(uriInfo, user));
+        Optional<User> maybeUser = userService.getUserById(id);
         if (maybeUser.isPresent()) {
-            return Response.ok(maybeUser.get()).build();
+            return Response.ok(UserDto.fromUser(this.uriInfo, maybeUser.get())).build();
         }
         return Response.status(Response.Status.NOT_FOUND).build();
     }
