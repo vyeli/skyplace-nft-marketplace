@@ -130,12 +130,16 @@ public class NftController {
                 .build();
     }
 
-    @POST
+    @PUT
     @Path("/{id}/favorite")
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED, })
     public Response addUserFavorite(
             @PathParam("id") int nftId
     ) {
+        Optional<NftDto> maybeNft = nftService.getNFTById(nftId).map(n -> NftDto.fromNft(uriInfo, n));
+        if (!maybeNft.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         // TODO: Get current user when jwt works
         Optional<User> maybeCurrentUser = userService.getUserById(1);
         if(!maybeCurrentUser.isPresent())
@@ -151,6 +155,10 @@ public class NftController {
     public Response removeUserFavorite(
             @PathParam("id") int nftId
     ) {
+        Optional<NftDto> maybeNft = nftService.getNFTById(nftId).map(n -> NftDto.fromNft(uriInfo, n));
+        if (!maybeNft.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         // TODO: Get current user when jwt works
         Optional<User> maybeCurrentUser = userService.getUserById(1);
         if(!maybeCurrentUser.isPresent())

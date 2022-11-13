@@ -12,6 +12,7 @@ import ar.edu.itba.paw.webapp.form.CreateSellOrderForm;
 import ar.edu.itba.paw.webapp.form.PriceForm;
 import ar.edu.itba.paw.webapp.form.SellNftForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
@@ -192,6 +193,35 @@ public class SellOrderController {
 
         buyOrderService.deleteBuyOrder(id, userId);
         return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("/{id}/buyorders/{userId}")
+    public Response acceptBuyOrderFromUserId(@PathParam("id") int id, @PathParam("userId") int userId) {
+
+        //TODO VALIDATE USER PERMISSIONS TO DO THIS
+
+        Optional<User> maybeUser = this.userService.getUserById(userId);
+        Optional<SellOrder> maybeSellOrder = this.sellOrderService.getOrderById(id);
+        if (maybeSellOrder.isPresent() && maybeUser.isPresent()) {
+            buyOrderService.acceptBuyOrder(id, userId);
+            return Response.noContent().build();  //TODO: SHOULD RETURN SOMETHING ELSE ?
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @GET
+    @Path("/{id}/buyorders/{userId}")
+    public Response getBuyOrderFromUserId(@PathParam("id") int id, @PathParam("userId") int userId) {
+
+        Optional<SellOrder> maybeSellOrder = this.sellOrderService.getOrderById(id);
+        Optional<User> maybeUser = this.userService.getUserById(userId);
+        if (!maybeSellOrder.isPresent() || !maybeUser.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        //WIP
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
 
