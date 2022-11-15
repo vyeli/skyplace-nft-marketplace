@@ -6,13 +6,11 @@ import ar.edu.itba.paw.service.NftService;
 import ar.edu.itba.paw.service.SellOrderService;
 import ar.edu.itba.paw.service.UserService;
 import ar.edu.itba.paw.webapp.dto.BuyOrderDto;
-import ar.edu.itba.paw.webapp.dto.NftDto;
 import ar.edu.itba.paw.webapp.dto.SellOrderDto;
 import ar.edu.itba.paw.webapp.form.CreateSellOrderForm;
 import ar.edu.itba.paw.webapp.form.PriceForm;
 import ar.edu.itba.paw.webapp.form.SellNftForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
@@ -20,7 +18,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -142,7 +139,7 @@ public class SellOrderController {
         buyOrderService.create(id, priceForm.getPrice(), userId);
         // WHAT URI TO RETURN ??
         final URI location = uriInfo.getAbsolutePathBuilder()
-                .path(String.valueOf(id) + "buyorders").build();
+                .path(id + "buyorders").build();
         return Response.created(location).build();
     }
 
@@ -156,14 +153,14 @@ public class SellOrderController {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        long amountOfferPages = 0;
+        long amountOfferPages;
         amountOfferPages = buyOrderService.getAmountPagesBySellOrderId(maybeSellOrder.get());
 
         if(offerPage > amountOfferPages || offerPage < 0 ) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        List<BuyOrderDto> buyOffers = new ArrayList<>();
+        List<BuyOrderDto> buyOffers;
         buyOffers = buyOrderService.getOrdersBySellOrderId(offerPage, maybeSellOrder.get().getId()).stream().map(n -> BuyOrderDto.fromBuyOrder(n, uriInfo)).collect(Collectors.toList());
 
         if(buyOffers.isEmpty()){
