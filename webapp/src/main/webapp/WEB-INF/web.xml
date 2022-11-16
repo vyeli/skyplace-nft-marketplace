@@ -26,6 +26,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
     </listener-class>
   </listener>
 
+  <!--
   <error-page>
     <error-code>400</error-code>
     <location>/WEB-INF/error/400.jsp</location>
@@ -50,6 +51,7 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
     <error-code>500</error-code>
     <location>/WEB-INF/error/500.jsp</location>
   </error-page>
+  -->
 
   <filter>
     <filter-name>jersey</filter-name>

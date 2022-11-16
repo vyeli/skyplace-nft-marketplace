@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Instant;
@@ -46,39 +45,28 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         UsernamePasswordAuthenticationToken token;
-        // 1. get the authentication header. Tokens are supposed to be passed in the authentication header
-        String headerContent = request.getHeader(HttpHeaders.AUTHORIZATION);
         Instant now = Instant.now();
-
-        // 2. validate the header and check the prefix
-        if(headerContent == null){
-            System.out.println("ERROR: No recibi el header de auth");
-            // go to the next filter in the filter chain
-            chain.doFilter(request, response);
-            return;
-        }
-
-        String[] contentInfo = headerContent.split(" ", 2);
-        if(contentInfo.length < 2){
-            System.out.println("ERROR: No recibi las credenciales en el header de auth");
-            chain.doFilter(request, response);
-            return;
-        }
-
-        String prefix = contentInfo[0];
-        String credentials = contentInfo[1];
 
         String accessToken;
         String refreshToken;
+        String prefix = "";
+        String credentials = "";
+
+        String headerContent = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if(headerContent != null){
+            String[] contentInfo = headerContent.split(" ", 2);
+            if(contentInfo.length == 2){
+                prefix = contentInfo[0];
+                credentials = contentInfo[1];
+            }
+        }
 
         switch(prefix){
             case USERAUTH_PREFIX:
-                System.out.println("Mande un " + prefix + " con credenciales " + credentials);
                 // validate user credentails and, if valid, return new jwt auth and refresh tokens
                 String decodedCredentials = new String(Base64.getDecoder().decode(credentials));
                 String[] userPass = decodedCredentials.split(":", 2);
-
-                System.out.println("Inicio sesion con usuario " + userPass[0] + " y contra " + userPass[1]);
 
                 token = userDetailsService.restLogin(userPass[0], userPass[1]);
 

@@ -1,11 +1,10 @@
 package ar.edu.itba.paw.webapp.mappers;
 
-import ar.edu.itba.paw.webapp.dto.ValidationErrorDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
+import ar.edu.itba.paw.webapp.dto.ResponseErrorDto;
 
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -17,10 +16,12 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
 
     @Override
     public Response toResponse(final ConstraintViolationException e) {
-        final List<ValidationErrorDto> errors = e.getConstraintViolations().stream()
-                .map(ValidationErrorDto::fromValidationException).collect(Collectors.toList());
+        final List<ResponseErrorDto> errors = e.getConstraintViolations().stream()
+                .map(ResponseErrorDto::fromValidationException).collect(Collectors.toList());
 
         return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new GenericEntity<List<ValidationErrorDto>>(errors){}).build();
+                .entity(new GenericEntity<List<ResponseErrorDto>>(errors){})
+                .type(MediaType.APPLICATION_JSON)
+                .build();
     }
 }
