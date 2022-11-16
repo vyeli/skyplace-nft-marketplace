@@ -113,6 +113,15 @@ public class ReviewJpaDao implements ReviewDao{
     }
 
     @Override
+    public Optional<Review> getReview(int reviewId) {
+        Review review = em.find(Review.class, reviewId);
+        if(review != null){
+            return Optional.of(review);
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public void deleteReview(int reviewId) {
         Review review = em.find(Review.class, reviewId);
         em.remove(review);

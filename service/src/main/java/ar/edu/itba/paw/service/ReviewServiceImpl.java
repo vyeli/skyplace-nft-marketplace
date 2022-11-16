@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 public class ReviewServiceImpl implements ReviewService{
@@ -33,7 +34,7 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Transactional
     @Override
-    public void addReview(int reviewerId, int revieweeId, int score, String title, String comments) {
+    public Review addReview(int reviewerId, int revieweeId, int score, String title, String comments) {
         if(reviewerId == revieweeId || hasReviewByUser(reviewerId, revieweeId))
             throw new InvalidReviewException();
         User reviewer = userDao.getUserById(reviewerId).orElseThrow(UserNotFoundException::new);
@@ -41,6 +42,12 @@ public class ReviewServiceImpl implements ReviewService{
         Review newReview = reviewDao.addReview(reviewer, reviewee, score, title, comments);
         Locale locale = Locale.forLanguageTag(reviewee.getLocale());
         mailingService.sendNewReviewMail(reviewee.getUsername(), reviewee.getEmail(), revieweeId, reviewer.getUsername(), reviewer.getEmail(), newReview.getScore(), newReview.getTitle(), newReview.getComments(), locale);
+        return newReview;
+    }
+
+    @Override
+    public Optional<Review> getReview(int reviewId) {
+        return reviewDao.getReview(reviewId);
     }
 
     @Override
