@@ -36,20 +36,47 @@ public class SkyplaceUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         final User user = us.getUserByEmail(email).
                 orElseThrow(()->new UsernameNotFoundException("No such user with email: " + email));
-
-        final Collection<GrantedAuthority> roles = new ArrayList<>();
-        for(String rol:Role.getRoles())
-            if(user.getRole().name().equals(rol)) {
+        final List<GrantedAuthority> roles = new ArrayList<>();
+        for(String rol:Role.getRoles()) {
+            if (user.getRole().name().equals(rol)) {
                 System.out.println("User " + email + " has role of " + rol);
                 roles.add(new SimpleGrantedAuthority(String.format("ROLE_%s", rol.toUpperCase())));
             }
-
+        }
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), roles);
+    }
+
+    public UsernamePasswordAuthenticationToken restLogin(String email, String password) throws UsernameNotFoundException {
+        final User user = us.getUserByEmail(email).
+                orElseThrow(()->new UsernameNotFoundException("No such user with email: " + email));
+        final List<GrantedAuthority> roles = new ArrayList<>();
+        for(String rol:Role.getRoles()) {
+            if (user.getRole().name().equals(rol)) {
+                System.out.println("User " + email + " has role of " + rol);
+                roles.add(new SimpleGrantedAuthority(String.format("ROLE_%s", rol.toUpperCase())));
+            }
+        }
+        return new UsernamePasswordAuthenticationToken(email, password, roles);
+        //return new org.springframework.security.core.userdetails.User(user.getEmail(), password, roles);
+    }
+
+    public UsernamePasswordAuthenticationToken jwtLogin(String email) throws UsernameNotFoundException {
+        final User user = us.getUserByEmail(email).
+                orElseThrow(()->new UsernameNotFoundException("No such user with email: " + email));
+        final List<GrantedAuthority> roles = new ArrayList<>();
+        for(String rol:Role.getRoles()) {
+            if (user.getRole().name().equals(rol)) {
+                System.out.println("User " + email + " has role of " + rol);
+                roles.add(new SimpleGrantedAuthority(String.format("ROLE_%s", rol.toUpperCase())));
+            }
+        }
+        return new UsernamePasswordAuthenticationToken(email, user.getPassword(), roles);
+        //return new org.springframework.security.core.userdetails.User(user.getEmail(), password, roles);
     }
 
     public void autologin(String username, String password) {
         UserDetails userDetails = loadUserByUsername(username);
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
         for(GrantedAuthority authority : userDetails.getAuthorities())
             System.out.println("authority: " + authority);
 

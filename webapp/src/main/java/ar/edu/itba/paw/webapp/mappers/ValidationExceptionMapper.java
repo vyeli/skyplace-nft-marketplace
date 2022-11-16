@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.mappers;
 
 import ar.edu.itba.paw.webapp.dto.ValidationErrorDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.GenericEntity;

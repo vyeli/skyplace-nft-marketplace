@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
-import ar.edu.itba.paw.webapp.auth.JwtFilter;
+import ar.edu.itba.paw.webapp.auth.JwtAuthorizationFilter;
 import ar.edu.itba.paw.webapp.auth.SkyplaceUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,12 +17,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
 @ComponentScan({"ar.edu.itba.paw.webapp.auth"})
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true)
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
     public static final String REMEMBERME_KEY_PARAMETER = "REMEMBERME_KEY";
@@ -29,12 +34,14 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private SkyplaceUserDetailsService userDetailsService;
 
-    @Autowired
-    private JwtFilter jwtFilter;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtAuthorizationFilter jwtAuthorizationFilter() {
+        return new JwtAuthorizationFilter(userDetailsService);
     }
 
     @Bean
@@ -56,12 +63,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 //        http.sessionManagement()
 //                .invalidSessionUrl("/")
              .and().authorizeRequests()
-                .antMatchers("/login", "/register").anonymous()
+                //.antMatchers("/login", "/register").anonymous()
                 // TODO: refactor with new login with API
-                .antMatchers(HttpMethod.POST, "/nfts").anonymous()
-                .antMatchers(HttpMethod.GET, "/nfts").anonymous()
                 .antMatchers("/dummy", "/create", "/buyorder/accept", "/buyorder/validate", "/buyorder/delete","/product/*/delete", "/sell/*", "/sellOrder/*/update", "/sellOrder/*/delete", "/favorite/*/add", "/favorite/*/remove", "/review/*").hasAnyRole("USER","ADMIN")
-                .antMatchers(HttpMethod.POST, "/product/*").hasAnyRole("USER","ADMIN")
+                .antMatchers(HttpMethod.POST, "/product/*", "/nfts").hasAnyRole("USER","ADMIN")
                 .antMatchers("/","/explore","/product/*", "/profile/*", "/images/*").permitAll()
                 .antMatchers("/**").authenticated()
 //            .and().formLogin()
@@ -81,7 +86,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
             .and().exceptionHandling()
                 .accessDeniedPage("/403")
             .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
             .csrf().disable();
     }
 
@@ -89,6 +94,13 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     public void configure(final WebSecurity web) {
         web.ignoring()
                 .antMatchers("/favicon.ico", "/css/**", "/js/**", "/resources/**", "/403", "/images/**");
+    }
+
+    @Bean
+    public CorsConfiguration corsConfiguration() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedHeader("http://localhost:9000/");
+        return corsConfiguration;
     }
 
 }
