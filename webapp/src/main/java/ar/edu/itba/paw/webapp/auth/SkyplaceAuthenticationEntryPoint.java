@@ -18,7 +18,7 @@ public class SkyplaceAuthenticationEntryPoint implements AuthenticationEntryPoin
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        final ResponseErrorDto dto = ResponseErrorDto.fromAuthenticationException(authException);
+        final ResponseErrorDto dto = ResponseErrorDto.fromGenericException(authException, HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON);
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.getWriter().print(gson.toJson(dto));

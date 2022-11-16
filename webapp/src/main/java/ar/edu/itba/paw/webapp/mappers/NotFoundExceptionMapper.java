@@ -14,7 +14,7 @@ public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundExceptio
 
     @Override
     public Response toResponse(final NotFoundException e) {
-        final ResponseErrorDto error = ResponseErrorDto.fromNotFoundException(e);
+        final ResponseErrorDto error = ResponseErrorDto.fromGenericException(e, 404);
 
         return Response.status(Response.Status.NOT_FOUND)
                 .entity(new GenericEntity<ResponseErrorDto>(error){})

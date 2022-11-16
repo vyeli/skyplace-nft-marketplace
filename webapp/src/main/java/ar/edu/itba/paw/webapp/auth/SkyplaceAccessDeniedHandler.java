@@ -17,9 +17,9 @@ public class SkyplaceAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        final ResponseErrorDto dto = ResponseErrorDto.fromAccessDeniedException(accessDeniedException);
+        final ResponseErrorDto dto = ResponseErrorDto.fromGenericException(accessDeniedException, HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON);
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().print(gson.toJson(dto));
         response.getWriter().flush();
     }

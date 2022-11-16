@@ -1,14 +1,6 @@
 package ar.edu.itba.paw.webapp.dto;
 
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
-
 import javax.validation.ConstraintViolation;
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.ServerErrorException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,11 +13,11 @@ public class ResponseErrorDto {
     private String detail;
     private SourceDto source;
 
-    public static ResponseErrorDto fromNotFoundException(final NotFoundException e) {
+    public static ResponseErrorDto fromGenericException(final RuntimeException e, final int statusCode){
         final ResponseErrorDto dto = new ResponseErrorDto();
 
-        dto.status = e.getResponse().getStatus();
-        dto.title = e.getResponse().getStatusInfo().getReasonPhrase();
+        dto.status = statusCode;
+        dto.title = e.getLocalizedMessage();
 
         return dto;
     }
@@ -38,33 +30,6 @@ public class ResponseErrorDto {
         sourceMap.put("pointer", getPointerString(vex.getPropertyPath().toString()));
         dto.source = SourceDto.toSourceList(sourceMap);
         dto.title = vex.getMessage();
-        return dto;
-    }
-
-    public static ResponseErrorDto fromServerErrorException(final ServerErrorException e) {
-        final ResponseErrorDto dto = new ResponseErrorDto();
-
-        dto.status = e.getResponse().getStatus();
-        dto.title = e.getLocalizedMessage();
-
-        return dto;
-    }
-
-    public static ResponseErrorDto fromAuthenticationException(AuthenticationException e) {
-        final ResponseErrorDto dto = new ResponseErrorDto();
-
-        dto.status = 403;
-        dto.title = e.getLocalizedMessage();
-
-        return dto;
-    }
-
-    public static ResponseErrorDto fromAccessDeniedException(AccessDeniedException e) {
-        final ResponseErrorDto dto = new ResponseErrorDto();
-
-        dto.status = 401;
-        dto.title = e.getLocalizedMessage();
-
         return dto;
     }
 
