@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.config;
 
 import ar.edu.itba.paw.webapp.auth.JwtAuthorizationFilter;
+import ar.edu.itba.paw.webapp.auth.SkyplaceAccessDeniedHandler;
+import ar.edu.itba.paw.webapp.auth.SkyplaceAuthenticationEntryPoint;
 import ar.edu.itba.paw.webapp.auth.SkyplaceUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -65,7 +67,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
              .and().authorizeRequests()
                 //.antMatchers("/login", "/register").anonymous()
                 // TODO: refactor with new login with API
-                .antMatchers("/dummy", "/create", "/buyorder/accept", "/buyorder/validate", "/buyorder/delete","/product/*/delete", "/sell/*", "/sellOrder/*/update", "/sellOrder/*/delete", "/favorite/*/add", "/favorite/*/remove", "/review/*").hasAnyRole("USER","ADMIN")
+                .antMatchers("/create", "/buyorder/accept", "/buyorder/validate", "/buyorder/delete","/product/*/delete", "/sell/*", "/sellOrder/*/update", "/sellOrder/*/delete", "/favorite/*/add", "/favorite/*/remove", "/review/*").hasAnyRole("USER","ADMIN")
                 .antMatchers(HttpMethod.POST, "/product/*", "/nfts").hasAnyRole("USER","ADMIN")
                 .antMatchers("/","/explore","/product/*", "/profile/*", "/images/*").permitAll()
                 .antMatchers("/**").authenticated()
@@ -84,7 +86,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 //                .logoutSuccessUrl("/")
 //                .and.csrf.disable()
             .and().exceptionHandling()
-                .accessDeniedPage("/403")
+                .authenticationEntryPoint(new SkyplaceAuthenticationEntryPoint())
+                .accessDeniedHandler(new SkyplaceAccessDeniedHandler())
             .and()
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
             .csrf().disable();

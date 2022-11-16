@@ -1,10 +1,14 @@
 package ar.edu.itba.paw.webapp.dto;
 
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 
 import javax.validation.ConstraintViolation;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ServerErrorException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,12 +50,20 @@ public class ResponseErrorDto {
         return dto;
     }
 
-    public static ResponseErrorDto fromAccessDeniedException(AccessDeniedException e) {
+    public static ResponseErrorDto fromAuthenticationException(AuthenticationException e) {
         final ResponseErrorDto dto = new ResponseErrorDto();
 
         dto.status = 403;
         dto.title = e.getLocalizedMessage();
-        dto.detail = e.getCause().getLocalizedMessage();
+
+        return dto;
+    }
+
+    public static ResponseErrorDto fromAccessDeniedException(AccessDeniedException e) {
+        final ResponseErrorDto dto = new ResponseErrorDto();
+
+        dto.status = 401;
+        dto.title = e.getLocalizedMessage();
 
         return dto;
     }
